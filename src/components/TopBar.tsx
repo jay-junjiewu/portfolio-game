@@ -12,7 +12,7 @@ const TopBar = ({
   onOpenSection,
 }: TopBarProps) => {
   return (
-    <header className="top-bar">
+    <header className={`top-bar ${isDay ? "day" : "night"}`}>
       <div className="top-bar-content">
         <div className="brand">
           <span className="brand-title">Pocket Portfolio City</span>

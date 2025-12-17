@@ -53,6 +53,11 @@ body {
   z-index: 4;
 }
 
+.top-bar.night {
+  background: linear-gradient(180deg, rgba(16, 24, 38, 0.95), rgba(16, 24, 38, 0.88));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
 .top-bar-content {
   width: 100%;
   display: flex;
@@ -69,6 +74,10 @@ body {
 .brand-title {
   font-weight: 600;
   font-size: 1rem;
+}
+
+.top-bar.night .brand-title {
+  color: #e8f0ff;
 }
 
 .nav-links {
@@ -89,6 +98,10 @@ body {
   padding: 0.3rem 0.5rem;
 }
 
+.top-bar.night .nav-link {
+  color: #d8e6ff;
+}
+
 .nav-link:hover {
   text-decoration: underline;
 }
@@ -102,6 +115,11 @@ body {
   border: 1px solid #c9d5e7;
   background: white;
   cursor: pointer;
+}
+
+.top-bar.night .toggle {
+  background: #111927;
+  border: 1px solid #253551;
 }
 
 .toggle-dot {
@@ -127,6 +145,10 @@ body {
   font-size: 0.9rem;
   color: #1c3f7c;
   font-weight: 700;
+}
+
+.top-bar.night .toggle-label {
+  color: #d8e6ff;
 }
 
 .controls-panel {
