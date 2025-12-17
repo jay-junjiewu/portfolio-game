@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 type TopBarProps = {
   isDay: boolean;
   onToggleDay: () => void;
@@ -11,29 +13,48 @@ const TopBar = ({
   onToggleControls,
   onOpenSection,
 }: TopBarProps) => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleNav = (key: "about" | "projects" | "skills" | "experience" | "contact") => {
+    onOpenSection(key);
+    setMenuOpen(false);
+  };
+
   return (
     <header className={`top-bar ${isDay ? "day" : "night"}`}>
       <div className="top-bar-content">
-        <div className="brand">
-          <span className="brand-title">Junjie (Jay) Wu</span>
+        <div className="top-bar-row">
+          <div className="brand">
+            <span className="brand-title">Junjie (Jay) Wu</span>
+          </div>
+          <button
+            type="button"
+            className="hamburger"
+            aria-label="Toggle navigation"
+            onClick={() => setMenuOpen((v) => !v)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
         </div>
-        <nav className="nav-links">
+        <nav className={`nav-links ${menuOpen ? "open" : ""}`}>
           <button type="button" className="nav-link" onClick={onToggleControls}>
             Help
           </button>
-          <button type="button" className="nav-link" onClick={() => onOpenSection("about")}>
+          <button type="button" className="nav-link" onClick={() => handleNav("about")}>
             About
           </button>
-          <button type="button" className="nav-link" onClick={() => onOpenSection("projects")}>
+          <button type="button" className="nav-link" onClick={() => handleNav("projects")}>
             Projects
           </button>
-          <button type="button" className="nav-link" onClick={() => onOpenSection("skills")}>
+          <button type="button" className="nav-link" onClick={() => handleNav("skills")}>
             Skills
           </button>
-          <button type="button" className="nav-link" onClick={() => onOpenSection("experience")}>
+          <button type="button" className="nav-link" onClick={() => handleNav("experience")}>
             Experience
           </button>
-          <button type="button" className="nav-link" onClick={() => onOpenSection("contact")}>
+          <button type="button" className="nav-link" onClick={() => handleNav("contact")}>
             Contact
           </button>
           <button type="button" className="toggle" onClick={onToggleDay}>

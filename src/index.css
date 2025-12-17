@@ -47,7 +47,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.6rem 1.2rem;
+  padding: 1rem 1.5rem;
   background: linear-gradient(180deg, rgba(245, 250, 246, 0.96), rgba(245, 250, 246, 0.85));
   box-shadow: 0 2px 6px rgba(14, 27, 58, 0.08);
   z-index: 4;
@@ -80,12 +80,24 @@ body {
   color: #e8f0ff;
 }
 
+.top-bar-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .nav-links {
   display: flex;
   gap: 1.25rem;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
+}
+
+.nav-links.open {
+  display: flex;
 }
 
 .nav-link {
@@ -179,6 +191,32 @@ body {
 
 .top-bar.night .toggle-label {
   color: #d8e6ff;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  margin-left: auto;
+}
+
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #1c3f7c;
+}
+
+.top-bar.night .hamburger span {
+  background: #d8e6ff;
+}
+
+.nav-links.open {
+  display: flex;
 }
 
 .controls-panel {
@@ -475,26 +513,53 @@ body {
 }
 
 @media (max-width: 900px) {
-  .top-bar {
+  .top-bar-content {
     flex-direction: column;
-    align-items: flex-start;
-    border-radius: 24px;
-  }
-  .top-bar-actions {
-    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0.25rem;
+    position: relative;
     width: 100%;
   }
-  .portfolio-panel {
-    right: 1rem;
-    left: 1rem;
-    width: auto;
+  .nav-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+    position: static;
+    padding: 0.25rem 0 0.8rem 0;
+    background: inherit;
+    box-shadow: none;
+    z-index: 1;
+  }
+  .nav-links.open {
+    display: flex;
+  }
+  .top-bar.night .nav-links {
+    background: inherit;
+  }
+  .hamburger {
+    display: flex;
   }
 }
 
 @media (max-width: 640px) {
   .top-bar {
-    top: 1rem;
-    width: calc(100% - 1rem);
+    padding: 0.5rem 0.8rem;
+  }
+  .nav-links {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    display: none;
+  }
+  .brand-title {
+    font-size: 0.95rem;
+  }
+  .toggle {
+    padding: 0.25rem 0.6rem;
   }
   .portfolio-panel {
     top: auto;
@@ -502,17 +567,11 @@ body {
     left: 0;
     right: 0;
     border-radius: 24px 24px 0 0;
-    height: 55vh;
+    height: 70vh;
     transform: translateY(110%);
+    width: 100%;
   }
   .portfolio-panel.open {
     transform: translateY(0);
-  }
-  .mini-map {
-    left: auto;
-    right: 1rem;
-    bottom: 1rem;
-    width: 120px;
-    height: 120px;
   }
 }
