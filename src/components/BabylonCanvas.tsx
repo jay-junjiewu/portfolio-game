@@ -38,6 +38,7 @@ const BabylonCanvas = ({
       engine.runRenderLoop(() => {
         controls.scene.render();
       });
+      canvas.focus();
     })();
 
     const handleResize = () => {
@@ -58,7 +59,7 @@ const BabylonCanvas = ({
     controlsRef.current?.setDayMode(isDay);
   }, [isDay]);
 
-  return <canvas ref={canvasRef} className="city-canvas" />;
+  return <canvas ref={canvasRef} className="city-canvas" tabIndex={0} />;
 };
 
 export default BabylonCanvas;

@@ -75,6 +75,48 @@ body {
   gap: 0.5rem;
 }
 
+.controls-panel {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  width: min(320px, calc(100% - 2rem));
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(7, 13, 34, 0.22);
+  padding: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  transform: translateY(120%);
+  opacity: 0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  z-index: 3;
+}
+
+.controls-panel.open {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.controls-panel ul {
+  padding-left: 1.1rem;
+  margin: 0;
+}
+
+.controls-panel li {
+  margin-bottom: 0.4rem;
+}
+
+.controls-panel strong {
+  font-weight: 700;
+}
+
 .ghost-button {
   border: 1px solid rgba(9, 24, 53, 0.15);
   background: rgba(248, 249, 255, 0.9);

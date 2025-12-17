@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import BabylonCanvas from "./components/BabylonCanvas";
+import ControlsPanel from "./components/ControlsPanel";
 import PortfolioPanel from "./components/PortfolioPanel";
 import TopBar from "./components/TopBar";
 import type { BuildingKey } from "./data/cityLayout";
@@ -8,6 +9,7 @@ import type { SceneControls } from "./scene/createScene";
 const App = () => {
   const [isDay, setIsDay] = useState(true);
   const [activeBuilding, setActiveBuilding] = useState<BuildingKey | null>(null);
+  const [showControls, setShowControls] = useState(false);
   const controlsRef = useRef<SceneControls | null>(null);
 
   const handleSceneReady = useCallback((controls: SceneControls) => {
@@ -21,12 +23,16 @@ const App = () => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setActiveBuilding(null);
+        if (showControls) {
+          setShowControls(false);
+        } else {
+          setActiveBuilding(null);
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [showControls]);
 
   const toggleDay = () => {
     setIsDay((prev) => !prev);
@@ -47,8 +53,10 @@ const App = () => {
         isDay={isDay}
         onToggleDay={toggleDay}
         onResetCamera={resetCamera}
+        onToggleControls={() => setShowControls((v) => !v)}
       />
       <PortfolioPanel activeKey={activeBuilding} onClose={() => setActiveBuilding(null)} />
+      <ControlsPanel open={showControls} onClose={() => setShowControls(false)} />
     </div>
   );
 };

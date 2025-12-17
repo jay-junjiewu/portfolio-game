@@ -55,8 +55,8 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
     panningMouseButton: number;
   };
   pointerInput.buttons = [0];
-  pointerInput.angularSensibilityX = 10000;
-  pointerInput.angularSensibilityY = 10000;
+  pointerInput.angularSensibilityX = 1000;
+  pointerInput.angularSensibilityY = 1000;
   pointerInput.panningSensibility = 450;
   pointerInput.panningMouseButton = 0;
   camera.attachControl(canvas, true);
@@ -64,13 +64,14 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
   scene.onKeyboardObservable.add((info) => {
     const event = info.event;
     if (info.type !== KeyboardEventTypes.KEYDOWN) return;
-    const panStep = 0.8;
-    const forward = new Vector3(
-      Math.sin(camera.alpha),
-      0,
-      Math.cos(camera.alpha)
-    ).normalize();
-    const right = Vector3.Cross(forward, Vector3.Up()).normalize();
+    const panStep = 0.5;
+    const forwardDir = camera.target.subtract(camera.position);
+    forwardDir.y = 0;
+    if (forwardDir.lengthSquared() < 0.0001) {
+      forwardDir.set(Math.sin(camera.alpha), 0, Math.cos(camera.alpha));
+    }
+    forwardDir.normalize();
+    const right = Vector3.Cross(forwardDir, Vector3.Up()).normalize();
 
     switch (event.code) {
       case "KeyQ":
@@ -83,26 +84,26 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
         break;
       case "KeyW":
       case "ArrowUp":
-        camera.target.addInPlace(forward.scale(panStep));
-        camera.position.addInPlace(forward.scale(panStep));
+        camera.target.addInPlace(forwardDir.scale(panStep));
+        camera.position.addInPlace(forwardDir.scale(panStep));
         event.preventDefault();
         break;
       case "KeyS":
       case "ArrowDown":
-        camera.target.addInPlace(forward.scale(-panStep));
-        camera.position.addInPlace(forward.scale(-panStep));
+        camera.target.addInPlace(forwardDir.scale(-panStep));
+        camera.position.addInPlace(forwardDir.scale(-panStep));
         event.preventDefault();
         break;
       case "KeyA":
       case "ArrowLeft":
-        camera.target.addInPlace(right.scale(-panStep));
-        camera.position.addInPlace(right.scale(-panStep));
+        camera.target.addInPlace(right.scale(panStep));
+        camera.position.addInPlace(right.scale(panStep));
         event.preventDefault();
         break;
       case "KeyD":
       case "ArrowRight":
-        camera.target.addInPlace(right.scale(panStep));
-        camera.position.addInPlace(right.scale(panStep));
+        camera.target.addInPlace(right.scale(-panStep));
+        camera.position.addInPlace(right.scale(-panStep));
         event.preventDefault();
         break;
       default:
