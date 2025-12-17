@@ -10,6 +10,7 @@ const App = () => {
   const [isDay, setIsDay] = useState(true);
   const [activeBuilding, setActiveBuilding] = useState<BuildingKey | null>(null);
   const [showControls, setShowControls] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const controlsRef = useRef<SceneControls | null>(null);
 
   const handleSceneReady = useCallback((controls: SceneControls) => {
@@ -48,6 +49,7 @@ const App = () => {
         isDay={isDay}
         onBuildingSelect={handleBuildingSelect}
         onSceneReady={handleSceneReady}
+        onLoadingChange={setIsLoading}
       />
       <TopBar
         isDay={isDay}
@@ -57,6 +59,12 @@ const App = () => {
       />
       <PortfolioPanel activeKey={activeBuilding} onClose={() => setActiveBuilding(null)} />
       <ControlsPanel open={showControls} onClose={() => setShowControls(false)} />
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="spinner" />
+          <p>Loading city...</p>
+        </div>
+      )}
     </div>
   );
 };

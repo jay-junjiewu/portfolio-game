@@ -7,12 +7,14 @@ type BabylonCanvasProps = {
   isDay: boolean;
   onBuildingSelect: (key: BuildingKey | null) => void;
   onSceneReady?: (controls: SceneControls) => void;
+  onLoadingChange?: (loading: boolean) => void;
 };
 
 const BabylonCanvas = ({
   isDay,
   onBuildingSelect,
   onSceneReady,
+  onLoadingChange,
 }: BabylonCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const controlsRef = useRef<SceneControls | null>(null);
@@ -21,6 +23,7 @@ const BabylonCanvas = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    onLoadingChange?.(true);
     const engine = new Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
     let disposed = false;
 
@@ -39,6 +42,7 @@ const BabylonCanvas = ({
         controls.scene.render();
       });
       canvas.focus();
+      onLoadingChange?.(false);
     })();
 
     const handleResize = () => {
@@ -53,11 +57,14 @@ const BabylonCanvas = ({
       controlsRef.current = null;
       engine.dispose();
     };
-  }, [isDay, onBuildingSelect, onSceneReady]);
+  }, [isDay, onBuildingSelect, onSceneReady, onLoadingChange]);
 
   useEffect(() => {
     controlsRef.current?.setDayMode(isDay);
-  }, [isDay]);
+    onLoadingChange?.(true);
+    const t = window.setTimeout(() => onLoadingChange?.(false), 350);
+    return () => window.clearTimeout(t);
+  }, [isDay, onLoadingChange]);
 
   return <canvas ref={canvasRef} className="city-canvas" tabIndex={0} />;
 };
