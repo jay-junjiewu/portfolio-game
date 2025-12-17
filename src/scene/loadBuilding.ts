@@ -264,7 +264,7 @@ export const loadBuilding = async (
     glowMesh.isPickable = false;
     const glowMaterial = new StandardMaterial(`${entry.id}-glow-mat`, scene);
     glowMaterial.emissiveColor = Color3.FromHexString("#ffde85");
-    glowMaterial.alpha = 0.8;
+    glowMaterial.alpha = 0.0;
     glowMesh.material = glowMaterial;
     glowMesh.isVisible = false;
 
