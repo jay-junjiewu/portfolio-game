@@ -20,13 +20,13 @@ export type LoadedBuilding = {
   root: TransformNode;
   meshes: AbstractMesh[];
   glowMesh?: AbstractMesh;
+  labelMesh?: AbstractMesh;
 };
 
-const UNIFORM_BUILDING_SCALE = 4.4;
 const DEFAULT_SCALES: Record<CityEntity["type"], number> = {
-  main: UNIFORM_BUILDING_SCALE,
-  decor: UNIFORM_BUILDING_SCALE,
-  road: UNIFORM_BUILDING_SCALE * 0.4,
+  main: 1,
+  decor: 1,
+  road: 1,
 };
 
 const splitPath = (modelPath: string) => {
@@ -54,6 +54,75 @@ const assignMetadata = (mesh: AbstractMesh, entryId: string) => {
   mesh.metadata = { ...existing, cityEntryId: entryId };
 };
 
+const ICON_COLORS: Record<string, string> = {
+  about: "#1fc8c6",
+  projects: "#c04bff",
+  skills: "#f5c400",
+  experience: "#ff8a3c",
+  contact: "#4a90ff",
+};
+
+const getBounds = (data: {
+  min?: Vector3;
+  max?: Vector3;
+  minimum?: Vector3;
+  maximum?: Vector3;
+}) => {
+  const min = data.min ?? data.minimum ?? null;
+  const max = data.max ?? data.maximum ?? null;
+  return { min, max };
+};
+
+const createIconBubble = (scene: Scene, entryId: string, color: string) => {
+  const texture = new DynamicTexture(`${entryId}-bubble-tex`, { width: 256, height: 256 }, scene, false);
+  const ctx = texture.getContext();
+  if (ctx) {
+    ctx.clearRect(0, 0, 256, 256);
+    ctx.fillStyle = "#fdfdfd";
+    ctx.strokeStyle = "#1a1a1a";
+    ctx.lineWidth = 10;
+    const radius = 48;
+    const x = 128;
+    const y = 110;
+    const w = 180;
+    const h = 140;
+    const left = x - w / 2;
+    const top = y - h / 2;
+    ctx.beginPath();
+    ctx.moveTo(left + radius, top);
+    ctx.lineTo(left + w - radius, top);
+    ctx.quadraticCurveTo(left + w, top, left + w, top + radius);
+    ctx.lineTo(left + w, top + h - radius);
+    ctx.quadraticCurveTo(left + w, top + h, left + w - radius, top + h);
+    ctx.lineTo(x + 12, top + h);
+    ctx.lineTo(x, top + h + 28);
+    ctx.lineTo(x - 12, top + h);
+    ctx.lineTo(left + radius, top + h);
+    ctx.quadraticCurveTo(left, top + h, left, top + h - radius);
+    ctx.lineTo(left, top + radius);
+    ctx.quadraticCurveTo(left, top, left + radius, top);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(128, 110, 38, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  texture.hasAlpha = true;
+  texture.update(false);
+
+  const mat = new StandardMaterial(`${entryId}-bubble-mat`, scene);
+  mat.diffuseTexture = texture;
+  mat.useAlphaFromDiffuseTexture = true;
+  mat.emissiveColor = Color3.White();
+  mat.backFaceCulling = false;
+  mat.disableLighting = true;
+  mat.disableDepthWrite = true;
+  return mat;
+};
+
 const normalizeMeshScale = (root: TransformNode, meshes: Mesh[], targetFootprint: number) => {
   const validMeshes = meshes.filter((mesh) => mesh.getTotalVertices() > 0);
   if (!validMeshes.length) {
@@ -63,20 +132,22 @@ const normalizeMeshScale = (root: TransformNode, meshes: Mesh[], targetFootprint
   validMeshes.forEach((mesh) => mesh.computeWorldMatrix(true));
 
   const bounds = Mesh.MinMax(validMeshes);
-  if (!bounds.minimum || !bounds.maximum) {
+  const { min, max } = getBounds(bounds);
+  if (!min || !max) {
     return;
   }
 
   const footprint = Math.max(
-    bounds.maximum.x - bounds.minimum.x,
-    bounds.maximum.z - bounds.minimum.z
+    max.x - min.x,
+    max.z - min.z
   );
   const scale = footprint > 0.0001 ? targetFootprint / footprint : 1;
   root.scaling = new Vector3(scale, scale, scale);
 
   const scaled = Mesh.MinMax(validMeshes);
-  if (!scaled.minimum) return;
-  const bottom = scaled.minimum.y;
+  const { min: scaledMin } = getBounds(scaled);
+  if (!scaledMin) return;
+  const bottom = scaledMin.y;
   root.position.y -= bottom;
 };
 
@@ -128,11 +199,15 @@ export const loadBuilding = async (
 ): Promise<LoadedBuilding> => {
   const root = new TransformNode(`${entry.id}-root`, scene);
   root.rotationQuaternion = null;
+  if (entry.isPortfolio !== true) {
+    root.setEnabled(false);
+    return { entry, root, meshes: [] };
+  }
   let meshes: AbstractMesh[] = [];
 
   try {
-    const { root, file } = splitPath(entry.modelPath);
-    const result = await SceneLoader.ImportMeshAsync("", root, file, scene);
+    const { root: assetRoot, file } = splitPath(entry.modelPath);
+    const result = await SceneLoader.ImportMeshAsync("", assetRoot, file, scene);
 
     meshes = result.meshes.filter(
       (mesh): mesh is AbstractMesh => mesh instanceof AbstractMesh
@@ -149,7 +224,7 @@ export const loadBuilding = async (
   meshes.forEach((mesh, index) => {
     mesh.parent = root;
     mesh.alwaysSelectAsActiveMesh = entry.type === "main";
-    mesh.isPickable = entry.type === "main";
+    mesh.isPickable = entry.type === "main" && entry.isPortfolio === true;
     mesh.receiveShadows = true;
     mesh.name ||= `${entry.id}-mesh-${index}`;
     ensureMaterial(mesh, scene);
@@ -169,16 +244,18 @@ export const loadBuilding = async (
   root.rotation.y = entry.rotation?.y ?? 0;
 
   let glowMesh: AbstractMesh | undefined;
-  if (entry.type === "main" && meshNodes.length) {
+  let labelMesh: AbstractMesh | undefined;
+  if (entry.type === "main" && meshNodes.length && entry.isPortfolio === true) {
     meshNodes.forEach((mesh) => mesh.computeWorldMatrix(true));
     const bounds = Mesh.MinMax(meshNodes);
-    if (!bounds.minimum || !bounds.maximum) {
-      return { entry, root, meshes, glowMesh };
+    const { min, max } = getBounds(bounds);
+    if (!min || !max) {
+      return { entry, root, meshes, glowMesh, labelMesh };
     }
-    const height = bounds.maximum.y - bounds.minimum.y;
+    const height = max.y - min.y;
     glowMesh = MeshBuilder.CreatePlane(
       `${entry.id}-glow`,
-      { width: desiredScale * 0.7, height: Math.max(1.2, height * 0.2) },
+      { width: requestedScale * 0.7, height: Math.max(1.2, height * 0.2) },
       scene
     );
     glowMesh.billboardMode = Mesh.BILLBOARDMODE_Y;
@@ -190,7 +267,20 @@ export const loadBuilding = async (
     glowMaterial.alpha = 0.8;
     glowMesh.material = glowMaterial;
     glowMesh.isVisible = false;
+
+    const bubbleSize = requestedScale * 0.3;
+    const bubble = MeshBuilder.CreatePlane(`${entry.id}-bubble`, { width: bubbleSize, height: bubbleSize }, scene);
+    bubble.billboardMode = Mesh.BILLBOARDMODE_Y;
+    bubble.parent = root;
+    bubble.position.y = height * 0.4 + requestedScale * 0.2;
+    bubble.rotation.z = Math.PI;
+    bubble.isPickable = entry.isPortfolio === true;
+    assignMetadata(bubble, entry.id);
+    bubble.renderingGroupId = 2;
+    const bubbleColor = ICON_COLORS[entry.key] ?? "#4a90ff";
+    bubble.material = createIconBubble(scene, entry.id, bubbleColor);
+    labelMesh = bubble;
   }
 
-  return { entry, root, meshes, glowMesh };
+  return { entry, root, meshes, glowMesh, labelMesh };
 };

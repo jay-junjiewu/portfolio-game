@@ -120,15 +120,15 @@ const createGround = (scene: Scene) => {
     scene
   );
   const groundMaterial = new StandardMaterial("ground-mat", scene);
-  groundMaterial.diffuseColor = Color3.FromHexString("#bfe3c1");
+  groundMaterial.diffuseColor = Color3.FromHexString("#c9efd8");
   groundMaterial.specularColor = Color3.Black();
 
   const gridTexture = new DynamicTexture("grid-tex", { width: 512, height: 512 }, scene, false);
   const ctx = gridTexture.getContext();
   if (ctx) {
     ctx.clearRect(0, 0, 512, 512);
-    ctx.strokeStyle = "rgba(6, 28, 64, 0.07)";
-    ctx.lineWidth = 1.25;
+    ctx.strokeStyle = "rgba(6, 28, 64, 0.22)";
+    ctx.lineWidth = 2;
     const step = 64;
     for (let i = 0; i <= 512; i += step) {
       ctx.beginPath();
@@ -142,14 +142,41 @@ const createGround = (scene: Scene) => {
     }
     gridTexture.update(false);
     gridTexture.hasAlpha = true;
-    gridTexture.uScale = 14;
-    gridTexture.vScale = 14;
+    gridTexture.uScale = 10;
+    gridTexture.vScale = 10;
     groundMaterial.diffuseTexture = gridTexture;
+
   }
 
   ground.material = groundMaterial;
   ground.receiveShadows = true;
   return { ground, groundMaterial };
+};
+
+const addGridLines = (scene: Scene) => {
+  const size = CITY_TILE_SIZE;
+  const extent = CITY_TILE_SIZE * 12;
+  const color = Color3.FromHexString("#597392");
+
+  for (let x = -extent; x <= extent; x += size) {
+    MeshBuilder.CreateLines(
+      `grid-x-${x}`,
+      {
+        points: [new Vector3(x, 0.01, -extent), new Vector3(x, 0.01, extent)],
+      },
+      scene
+    ).color = color;
+  }
+
+  for (let z = -extent; z <= extent; z += size) {
+    MeshBuilder.CreateLines(
+      `grid-z-${z}`,
+      {
+        points: [new Vector3(-extent, 0.01, z), new Vector3(extent, 0.01, z)],
+      },
+      scene
+    ).color = color;
+  }
 };
 
 const setupLights = (scene: Scene) => {
@@ -192,6 +219,9 @@ export const createCityScene = async (
   scene.clearColor = new Color4(0.82, 0.92, 1, 1);
 
   const { ground, groundMaterial } = createGround(scene);
+
+  // Grid for testing
+  addGridLines(scene);
   const camera = setupCamera(scene, canvas);
   const { hemi, directional, shadowGenerator } = setupLights(scene);
   decorateScene(scene);

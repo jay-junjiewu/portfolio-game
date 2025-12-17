@@ -12,11 +12,13 @@ export type BasePlacement = {
   position: { x: number; z: number };
   targetScale?: number;
   rotation?: { y: number };
+  isPortfolio?: boolean;
 };
 
 export type BuildingPlacement = BasePlacement & {
   type: "main";
   key: BuildingKey;
+  isPortfolio?: boolean;
 };
 
 export type DecorativePlacement = BasePlacement & {
@@ -29,11 +31,11 @@ export type RoadPlacement = BasePlacement & {
 
 export type CityEntity = BuildingPlacement | DecorativePlacement | RoadPlacement;
 
-export const TILE_SIZE = 3;
-const UNIFORM_SCALE = TILE_SIZE * 3;
+export const TILE_SIZE = 4;
+const UNIFORM_SCALE = TILE_SIZE * 0.9;
 
 // Main portfolio buildings
-export const MAIN_BUILDINGS: BuildingPlacement[] = [
+const MAIN_BUILDINGS: BuildingPlacement[] = [
   {
     id: "about",
     type: "main",
@@ -42,6 +44,7 @@ export const MAIN_BUILDINGS: BuildingPlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-a.obj",
     position: { x: 0, z: 0 },
     targetScale: UNIFORM_SCALE,
+    isPortfolio: true,
   },
   {
     id: "projects",
@@ -51,6 +54,7 @@ export const MAIN_BUILDINGS: BuildingPlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-b.obj",
     position: { x: TILE_SIZE * 1, z: 0 },
     targetScale: UNIFORM_SCALE,
+    isPortfolio: true,
   },
   {
     id: "skills",
@@ -60,6 +64,7 @@ export const MAIN_BUILDINGS: BuildingPlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-c.obj",
     position: { x: TILE_SIZE * 1, z: TILE_SIZE * 1 },
     targetScale: UNIFORM_SCALE,
+    isPortfolio: true,
   },
   {
     id: "experience",
@@ -69,6 +74,7 @@ export const MAIN_BUILDINGS: BuildingPlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-d.obj",
     position: { x: -TILE_SIZE * 3, z: TILE_SIZE * 1 },
     targetScale: UNIFORM_SCALE,
+    isPortfolio: true,
   },
   {
     id: "contact",
@@ -78,11 +84,12 @@ export const MAIN_BUILDINGS: BuildingPlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-e.obj",
     position: { x: -TILE_SIZE * 1, z: -TILE_SIZE * 3 },
     targetScale: UNIFORM_SCALE,
+    isPortfolio: true,
   },
 ];
 
 // Drop new decorative buildings here (shops, homes, etc.)
-export const DECORATIVE_BUILDINGS: DecorativePlacement[] = [
+const RAW_DECORATIVE_BUILDINGS: DecorativePlacement[] = [
   {
     id: "decor-downtown-east",
     type: "decor",
@@ -124,20 +131,28 @@ export const DECORATIVE_BUILDINGS: DecorativePlacement[] = [
     targetScale: UNIFORM_SCALE,
   },
 ];
+export const DECORATIVE_BUILDINGS: DecorativePlacement[] = RAW_DECORATIVE_BUILDINGS.map((b) => ({
+  ...b,
+  isPortfolio: true,
+}));
 
 // Hand-place roads: add or move entries in ROAD_TILES as needed.
-export const ROAD_TILES: RoadPlacement[] = [
+const RAW_ROAD_TILES: RoadPlacement[] = [
   // outer ring
-  { id: "road-west-12-12", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * -4 }, targetScale: TILE_SIZE * 1.8, rotation: { y: Math.PI / 2 } },
-  { id: "road-west-12-8", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * -3 }, targetScale: TILE_SIZE * 1.8, rotation: { y: Math.PI / 2 } },
-  { id: "road-west-12-4", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * -2 }, targetScale: TILE_SIZE * 1.8, rotation: { y: Math.PI / 2 } },
-  { id: "road-west-12-0", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * -1 }, targetScale: TILE_SIZE * 1.8, rotation: { y: Math.PI / 2 } },
-  { id: "road-west-12-4b", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * 0 }, targetScale: TILE_SIZE * 1.8, rotation: { y: Math.PI / 2 } },
-  { id: "road-west-12-8b", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * 1 }, targetScale: TILE_SIZE * 1.8, rotation: { y: Math.PI / 2 } },
-  { id: "road-west-12-12b", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * 2 }, targetScale: TILE_SIZE * 1.8, rotation: { y: Math.PI / 2 } },
-  { id: "road-west-12-16", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * 3 }, targetScale: TILE_SIZE * 1.8, rotation: { y: Math.PI / 2 } },
-  { id: "road-west-12-20", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * 4 }, targetScale: TILE_SIZE * 1.8, rotation: { y: Math.PI / 2 } },
+  { id: "road-west-12-12", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * -4 }, targetScale: TILE_SIZE * 0.8, rotation: { y: Math.PI / 2 } },
+  { id: "road-west-12-8", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * -3 }, targetScale: TILE_SIZE * 0.8, rotation: { y: Math.PI / 2 } },
+  { id: "road-west-12-4", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * -2 }, targetScale: TILE_SIZE * 0.8, rotation: { y: Math.PI / 2 } },
+  { id: "road-west-12-0", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * -1 }, targetScale: TILE_SIZE * 0.8, rotation: { y: Math.PI / 2 } },
+  { id: "road-west-12-4b", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * 0 }, targetScale: TILE_SIZE * 0.8, rotation: { y: Math.PI / 2 } },
+  { id: "road-west-12-8b", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * 1 }, targetScale: TILE_SIZE * 0.8, rotation: { y: Math.PI / 2 } },
+  { id: "road-west-12-12b", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * 2 }, targetScale: TILE_SIZE * 0.8, rotation: { y: Math.PI / 2 } },
+  { id: "road-west-12-16", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * 3 }, targetScale: TILE_SIZE * 0.8, rotation: { y: Math.PI / 2 } },
+  { id: "road-west-12-20", type: "road", name: "Road Tile", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * -4, z: TILE_SIZE * 4 }, targetScale: TILE_SIZE * 0.8, rotation: { y: Math.PI / 2 } },
 ];
+export const ROAD_TILES: RoadPlacement[] = RAW_ROAD_TILES.map((r) => ({
+  ...r,
+  isPortfolio: true,
+}));
 
 export const CITY_LAYOUT: CityEntity[] = [
   ...MAIN_BUILDINGS,
