@@ -55,8 +55,8 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
     panningMouseButton: number;
   };
   pointerInput.buttons = [0];
-  pointerInput.angularSensibilityX = 1000;
-  pointerInput.angularSensibilityY = 1000;
+  pointerInput.angularSensibilityX = 10000;
+  pointerInput.angularSensibilityY = 10000;
   pointerInput.panningSensibility = 450;
   pointerInput.panningMouseButton = 0;
   camera.attachControl(canvas, true);

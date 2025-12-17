@@ -13,6 +13,7 @@ import {
 } from "@babylonjs/core";
 import "@babylonjs/loaders/OBJ/objFileLoader";
 import type { CityEntity } from "../data/cityLayout";
+import { PANEL_TITLES } from "../data/portfolioData";
 import { ASSET_BASE_URL } from "../config";
 
 export type LoadedBuilding = {
@@ -55,11 +56,11 @@ const assignMetadata = (mesh: AbstractMesh, entryId: string) => {
 };
 
 const ICON_COLORS: Record<string, string> = {
-  about: "#1fc8c6",
-  projects: "#c04bff",
-  skills: "#f5c400",
-  experience: "#ff8a3c",
-  contact: "#4a90ff",
+  about: "#006B6A",
+  projects: "#5A00A8",
+  skills: "#6E5600",
+  experience: "#8F2F00",
+  contact: "#0046B8"
 };
 
 const getBounds = (data: {
@@ -73,32 +74,49 @@ const getBounds = (data: {
   return { min, max };
 };
 
-const createIconBubble = (scene: Scene, entryId: string, color: string) => {
-  const texture = new DynamicTexture(`${entryId}-bubble-tex`, { width: 256, height: 256 }, scene, false);
-  const ctx = texture.getContext();
+const createIconBubble = (
+  scene: Scene,
+  entryId: string,
+  color: string,
+  label: string
+) => {
+  const texture = new DynamicTexture(
+    `${entryId}-bubble-tex`,
+    { width: 256, height: 256 },
+    scene,
+    false
+  );
+  const ctx = texture.getContext() as CanvasRenderingContext2D | null;
+  let measured = 0;
   if (ctx) {
     ctx.clearRect(0, 0, 256, 256);
-    ctx.fillStyle = "#fdfdfd";
-    ctx.strokeStyle = "#1a1a1a";
-    ctx.lineWidth = 10;
-    const radius = 48;
+    ctx.save();
+    ctx.translate(256, 0);
+    ctx.scale(-1, 1);
+    ctx.font = "bold 40px 'Space Grotesk', sans-serif";
+    measured = ctx.measureText(label).width;
+    const bubbleWidth = Math.min(240, measured + 60);
+    const bubbleHeight = 138;
+    const radius = 40;
     const x = 128;
     const y = 110;
-    const w = 180;
-    const h = 140;
-    const left = x - w / 2;
-    const top = y - h / 2;
+    const left = x - bubbleWidth / 2;
+    const top = y - bubbleHeight / 2;
+
+    ctx.fillStyle = "#fdfdfd";
+    ctx.strokeStyle = "#1a1a1a";
+    ctx.lineWidth = 9;
     ctx.beginPath();
     ctx.moveTo(left + radius, top);
-    ctx.lineTo(left + w - radius, top);
-    ctx.quadraticCurveTo(left + w, top, left + w, top + radius);
-    ctx.lineTo(left + w, top + h - radius);
-    ctx.quadraticCurveTo(left + w, top + h, left + w - radius, top + h);
-    ctx.lineTo(x + 12, top + h);
-    ctx.lineTo(x, top + h + 28);
-    ctx.lineTo(x - 12, top + h);
-    ctx.lineTo(left + radius, top + h);
-    ctx.quadraticCurveTo(left, top + h, left, top + h - radius);
+    ctx.lineTo(left + bubbleWidth - radius, top);
+    ctx.quadraticCurveTo(left + bubbleWidth, top, left + bubbleWidth, top + radius);
+    ctx.lineTo(left + bubbleWidth, top + bubbleHeight - radius);
+    ctx.quadraticCurveTo(left + bubbleWidth, top + bubbleHeight, left + bubbleWidth - radius, top + bubbleHeight);
+    ctx.lineTo(x + 10, top + bubbleHeight);
+    ctx.lineTo(x, top + bubbleHeight + 22);
+    ctx.lineTo(x - 10, top + bubbleHeight);
+    ctx.lineTo(left + radius, top + bubbleHeight);
+    ctx.quadraticCurveTo(left, top + bubbleHeight, left, top + bubbleHeight - radius);
     ctx.lineTo(left, top + radius);
     ctx.quadraticCurveTo(left, top, left + radius, top);
     ctx.closePath();
@@ -106,9 +124,10 @@ const createIconBubble = (scene: Scene, entryId: string, color: string) => {
     ctx.stroke();
 
     ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(128, 110, 38, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(label, x, y);
+    ctx.restore();
   }
   texture.hasAlpha = true;
   texture.update(false);
@@ -120,7 +139,7 @@ const createIconBubble = (scene: Scene, entryId: string, color: string) => {
   mat.backFaceCulling = false;
   mat.disableLighting = true;
   mat.disableDepthWrite = true;
-  return mat;
+  return { mat, measured };
 };
 
 const normalizeMeshScale = (root: TransformNode, meshes: Mesh[], targetFootprint: number) => {
@@ -178,7 +197,7 @@ const createFallbackMesh = (
     entry.name,
     null,
     84,
-    "bold 32px 'Space Grotesk', sans-serif",
+    "bold 56px 'Space Grotesk', sans-serif",
     "#ffffff",
     "#00000066",
     true,
@@ -268,8 +287,22 @@ export const loadBuilding = async (
     glowMesh.material = glowMaterial;
     glowMesh.isVisible = false;
 
-    const bubbleSize = requestedScale * 0.3;
-    const bubble = MeshBuilder.CreatePlane(`${entry.id}-bubble`, { width: bubbleSize, height: bubbleSize }, scene);
+    const bubbleColor = ICON_COLORS[entry.key] ?? "#4a90ff";
+    const labelText = PANEL_TITLES[entry.key] ?? entry.name;
+    const { mat: bubbleMat, measured } = createIconBubble(
+      scene,
+      entry.id,
+      bubbleColor,
+      labelText
+    );
+    const minWorldWidth = Math.max(0.9, requestedScale * 0.45);
+    const worldWidth = Math.min(2.4, Math.max(minWorldWidth, (measured / 256) * 1.8));
+    const worldHeight = worldWidth * 0.84;
+    const bubble = MeshBuilder.CreatePlane(
+      `${entry.id}-bubble`,
+      { width: worldWidth, height: worldHeight },
+      scene
+    );
     bubble.billboardMode = Mesh.BILLBOARDMODE_Y;
     bubble.parent = root;
     bubble.position.y = height * 0.4 + requestedScale * 0.2;
@@ -277,8 +310,7 @@ export const loadBuilding = async (
     bubble.isPickable = entry.isPortfolio === true;
     assignMetadata(bubble, entry.id);
     bubble.renderingGroupId = 2;
-    const bubbleColor = ICON_COLORS[entry.key] ?? "#4a90ff";
-    bubble.material = createIconBubble(scene, entry.id, bubbleColor);
+    bubble.material = bubbleMat;
     labelMesh = bubble;
   }
 
