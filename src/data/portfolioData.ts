@@ -1,10 +1,16 @@
 import type { BuildingKey } from "./cityLayout";
 
+export type ProjectCategory = "software" | "electrical";
+
 export type Project = {
   title: string;
   description: string;
   stack: string[];
+  category: ProjectCategory;
+  date: string;
+  image?: string;
   link?: string;
+  externalLink?: string;
 };
 
 export type ExperienceItem = {
@@ -40,31 +46,69 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   projects: [
     {
       title: "Aurora Transit",
+      category: "software",
+      date: "May 2024",
       description:
         "Transit planner that lets riders simulate future routes in a stylized 3D city using Babylon.js and GraphQL.",
       stack: ["Babylon.js", "React", "GraphQL", "Web Audio API"],
       link: "https://example.com/aurora",
+      externalLink: "https://github.com/example/aurora",
+      image: "/vite.svg",
     },
     {
       title: "Biolume AR Guide",
+      category: "software",
+      date: "February 2024",
       description:
         "Mobile web app blending AR portals with live environmental data for science museums.",
       stack: ["React Native Web", "Three.js", "Expo"],
       link: "https://example.com/biolume",
+      externalLink: "https://dribbble.com/example/biolume",
+      image: "/vite.svg",
     },
     {
       title: "Field Notes OS",
+      category: "software",
+      date: "October 2023",
       description:
         "Offline-first research companion for humanitarian field teams that syncs via WebRTC mesh networks.",
       stack: ["TypeScript", "IndexedDB", "WebRTC", "PWA"],
       link: "https://example.com/fieldnotes",
+      externalLink: "https://github.com/example/fieldnotes",
+      image: "/vite.svg",
     },
     {
       title: "Canvas Beats",
+      category: "software",
+      date: "June 2023",
       description:
         "Modular audio workstation in the browser with drag-to-patch synth nodes and multiplayer editing.",
       stack: ["React", "Tone.js", "Colyseus"],
       link: "https://example.com/canvasbeats",
+      externalLink: "https://github.com/example/canvasbeats",
+      image: "/vite.svg",
+    },
+    {
+      title: "GridSense Edge Monitor",
+      category: "electrical",
+      date: "January 2024",
+      description:
+        "Low-power hardware module that logs sensor data and streams telemetry to a React dashboard for industrial sites.",
+      stack: ["STM32", "LoRa", "MQTT", "React"],
+      link: "https://example.com/gridsense",
+      externalLink: "https://github.com/example/gridsense",
+      image: "/vite.svg",
+    },
+    {
+      title: "Solar Array Balancer",
+      category: "electrical",
+      date: "August 2023",
+      description:
+        "MPPT controller prototype with a companion SPA that visualizes live current/voltage curves and firmware updates.",
+      stack: ["KiCad", "ESP32", "TypeScript", "D3.js"],
+      link: "https://example.com/solar-array",
+      externalLink: "https://github.com/example/solar-array",
+      image: "/vite.svg",
     },
   ],
   skills: [

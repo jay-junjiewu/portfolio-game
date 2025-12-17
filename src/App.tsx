@@ -52,8 +52,8 @@ const App = () => {
       <TopBar
         isDay={isDay}
         onToggleDay={toggleDay}
-        onResetCamera={resetCamera}
         onToggleControls={() => setShowControls((v) => !v)}
+        onOpenSection={(key) => setActiveBuilding(key)}
       />
       <PortfolioPanel activeKey={activeBuilding} onClose={() => setActiveBuilding(null)} />
       <ControlsPanel open={showControls} onClose={() => setShowControls(false)} />
