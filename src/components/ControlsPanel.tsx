@@ -7,7 +7,7 @@ const ControlsPanel = ({ open, onClose }: ControlsPanelProps) => {
   return (
     <div className={`controls-panel ${open ? "open" : ""}`}>
       <div className="controls-header">
-        <h3>Controls</h3>
+        <h3>Help</h3>
         <button className="ghost-button" onClick={onClose} type="button">
           Close
         </button>

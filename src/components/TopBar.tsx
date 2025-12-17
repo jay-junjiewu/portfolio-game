@@ -15,11 +15,11 @@ const TopBar = ({
     <header className={`top-bar ${isDay ? "day" : "night"}`}>
       <div className="top-bar-content">
         <div className="brand">
-          <span className="brand-title">Pocket Portfolio City</span>
+          <span className="brand-title">Junjie (Jay) Wu</span>
         </div>
         <nav className="nav-links">
           <button type="button" className="nav-link" onClick={onToggleControls}>
-            Controls
+            Help
           </button>
           <button type="button" className="nav-link" onClick={() => onOpenSection("about")}>
             About

@@ -250,8 +250,11 @@ export const createCityScene = async (
     scene.clearColor = isDay
       ? new Color4(0.84, 0.93, 0.86, 1)
       : new Color4(0.04, 0.05, 0.08, 1);
-    hemi.intensity = isDay ? 0.8 : 0.25;
-    directional.intensity = isDay ? 1.2 : 0.4;
+    scene.ambientColor = isDay
+      ? Color3.FromHexString("#dbe8d9")
+      : Color3.FromHexString("#1c2942");
+    hemi.intensity = isDay ? 0.8 : 0.55;
+    directional.intensity = isDay ? 1.2 : 0.7;
     groundMaterial.diffuseColor = isDay
       ? Color3.FromHexString("#bfe3c1")
       : Color3.FromHexString("#1f2835");
@@ -266,7 +269,7 @@ export const createCityScene = async (
       building.meshes.forEach((mesh) => {
         const mat = mesh.material as StandardMaterial | null;
         if (!mat || !mat.emissiveColor) return;
-        const colorValue = isDay ? 0.02 : 0.15;
+        const colorValue = isDay ? 0.02 : 0.22;
         mat.emissiveColor = new Color3(colorValue, colorValue, colorValue);
       });
     });

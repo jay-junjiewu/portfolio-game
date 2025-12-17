@@ -57,7 +57,7 @@ const BabylonCanvas = ({
       controlsRef.current = null;
       engine.dispose();
     };
-  }, [isDay, onBuildingSelect, onSceneReady, onLoadingChange]);
+  }, [onBuildingSelect, onSceneReady, onLoadingChange]);
 
   useEffect(() => {
     controlsRef.current?.setDayMode(isDay);

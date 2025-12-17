@@ -47,7 +47,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   background: linear-gradient(180deg, rgba(245, 250, 246, 0.96), rgba(245, 250, 246, 0.85));
   box-shadow: 0 2px 6px rgba(14, 27, 58, 0.08);
   z-index: 4;
@@ -183,10 +183,11 @@ body {
 
 .controls-panel {
   position: fixed;
-  bottom: 1.5rem;
+  bottom: 1rem;
   left: 1.5rem;
   width: min(360px, calc(100% - 2rem));
   background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
   box-shadow: 0 16px 40px rgba(7, 13, 34, 0.22);
   padding: 1rem;
   font-size: 0.9rem;
