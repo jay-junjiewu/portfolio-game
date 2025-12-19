@@ -53,12 +53,18 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
     angularSensibilityY: number;
     panningSensibility: number;
     panningMouseButton: number;
+    multiTouchPanAndZoom?: boolean;
+    pinchDeltaPercentage?: number;
+    useNaturalPinchZoom?: boolean;
   };
   pointerInput.buttons = [0];
   pointerInput.angularSensibilityX = 10000;
   pointerInput.angularSensibilityY = 10000;
   pointerInput.panningSensibility = 450;
   pointerInput.panningMouseButton = 0;
+  pointerInput.multiTouchPanAndZoom = true;
+  pointerInput.pinchDeltaPercentage = 0.01;
+  pointerInput.useNaturalPinchZoom = true;
   camera.attachControl(canvas, true);
 
   scene.onKeyboardObservable.add((info) => {

@@ -50,6 +50,7 @@ export const setupPicking = (
   buildings.forEach((b) => buildingMap.set(b.entry.id, b));
 
   let hovered: LoadedBuilding | null = null;
+  let lastTouchPointerId: number | null = null;
 
   const pickAtPointer = () => {
     const pickInfo = scene.pick(scene.pointerX, scene.pointerY, (mesh) => !!mesh.isPickable);
@@ -72,10 +73,30 @@ export const setupPicking = (
   };
 
   const observer = scene.onPointerObservable.add((pointerInfo) => {
+    const trySelect = (event: PointerEvent) => {
+      const building = pickAtPointer();
+      if (building && building.entry.type === "main") {
+        callbacks.onSelect(building.entry.key);
+        if (event.detail === 2) {
+          callbacks.onFocusRequest?.(building);
+        }
+      } else {
+        callbacks.onSelect(null);
+      }
+    };
+
     switch (pointerInfo.type) {
       case PointerEventTypes.POINTERMOVE: {
         const building = pickAtPointer();
         handleHoverChange(building);
+        break;
+      }
+      case PointerEventTypes.POINTERDOWN: {
+        const event = pointerInfo.event as PointerEvent;
+        if (event.pointerType === "touch" || event.pointerType === "pen") {
+          lastTouchPointerId = event.pointerId;
+          trySelect(event);
+        }
         break;
       }
       case PointerEventTypes.POINTERUP: {
@@ -83,15 +104,11 @@ export const setupPicking = (
         if (event.pointerType === "mouse" && event.button !== 0) {
           return;
         }
-        const building = pickAtPointer();
-        if (building && building.entry.type === "main") {
-          callbacks.onSelect(building.entry.key);
-          if (event.detail === 2) {
-            callbacks.onFocusRequest?.(building);
-          }
-        } else {
-          callbacks.onSelect(null);
+        if ((event.pointerType === "touch" || event.pointerType === "pen") && event.pointerId === lastTouchPointerId) {
+          lastTouchPointerId = null;
+          return;
         }
+        trySelect(event);
         break;
       }
       default:
