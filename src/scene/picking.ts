@@ -80,7 +80,7 @@ export const setupPicking = (
       }
       case PointerEventTypes.POINTERUP: {
         const event = pointerInfo.event as PointerEvent;
-        if (event.button !== 0) {
+        if (event.pointerType === "mouse" && event.button !== 0) {
           return;
         }
         const building = pickAtPointer();
