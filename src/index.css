@@ -36,6 +36,7 @@ body {
   height: 100%;
   display: block;
   background: radial-gradient(circle at top, #cde6ff, #2a3551);
+  touch-action: none;
 }
 
 .top-bar {

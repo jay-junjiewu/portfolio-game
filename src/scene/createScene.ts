@@ -7,6 +7,7 @@ import {
   DynamicTexture,
   HemisphericLight,
   MeshBuilder,
+  PointerEventTypes,
   Scene,
   ShadowGenerator,
   StandardMaterial,
@@ -52,7 +53,8 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
     angularSensibilityX: number;
     angularSensibilityY: number;
     panningSensibility: number;
-    panningMouseButton: number;
+    pinchZoom?: boolean;
+    multiTouchPanning?: boolean;
     multiTouchPanAndZoom?: boolean;
     pinchDeltaPercentage?: number;
     useNaturalPinchZoom?: boolean;
@@ -61,14 +63,53 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
   pointerInput.angularSensibilityX = 10000;
   pointerInput.angularSensibilityY = 10000;
   pointerInput.panningSensibility = 450;
-  pointerInput.panningMouseButton = 0;
-  pointerInput.multiTouchPanAndZoom = true;
+  pointerInput.pinchZoom = true;
+  pointerInput.multiTouchPanning = false;
+  pointerInput.multiTouchPanAndZoom = false;
   pointerInput.pinchDeltaPercentage = 0.01;
-  pointerInput.useNaturalPinchZoom = true;
-  camera.attachControl(canvas, true);
+  pointerInput.useNaturalPinchZoom = false;
+  camera.attachControl(false, false, -1);
+
+  const cameraPanning = camera as ArcRotateCamera & {
+    _panningMouseButton: number;
+  };
+  let spacePanningActive = false;
+  const touchPointers = new Set<number>();
+  const updatePanningButton = () => {
+    cameraPanning._panningMouseButton =
+      touchPointers.size > 0 || spacePanningActive ? 0 : -1;
+  };
+  const setSpacePanning = (active: boolean) => {
+    if (spacePanningActive === active) return;
+    spacePanningActive = active;
+    updatePanningButton();
+  };
+
+  scene.onPrePointerObservable.add((pointerInfo) => {
+    const event = pointerInfo.event as PointerEvent;
+    if (event.pointerType !== "touch" && event.pointerType !== "pen") {
+      return;
+    }
+    if (pointerInfo.type === PointerEventTypes.POINTERDOWN) {
+      touchPointers.add(event.pointerId);
+      updatePanningButton();
+    } else if (pointerInfo.type === PointerEventTypes.POINTERUP) {
+      touchPointers.delete(event.pointerId);
+      updatePanningButton();
+    }
+  });
 
   scene.onKeyboardObservable.add((info) => {
     const event = info.event;
+    if (event.code === "Space") {
+      if (info.type === KeyboardEventTypes.KEYDOWN) {
+        setSpacePanning(true);
+      } else if (info.type === KeyboardEventTypes.KEYUP) {
+        setSpacePanning(false);
+      }
+      event.preventDefault();
+      return;
+    }
     if (info.type !== KeyboardEventTypes.KEYDOWN) return;
     const panStep = 0.5;
     const forwardDir = camera.target.subtract(camera.position);
@@ -118,6 +159,65 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
   });
 
   return camera;
+};
+
+const setupTwoFingerRotation = (scene: Scene, camera: ArcRotateCamera) => {
+  const activeTouches = new Map<number, { x: number; y: number }>();
+  let lastMidpoint: { x: number; y: number } | null = null;
+  const rotationSensibility = 1400;
+
+  const getMidpoint = () => {
+    const points = Array.from(activeTouches.values());
+    return {
+      x: (points[0].x + points[1].x) / 2,
+      y: (points[0].y + points[1].y) / 2,
+    };
+  };
+
+  const observer = scene.onPointerObservable.add((pointerInfo) => {
+    const event = pointerInfo.event as PointerEvent;
+    if (event.pointerType !== "touch") return;
+
+    switch (pointerInfo.type) {
+      case PointerEventTypes.POINTERDOWN: {
+        activeTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        if (activeTouches.size === 2) {
+          lastMidpoint = getMidpoint();
+        }
+        break;
+      }
+      case PointerEventTypes.POINTERMOVE: {
+        if (!activeTouches.has(event.pointerId)) {
+          return;
+        }
+        activeTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+        if (activeTouches.size === 2) {
+          const midpoint = getMidpoint();
+          if (lastMidpoint) {
+            const dx = midpoint.x - lastMidpoint.x;
+            const dy = midpoint.y - lastMidpoint.y;
+            camera.inertialAlphaOffset -= dx / rotationSensibility;
+            camera.inertialBetaOffset -= dy / rotationSensibility;
+          }
+          lastMidpoint = midpoint;
+        }
+        break;
+      }
+      case PointerEventTypes.POINTERUP: {
+        activeTouches.delete(event.pointerId);
+        if (activeTouches.size < 2) {
+          lastMidpoint = null;
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  });
+
+  return () => {
+    scene.onPointerObservable.remove(observer);
+  };
 };
 
 const createGround = (scene: Scene) => {
@@ -232,6 +332,7 @@ export const createCityScene = async (
   // Grid for testing
   addGridLines(scene);
   const camera = setupCamera(scene, canvas);
+  const disposeTouchRotation = setupTwoFingerRotation(scene, camera);
   const { hemi, directional, shadowGenerator } = setupLights(scene);
   decorateScene(scene);
 
@@ -311,6 +412,7 @@ export const createCityScene = async (
     focusOnBuilding,
     dispose: () => {
       disposePicking();
+      disposeTouchRotation();
       scene.dispose();
     },
   };
