@@ -9,7 +9,7 @@ export type BasePlacement = {
   id: string;
   name: string;
   modelPath: string;
-  position: { x: number; z: number };
+  position: { x: number; y?: number; z: number };
   targetScale?: number;
   rotation?: { y: number };
   isPortfolio?: boolean;
@@ -33,6 +33,63 @@ export type CityEntity = BuildingPlacement | DecorativePlacement | RoadPlacement
 
 export const TILE_SIZE = 4;
 const UNIFORM_SCALE = TILE_SIZE * 0.9;
+
+type TileStripConfig = {
+  idPrefix: string;
+  modelPath: string;
+  start: { x: number; z: number; y?: number };
+  end: { x: number; z: number; y?: number };
+  y?: number;
+  targetScale?: number;
+  rotation?: { y: number };
+};
+
+const createTileBlock = ({
+  idPrefix,
+  modelPath,
+  start,
+  end,
+  y = 0,
+  targetScale = TILE_SIZE,
+  rotation,
+}: TileStripConfig): RoadPlacement[] => {
+  // Treat start/end as integer grid coordinates (tile units) and scale to world space.
+  const gridStartX = Math.round(start.x);
+  const gridStartZ = Math.round(start.z);
+  const gridEndX = Math.round(end.x);
+  const gridEndZ = Math.round(end.z);
+
+  const deltaX = gridEndX - gridStartX;
+  const deltaZ = gridEndZ - gridStartZ;
+  const baseY = start.y ?? end.y ?? y;
+
+  const stepsX = Math.max(1, Math.abs(deltaX) + 1);
+  const stepsZ = Math.max(1, Math.abs(deltaZ) + 1);
+  const stepX = deltaX === 0 ? 0 : Math.sign(deltaX);
+  const stepZ = deltaZ === 0 ? 0 : Math.sign(deltaZ);
+
+  const tiles: RoadPlacement[] = [];
+  for (let zIdx = 0; zIdx < stepsZ; zIdx += 1) {
+    for (let xIdx = 0; xIdx < stepsX; xIdx += 1) {
+      const idx = zIdx * stepsX + xIdx;
+      tiles.push({
+        id: `${idPrefix}-${idx + 1}`,
+        type: "road",
+        name: `${idPrefix}-${idx + 1}`,
+        modelPath,
+        position: {
+          x: (gridStartX + stepX * xIdx) * TILE_SIZE,
+          y: baseY,
+          z: (gridStartZ + stepZ * zIdx) * TILE_SIZE,
+        },
+        targetScale,
+        rotation,
+      });
+    }
+  }
+
+  return tiles;
+};
 
 // Main portfolio buildings
 const MAIN_BUILDINGS: BuildingPlacement[] = [
@@ -831,6 +888,67 @@ export const DECORATIVE_BUILDINGS: DecorativePlacement[] = RAW_DECORATIVE_BUILDI
   isPortfolio: true,
 }));
 
+// Auto-place every tile OBJ from /public/tiles-models in a preview grid.
+const TILE_LIBRARY_COUNT = 302;
+const TILE_LIBRARY_COLUMNS = 20;
+const TILE_LIBRARY_START = { x: -TILE_SIZE * 22, z: TILE_SIZE * 20 };
+const GENERATED_ROAD_TILES: RoadPlacement[] = Array.from(
+  { length: TILE_LIBRARY_COUNT },
+  (_, index) => {
+    const tileNumber = (index + 1).toString().padStart(3, "0");
+    const col = index % TILE_LIBRARY_COLUMNS;
+    const row = Math.floor(index / TILE_LIBRARY_COLUMNS);
+    return {
+      id: `road-tile-${tileNumber}`,
+      type: "road",
+      name: `roadTile_${tileNumber}`,
+      modelPath: `tiles-models/roadTile_${tileNumber}.obj`,
+      position: {
+        x: TILE_LIBRARY_START.x + TILE_SIZE * col,
+        z: TILE_LIBRARY_START.z + TILE_SIZE * row,
+      },
+      targetScale: TILE_SIZE
+    };
+  }
+);
+
+const BASE_TILE_BLOCK: RoadPlacement[] = createTileBlock({
+  idPrefix: "roadTile_163",
+  modelPath: "tiles-models/roadTile_163.obj",
+  start: { x: -12, z: -12 },
+  end: { x: 12, z: 12 },
+  y: TILE_SIZE * -0.21,
+  targetScale: TILE_SIZE,
+});
+
+const TILE_BLOCK1: RoadPlacement[] = createTileBlock({
+  idPrefix: "roadTile_002",
+  modelPath: "tiles-models/roadTile_002.obj",
+  start: { x: -12, z: -12 },
+  end: { x: -12, z: 6 },
+  y: TILE_SIZE * -0.2,
+  targetScale: TILE_SIZE,
+});
+
+const TILE_BLOCK2: RoadPlacement[] = createTileBlock({
+  idPrefix: "road-straight",
+  modelPath: "roads-models/OBJ format/road-straight.obj",
+  start: { x: -11, z: -12 },
+  end: { x: -11, z: 6 },
+  y: TILE_SIZE * 0.1,
+  targetScale: TILE_SIZE,
+  rotation: { y: Math.PI / 2 },
+});
+
+const TILE_BLOCK3: RoadPlacement[] = createTileBlock({
+  idPrefix: "road-straight",
+  modelPath: "roads-models/OBJ format/road-straight.obj",
+  start: { x: 12, z: 0 },
+  end: { x: 6, z: 0 },
+  y: TILE_SIZE * 0.1,
+  targetScale: TILE_SIZE,
+});
+
 // Hand-place roads: add or move entries in ROAD_TILES as needed.
 const RAW_ROAD_TILES: RoadPlacement[] = [
   // All Roads Sample
@@ -927,8 +1045,20 @@ const RAW_ROAD_TILES: RoadPlacement[] = [
   { id: "road-tile-slantHigh-1", type: "road", name: "road-tile-slantHigh-1", modelPath: "roads-models/OBJ format/tile-slantHigh.obj", position: { x: TILE_SIZE * -3, z: TILE_SIZE * -17 }, targetScale: TILE_SIZE },
 
 
+  { id: "road-tile-slantHigh-1", type: "road", name: "road-tile-slantHigh-1", modelPath: "tiles-models/roadTile_163.obj", position: { x: TILE_SIZE * 0.5, z: TILE_SIZE * 0.5, y: TILE_SIZE * -0.21, }, targetScale: TILE_SIZE },
 
-  // rotation: { y: Math.PI / 2 }
+  { id: "road-tile-slantHigh-1", type: "road", name: "road-tile-slantHigh-1", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * 12.25, z: TILE_SIZE * 12.25}, targetScale: TILE_SIZE * 0.5, rotation: { y: Math.PI / 2 } },
+  { id: "road-tile-slantHigh-1", type: "road", name: "road-tile-slantHigh-1", modelPath: "roads-models/OBJ format/road-straight.obj", position: { x: TILE_SIZE * 12.25, z: TILE_SIZE * 11.75}, targetScale: TILE_SIZE * 0.5, rotation: { y: Math.PI / 2 } },
+
+
+
+
+
+  // ...BASE_TILE_BLOCK,
+  ...GENERATED_ROAD_TILES,
+  ...TILE_BLOCK1,
+  ...TILE_BLOCK2,
+  ...TILE_BLOCK3,
 ];
 export const ROAD_TILES: RoadPlacement[] = RAW_ROAD_TILES.map((r) => ({
   ...r,

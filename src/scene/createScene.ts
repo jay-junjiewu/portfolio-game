@@ -162,24 +162,26 @@ const createGround = (scene: Scene) => {
 
 const addGridLines = (scene: Scene) => {
   const size = CITY_TILE_SIZE;
-  const extent = CITY_TILE_SIZE * 12;
+  const blocks = 25;
+  const start = -Math.floor((blocks - 1) / 2) * size;
+  const end = Math.floor((blocks + 1) / 2) * size;
   const color = Color3.FromHexString("#597392");
 
-  for (let x = -extent; x <= extent; x += size) {
+  for (let x = start; x <= end; x += size) {
     MeshBuilder.CreateLines(
       `grid-x-${x}`,
       {
-        points: [new Vector3(x, 0.01, -extent), new Vector3(x, 0.01, extent)],
+        points: [new Vector3(x, 0.01, start), new Vector3(x, 0.01, end)],
       },
       scene
     ).color = color;
   }
 
-  for (let z = -extent; z <= extent; z += size) {
+  for (let z = start; z <= end; z += size) {
     MeshBuilder.CreateLines(
       `grid-z-${z}`,
       {
-        points: [new Vector3(-extent, 0.01, z), new Vector3(extent, 0.01, z)],
+        points: [new Vector3(start, 0.01, z), new Vector3(end, 0.01, z)],
       },
       scene
     ).color = color;

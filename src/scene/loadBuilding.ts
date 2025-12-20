@@ -12,7 +12,7 @@ import {
   Vector3,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/OBJ/objFileLoader";
-import type { CityEntity } from "../data/cityLayout";
+import { CITY_TILE_SIZE, type CityEntity } from "../data/cityLayout";
 import { PANEL_TITLES } from "../data/portfolioData";
 import { ASSET_BASE_URL } from "../config";
 
@@ -258,8 +258,10 @@ export const loadBuilding = async (
   normalizeMeshScale(root, meshNodes, baseTarget);
   root.scaling = root.scaling.scale(extraScale);
 
-  root.position.x = entry.position.x;
-  root.position.z = entry.position.z;
+  const halfTile = CITY_TILE_SIZE / 2;
+  root.position.x = entry.position.x + halfTile;
+  root.position.y = entry.position.y ?? 0;
+  root.position.z = entry.position.z + halfTile;
   root.rotation.y = entry.rotation?.y ?? 0;
 
   let glowMesh: AbstractMesh | undefined;
