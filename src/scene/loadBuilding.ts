@@ -218,7 +218,8 @@ export const loadBuilding = async (
 ): Promise<LoadedBuilding> => {
   const root = new TransformNode(`${entry.id}-root`, scene);
   root.rotationQuaternion = null;
-  if (entry.isPortfolio !== true) {
+  const isPortfolio = entry.isPortfolio !== false;
+  if (!isPortfolio) {
     root.setEnabled(false);
     return { entry, root, meshes: [] };
   }
@@ -243,7 +244,7 @@ export const loadBuilding = async (
   meshes.forEach((mesh, index) => {
     mesh.parent = root;
     mesh.alwaysSelectAsActiveMesh = entry.type === "main";
-    mesh.isPickable = entry.type === "main" && entry.isPortfolio === true;
+    mesh.isPickable = entry.type === "main" && isPortfolio;
     mesh.receiveShadows = true;
     mesh.name ||= `${entry.id}-mesh-${index}`;
     ensureMaterial(mesh, scene);
@@ -266,7 +267,7 @@ export const loadBuilding = async (
 
   let glowMesh: AbstractMesh | undefined;
   let labelMesh: AbstractMesh | undefined;
-  if (entry.type === "main" && meshNodes.length && entry.isPortfolio === true) {
+  if (entry.type === "main" && meshNodes.length && isPortfolio) {
     meshNodes.forEach((mesh) => mesh.computeWorldMatrix(true));
     const bounds = Mesh.MinMax(meshNodes);
     const { min, max } = getBounds(bounds);
@@ -309,7 +310,7 @@ export const loadBuilding = async (
     bubble.parent = root;
     bubble.position.y = height * 0.4 + requestedScale * 0.2;
     bubble.rotation.z = Math.PI;
-    bubble.isPickable = entry.isPortfolio === true;
+    bubble.isPickable = isPortfolio;
     assignMetadata(bubble, entry.id);
     bubble.renderingGroupId = 2;
     bubble.material = bubbleMat;
