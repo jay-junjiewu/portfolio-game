@@ -29,6 +29,7 @@ export type SceneControls = {
   scene: Scene;
   resetCamera: () => void;
   setDayMode: (isDay: boolean) => void;
+  setCameraOrbit: (alpha: number, beta: number) => void;
   focusOnBuilding: (key: BuildingKey | null) => void;
   dispose: () => void;
 };
@@ -319,6 +320,18 @@ const animateCameraFocus = (camera: ArcRotateCamera, target: Vector3) => {
   update();
 };
 
+const clampBeta = (beta: number) => {
+  const min = 0.2;
+  const max = Math.PI - 0.2;
+  return Math.min(max, Math.max(min, beta));
+};
+
+const shortestAngle = (from: number, to: number) => {
+  const twoPi = Math.PI * 2;
+  const delta = ((to - from + Math.PI) % twoPi + twoPi) % twoPi;
+  return delta - Math.PI;
+};
+
 export const createCityScene = async (
   engine: Engine,
   canvas: HTMLCanvasElement,
@@ -354,6 +367,7 @@ export const createCityScene = async (
     radius: camera.radius,
     target: camera.target.clone(),
   };
+  let orbitAnimationFrame: number | null = null;
 
   const setDayMode = (isDay: boolean) => {
     scene.clearColor = isDay
@@ -409,8 +423,35 @@ export const createCityScene = async (
     scene,
     resetCamera,
     setDayMode,
+    setCameraOrbit: (alpha: number, beta: number) => {
+      if (orbitAnimationFrame !== null) {
+        window.cancelAnimationFrame(orbitAnimationFrame);
+      }
+      const startAlpha = camera.alpha;
+      const startBeta = camera.beta;
+      const targetAlpha = alpha;
+      const targetBeta = clampBeta(beta);
+      const startTime = performance.now();
+      const duration = 320;
+
+      const step = (time: number) => {
+        const t = Math.min(1, (time - startTime) / duration);
+        const eased = t * (2 - t);
+        camera.alpha = startAlpha + shortestAngle(startAlpha, targetAlpha) * eased;
+        camera.beta = startBeta + (targetBeta - startBeta) * eased;
+
+        if (t < 1) {
+          orbitAnimationFrame = window.requestAnimationFrame(step);
+        }
+      };
+
+      orbitAnimationFrame = window.requestAnimationFrame(step);
+    },
     focusOnBuilding,
     dispose: () => {
+      if (orbitAnimationFrame !== null) {
+        window.cancelAnimationFrame(orbitAnimationFrame);
+      }
       disposePicking();
       disposeTouchRotation();
       scene.dispose();

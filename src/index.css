@@ -513,6 +513,114 @@ body {
   box-shadow: 0 0 0 6px rgba(45, 212, 191, 0.25);
 }
 
+.orientation-widget {
+  --axis-x: #ff5a5f;
+  --axis-y: #7bd64f;
+  --axis-z: #4ea8ff;
+  position: fixed;
+  right: 1rem;
+  top: 4.5rem;
+  width: 96px;
+  height: 96px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  transform-origin: top right;
+}
+
+.orientation-widget svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.axis-line {
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.axis-line.x {
+  stroke: var(--axis-x);
+}
+
+.axis-line.y {
+  stroke: var(--axis-y);
+}
+
+.axis-line.z {
+  stroke: var(--axis-z);
+}
+
+.axis-line.neg {
+  stroke-opacity: 0.35;
+  stroke-dasharray: 4 5;
+}
+
+.axis-line.pos {
+  stroke-opacity: 0.95;
+}
+
+.orientation-button {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.55rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.orientation-button.pos {
+  color: #0b1524;
+}
+
+.orientation-button.neg {
+  background: rgba(8, 12, 22, 0.65);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.orientation-button.axis-x {
+  color: var(--axis-x);
+}
+
+.orientation-button.axis-x.pos {
+  background: var(--axis-x);
+}
+
+.orientation-button.axis-y {
+  color: var(--axis-y);
+}
+
+.orientation-button.axis-y.pos {
+  background: var(--axis-y);
+}
+
+.orientation-button.axis-z {
+  color: var(--axis-z);
+}
+
+.orientation-button.axis-z.pos {
+  background: var(--axis-z);
+}
+
+.orientation-button:hover {
+  transform: translate(-50%, -50%) scale(1.08);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.35);
+}
+
 @media (max-width: 900px) {
   .top-bar-content {
     flex-direction: column;
@@ -542,6 +650,11 @@ body {
   }
   .hamburger {
     display: flex;
+  }
+  .orientation-widget {
+    right: 0.75rem;
+    top: 4rem;
+    transform: scale(0.85);
   }
 }
 
@@ -574,5 +687,10 @@ body {
   }
   .portfolio-panel.open {
     transform: translateY(0);
+  }
+  .orientation-widget {
+    right: 0.6rem;
+    top: 3.6rem;
+    transform: scale(0.78);
   }
 }

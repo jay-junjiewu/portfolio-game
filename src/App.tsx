@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import BabylonCanvas from "./components/BabylonCanvas";
 import ControlsPanel from "./components/ControlsPanel";
+import OrientationWidget from "./components/OrientationWidget";
 import PortfolioPanel from "./components/PortfolioPanel";
 import TopBar from "./components/TopBar";
 import type { BuildingKey } from "./data/cityLayout";
@@ -11,10 +12,12 @@ const App = () => {
   const [activeBuilding, setActiveBuilding] = useState<BuildingKey | null>(null);
   const [showControls, setShowControls] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [sceneControls, setSceneControls] = useState<SceneControls | null>(null);
   const controlsRef = useRef<SceneControls | null>(null);
 
   const handleSceneReady = useCallback((controls: SceneControls) => {
     controlsRef.current = controls;
+    setSceneControls(controls);
   }, []);
 
   const handleBuildingSelect = useCallback((key: BuildingKey | null) => {
@@ -57,6 +60,7 @@ const App = () => {
         onToggleControls={() => setShowControls((v) => !v)}
         onOpenSection={(key) => setActiveBuilding(key)}
       />
+      <OrientationWidget controls={sceneControls} />
       <PortfolioPanel activeKey={activeBuilding} onClose={() => setActiveBuilding(null)} />
       <ControlsPanel open={showControls} onClose={() => setShowControls(false)} />
       {isLoading && (
