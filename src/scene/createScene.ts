@@ -263,7 +263,7 @@ const createGround = (scene: Scene) => {
 
 const addGridLines = (scene: Scene) => {
   const size = CITY_TILE_SIZE;
-  const blocks = 25;
+  const blocks = 17;
   const start = -Math.floor((blocks - 1) / 2) * size;
   const end = Math.floor((blocks + 1) / 2) * size;
   const color = Color3.FromHexString("#597392");

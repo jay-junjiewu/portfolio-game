@@ -60,7 +60,8 @@ const BabylonCanvas = ({
   }, [onBuildingSelect, onSceneReady, onLoadingChange]);
 
   useEffect(() => {
-    controlsRef.current?.setDayMode(isDay);
+    if (!controlsRef.current) return;
+    controlsRef.current.setDayMode(isDay);
     onLoadingChange?.(true);
     const t = window.setTimeout(() => onLoadingChange?.(false), 350);
     return () => window.clearTimeout(t);
