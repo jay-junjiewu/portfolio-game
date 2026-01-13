@@ -343,7 +343,7 @@ export const createCityScene = async (
   const { ground, groundMaterial } = createGround(scene);
 
   // Grid for testing
-  addGridLines(scene);
+  // addGridLines(scene);
   const camera = setupCamera(scene, canvas);
   const disposeTouchRotation = setupTwoFingerRotation(scene, camera);
   const { hemi, directional, shadowGenerator } = setupLights(scene);
