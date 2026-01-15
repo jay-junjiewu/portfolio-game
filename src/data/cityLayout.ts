@@ -88,7 +88,7 @@ const MAIN_BUILDINGS: BuildingPlacement[] = [
   },
 ];
 
-// Drop new decorative buildings here (shops, homes, etc.)
+// Buildings view
 const RAW_DECORATIVE_BUILDINGS: DecorativePlacement[] = [
   // Commercial Building
   {
@@ -802,6 +802,7 @@ const RAW_DECORATIVE_BUILDINGS: DecorativePlacement[] = [
 
 ];
 
+// Roads view
 const ROAD_TILE_LIBRARY: RoadPlacement[] = [
   {
     id: "road-tile-001",
@@ -3361,7 +3362,7 @@ for (let x = -8; x <= 8; x++) {
   }
 }
 
-
+// All city roads
 const ROAD_GRID: RoadPlacement[] = [
   {
     id: "",
@@ -4285,6 +4286,7 @@ const ROAD_GRID: RoadPlacement[] = [
   },
 ];
 
+// All city buildings, cars, trees, and light
 const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
   {
     id: "",
@@ -6301,7 +6303,87 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     targetScale: 0.75*UNIFORM_SCALE,
     rotation: { y: 3*(Math.PI / 2) },
   },
-  
+  {
+    id: "",
+    type: "decor",
+    name: "",
+    modelPath: "car-models/OBJ format/suv-luxury.obj",
+    position: { x: TILE_SIZE * 3, z: TILE_SIZE * 8.15 },
+    targetScale: 0.75*UNIFORM_SCALE,
+    rotation: { y: 3*(Math.PI / 2) },
+  },
+  {
+    id: "",
+    type: "decor",
+    name: "",
+    modelPath: "car-models/OBJ format/suv.obj",
+    position: { x: TILE_SIZE * -8.15, z: TILE_SIZE * -6 },
+    targetScale: 0.75*UNIFORM_SCALE,
+    rotation: { y: 0*(Math.PI / 2) },
+  },
+  {
+    id: "",
+    type: "decor",
+    name: "",
+    modelPath: "car-models/OBJ format/taxi.obj",
+    position: { x: TILE_SIZE * -7.85, z: TILE_SIZE * -1 },
+    targetScale: 0.75*UNIFORM_SCALE,
+    rotation: { y: 2*(Math.PI / 2) },
+  },
+  {
+    id: "",
+    type: "decor",
+    name: "",
+    modelPath: "car-models/OBJ format/tractor-police.obj",
+    position: { x: TILE_SIZE * -1, z: TILE_SIZE * -6.5 },
+    targetScale: 0.9*UNIFORM_SCALE,
+    rotation: { y: 2*(Math.PI / 2) },
+  },
+  {
+    id: "",
+    type: "decor",
+    name: "",
+    modelPath: "car-models/OBJ format/tractor-shovel.obj",
+    position: { x: TILE_SIZE * 5.5, z: TILE_SIZE * -8 },
+    targetScale: 0.9*UNIFORM_SCALE,
+    rotation: { y: (Math.PI / 2) },
+  },
+  {
+    id: "",
+    type: "decor",
+    name: "",
+    modelPath: "car-models/OBJ format/tractor.obj",
+    position: { x: TILE_SIZE * -4.5, z: TILE_SIZE * -4 },
+    targetScale: 0.9*UNIFORM_SCALE,
+    rotation: { y: (Math.PI / 2) },
+  },
+  {
+    id: "",
+    type: "decor",
+    name: "",
+    modelPath: "car-models/OBJ format/truck-flat.obj",
+    position: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 0 },
+    targetScale: 0.75*UNIFORM_SCALE,
+    rotation: { y: 0*(Math.PI / 2) },
+  },
+  {
+    id: "",
+    type: "decor",
+    name: "",
+    modelPath: "car-models/OBJ format/truck.obj",
+    position: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -5 },
+    targetScale: 0.75*UNIFORM_SCALE,
+    rotation: { y: 2*(Math.PI / 2) },
+  },
+  {
+    id: "",
+    type: "decor",
+    name: "",
+    modelPath: "car-models/OBJ format/van.obj",
+    position: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -5 },
+    targetScale: 0.75*UNIFORM_SCALE,
+    rotation: { y: 2*(Math.PI / 2) },
+  },
 ];
 
 export const DECORATIVE_BUILDINGS: DecorativePlacement[] = [

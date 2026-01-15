@@ -70,11 +70,28 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
   pointerInput.pinchDeltaPercentage = 0.01;
   pointerInput.useNaturalPinchZoom = false;
   camera.attachControl(false, false, -1);
+  const keyboardInput = camera.inputs.attached.keyboard as unknown as {
+    angularSpeed?: number;
+    keysLeft?: number[];
+    keysRight?: number[];
+  } | undefined;
+  if (keyboardInput) {
+    keyboardInput.angularSpeed = 0.004;
+    if (keyboardInput.keysLeft && !keyboardInput.keysLeft.includes(81)) {
+      keyboardInput.keysLeft.push(81);
+    }
+    if (keyboardInput.keysRight && !keyboardInput.keysRight.includes(69)) {
+      keyboardInput.keysRight.push(69);
+    }
+  }
+  const baseInertia = camera.inertia;
 
   const cameraPanning = camera as ArcRotateCamera & {
     _panningMouseButton: number;
   };
   let spacePanningActive = false;
+  const rotationKeys = new Set(["KeyQ", "KeyE", "ArrowLeft", "ArrowRight"]);
+  const activeRotationKeys = new Set<string>();
   const touchPointers = new Set<number>();
   const updatePanningButton = () => {
     cameraPanning._panningMouseButton =
@@ -102,6 +119,17 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
 
   scene.onKeyboardObservable.add((info) => {
     const event = info.event;
+    if (rotationKeys.has(event.code)) {
+      if (info.type === KeyboardEventTypes.KEYDOWN) {
+        activeRotationKeys.add(event.code);
+        camera.inertia = 0;
+      } else if (info.type === KeyboardEventTypes.KEYUP) {
+        activeRotationKeys.delete(event.code);
+        if (activeRotationKeys.size === 0) {
+          camera.inertia = baseInertia;
+        }
+      }
+    }
     if (event.code === "Space") {
       if (info.type === KeyboardEventTypes.KEYDOWN) {
         setSpacePanning(true);
@@ -122,34 +150,22 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
     const right = Vector3.Cross(forwardDir, Vector3.Up()).normalize();
 
     switch (event.code) {
-      case "KeyQ":
-        camera.alpha -= 0.1;
-        event.preventDefault();
-        break;
-      case "KeyE":
-        camera.alpha += 0.1;
-        event.preventDefault();
-        break;
       case "KeyW":
-      case "ArrowUp":
         camera.target.addInPlace(forwardDir.scale(panStep));
         camera.position.addInPlace(forwardDir.scale(panStep));
         event.preventDefault();
         break;
       case "KeyS":
-      case "ArrowDown":
         camera.target.addInPlace(forwardDir.scale(-panStep));
         camera.position.addInPlace(forwardDir.scale(-panStep));
         event.preventDefault();
         break;
       case "KeyA":
-      case "ArrowLeft":
         camera.target.addInPlace(right.scale(panStep));
         camera.position.addInPlace(right.scale(panStep));
         event.preventDefault();
         break;
       case "KeyD":
-      case "ArrowRight":
         camera.target.addInPlace(right.scale(-panStep));
         camera.position.addInPlace(right.scale(-panStep));
         event.preventDefault();

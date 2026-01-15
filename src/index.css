@@ -319,6 +319,7 @@ body {
 .panel-section p {
   line-height: 1.5;
   margin-bottom: 0.8rem;
+  white-space: pre-line;
 }
 
 .project-card,
@@ -441,8 +442,91 @@ body {
   margin-bottom: 1rem;
 }
 
-.contact-details p {
-  margin-bottom: 0.45rem;
+.contact-details {
+  display: grid;
+  gap: 0.8rem;
+  padding: 0.75rem;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 16px;
+  border: 1px solid rgba(16, 37, 72, 0.08);
+  background: rgba(8, 18, 48, 0.06);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.contact-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(23, 82, 255, 0.35);
+  box-shadow: 0 12px 22px rgba(12, 22, 42, 0.12);
+}
+
+.contact-card.static {
+  cursor: default;
+}
+
+.contact-card.static:hover {
+  transform: none;
+  border-color: rgba(16, 37, 72, 0.08);
+  box-shadow: none;
+}
+
+.contact-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(23, 82, 255, 0.12);
+  color: #1752ff;
+}
+
+.contact-icon.location {
+  background: rgba(45, 212, 191, 0.15);
+  color: #1a8f88;
+}
+
+.contact-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.contact-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.contact-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #5c6b82;
+}
+
+.contact-value {
+  font-weight: 600;
+}
+
+.contact-actions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.contact-link-card .contact-value {
+  overflow-wrap: anywhere;
 }
 
 .experience-card ul {

@@ -37,10 +37,9 @@ export type PortfolioContent = {
 
 export const PORTFOLIO_DATA: PortfolioContent = {
   about: {
-    headline: "Creative technologist crafting playful experiences.",
+    headline: "Computer Science & Electrical Engineering Student Focused on Software Engineering",
     body: [
-      "I build responsive applications and interactive playgrounds that merge storytelling with solid engineering. The Pocket City concept reflects how I see product work—carefully planned neighborhoods that make exploration fun.",
-      "When I am not prototyping with Babylon.js or React, you will find me sketching new city layouts on napkins or mentoring developers who want to push the browser into 3D.",
+      "Hello there! :) Welcome to my website. \n\nI am Junjie Wu, a penultimate Computer Science and Electrical Engineering student at UNSW with a passion for building things and making things work. \n\nMy academic and project work focuses heavily on software development, including building modern web applications using React and JavaScript, developing high-performance and embedded software in C++, and integrating software with hardware in low-level embedded and real-time systems. Alongside this, I've worked on engineering applications in areas such as electric vehicles, power, and audio systems, where software plays a central role in system performance and reliability. \n\nFeel free to reach out for a chat. Let's connect and create a meaningful impact together!",
     ],
   },
   projects: [
@@ -150,12 +149,11 @@ export const PORTFOLIO_DATA: PortfolioContent = {
     },
   ],
   contact: {
-    email: "hello@creative.dev",
-    location: "Remote · GMT-8",
+    email: "jaywu0045@gmail.com",
+    location: "Sydney, Australia",
     links: [
-      { label: "GitHub", url: "https://github.com/example" },
-      { label: "LinkedIn", url: "https://linkedin.com/in/example" },
-      { label: "Dribbble", url: "https://dribbble.com/example" },
+      { label: "GitHub", url: "https://github.com/jay-junjiewu" },
+      { label: "LinkedIn", url: "https://www.linkedin.com/in/junjiewujay/" },
     ],
   },
 };
