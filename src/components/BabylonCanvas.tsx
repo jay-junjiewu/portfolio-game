@@ -18,31 +18,42 @@ const BabylonCanvas = ({
 }: BabylonCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const controlsRef = useRef<SceneControls | null>(null);
+  const onBuildingSelectRef = useRef(onBuildingSelect);
+  const onSceneReadyRef = useRef(onSceneReady);
+  const onLoadingChangeRef = useRef(onLoadingChange);
+  const isDayRef = useRef(isDay);
+
+  useEffect(() => {
+    onBuildingSelectRef.current = onBuildingSelect;
+    onSceneReadyRef.current = onSceneReady;
+    onLoadingChangeRef.current = onLoadingChange;
+    isDayRef.current = isDay;
+  }, [isDay, onBuildingSelect, onLoadingChange, onSceneReady]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    onLoadingChange?.(true);
+    onLoadingChangeRef.current?.(true);
     const engine = new Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
     let disposed = false;
 
     (async () => {
       const controls = await createCityScene(engine, canvas, {
-        onBuildingSelect,
+        onBuildingSelect: (key) => onBuildingSelectRef.current?.(key),
       });
       if (disposed) {
         controls.dispose();
         return;
       }
       controlsRef.current = controls;
-      controls.setDayMode(isDay);
-      onSceneReady?.(controls);
+      controls.setDayMode(isDayRef.current);
+      onSceneReadyRef.current?.(controls);
       engine.runRenderLoop(() => {
         controls.scene.render();
       });
       canvas.focus();
-      onLoadingChange?.(false);
+      onLoadingChangeRef.current?.(false);
     })();
 
     const handleResize = () => {
@@ -57,15 +68,15 @@ const BabylonCanvas = ({
       controlsRef.current = null;
       engine.dispose();
     };
-  }, [onBuildingSelect, onSceneReady, onLoadingChange]);
+  }, []);
 
   useEffect(() => {
     if (!controlsRef.current) return;
     controlsRef.current.setDayMode(isDay);
-    onLoadingChange?.(true);
-    const t = window.setTimeout(() => onLoadingChange?.(false), 350);
+    onLoadingChangeRef.current?.(true);
+    const t = window.setTimeout(() => onLoadingChangeRef.current?.(false), 350);
     return () => window.clearTimeout(t);
-  }, [isDay, onLoadingChange]);
+  }, [isDay]);
 
   return <canvas ref={canvasRef} className="city-canvas" tabIndex={0} />;
 };

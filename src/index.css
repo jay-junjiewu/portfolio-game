@@ -299,6 +299,13 @@ body {
   transform: translateX(0);
 }
 
+.portfolio-panel.compact {
+  bottom: auto;
+  height: auto;
+  max-height: calc(100vh - 8rem);
+  overflow: hidden;
+}
+
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -314,6 +321,8 @@ body {
   margin-top: 1rem;
   overflow: auto;
   padding-right: 0.3rem;
+  flex: 1;
+  min-height: 0;
 }
 
 .panel-section p {
@@ -331,6 +340,15 @@ body {
   box-shadow: inset 0 0 0 1px rgba(4, 10, 24, 0.06);
 }
 
+.project-card-link {
+  cursor: pointer;
+}
+
+.project-card-link:focus-visible {
+  outline: 2px solid rgba(23, 82, 255, 0.4);
+  outline-offset: 2px;
+}
+
 .project-card-wide {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -344,6 +362,14 @@ body {
   border-radius: 16px;
   object-fit: cover;
   box-shadow: 0 8px 24px rgba(6, 15, 35, 0.25);
+}
+
+.project-thumb-detail {
+  margin-bottom: 1rem;
+}
+
+.project-thumb-detail img {
+  height: auto;
 }
 
 .project-meta {

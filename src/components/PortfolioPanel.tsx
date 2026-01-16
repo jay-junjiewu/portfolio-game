@@ -1,11 +1,12 @@
 import type { BuildingKey } from "../data/cityLayout";
 import { CITY_LAYOUT } from "../data/cityLayout";
-import { PANEL_TITLES, PORTFOLIO_DATA, type ProjectCategory } from "../data/portfolioData";
-import { useState, type ReactElement } from "react";
+import { PANEL_TITLES, PORTFOLIO_DATA, projectSlug, type ProjectCategory } from "../data/portfolioData";
+import { useState, type KeyboardEvent, type MouseEvent, type ReactElement } from "react";
 
 type PortfolioPanelProps = {
   activeKey: BuildingKey | null;
   onClose: () => void;
+  onProjectOpen: (slug: string) => void;
 };
 
 const MailIcon = () => (
@@ -84,7 +85,12 @@ const LinkedInIcon = () => (
   </svg>
 );
 
-const renderContent = (key: BuildingKey, projectsCategory: ProjectCategory, onTabChange: (cat: ProjectCategory) => void) => {
+const renderContent = (
+  key: BuildingKey,
+  projectsCategory: ProjectCategory,
+  onTabChange: (cat: ProjectCategory) => void,
+  onProjectOpen: (slug: string) => void
+) => {
   switch (key) {
     case "about":
       return (
@@ -121,8 +127,30 @@ const renderContent = (key: BuildingKey, projectsCategory: ProjectCategory, onTa
           </div>
           {PORTFOLIO_DATA.projects
             .filter((project) => project.category === projectsCategory)
-            .map((project) => (
-              <div key={project.title} className="project-card project-card-wide">
+            .map((project) => {
+              const slug = projectSlug(project.title);
+              const handleCardClick = (event: MouseEvent<HTMLDivElement>) => {
+                const target = event.target as HTMLElement;
+                if (target.closest("a")) {
+                  return;
+                }
+                onProjectOpen(slug);
+              };
+              const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onProjectOpen(slug);
+                }
+              };
+              return (
+                <div
+                  key={project.title}
+                  className="project-card project-card-wide project-card-link"
+                  role="link"
+                  tabIndex={0}
+                  onClick={handleCardClick}
+                  onKeyDown={handleCardKeyDown}
+                >
                 {project.image && (
                   <div className="project-thumb">
                     <img src={project.image} alt={project.title} />
@@ -134,17 +162,6 @@ const renderContent = (key: BuildingKey, projectsCategory: ProjectCategory, onTa
                       <h3>{project.title}</h3>
                       <span className="muted">{project.date}</span>
                     </div>
-                    {project.externalLink && (
-                      <a
-                        href={project.externalLink}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="chip chip-link external-chip"
-                        aria-label="External link"
-                      >
-                        ↗
-                      </a>
-                    )}
                   </div>
                   <p>{project.description}</p>
                   <div className="chip-row">
@@ -154,16 +171,10 @@ const renderContent = (key: BuildingKey, projectsCategory: ProjectCategory, onTa
                       </span>
                     ))}
                   </div>
-                  <div className="project-links">
-                    {project.link && (
-                      <a href={project.link} target="_blank" rel="noreferrer" className="chip chip-link">
-                        View
-                      </a>
-                    )}
-                  </div>
                 </div>
-              </div>
-            ))}
+                </div>
+              );
+            })}
         </div>
       );
     case "skills":
@@ -256,16 +267,17 @@ const renderContent = (key: BuildingKey, projectsCategory: ProjectCategory, onTa
   }
 };
 
-const PortfolioPanel = ({ activeKey, onClose }: PortfolioPanelProps) => {
+const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelProps) => {
   const [projectTab, setProjectTab] = useState<ProjectCategory>("software");
   const isOpen = Boolean(activeKey);
+  const isCompact = activeKey === "about" || activeKey === "skills" || activeKey === "contact";
   const building = CITY_LAYOUT.find(
     (entry) => entry.type === "main" && entry.key === activeKey
   );
 
   return (
     <>
-      <aside className={`portfolio-panel ${isOpen ? "open" : ""}`}>
+      <aside className={`portfolio-panel ${isOpen ? "open" : ""} ${isCompact ? "compact" : ""}`}>
         {activeKey ? (
           <>
             <div className="panel-header">
@@ -277,7 +289,7 @@ const PortfolioPanel = ({ activeKey, onClose }: PortfolioPanelProps) => {
               </button>
             </div>
             <div className="panel-body">
-              {renderContent(activeKey, projectTab, setProjectTab)}
+              {renderContent(activeKey, projectTab, setProjectTab, onProjectOpen)}
             </div>
           </>
         ) : (
