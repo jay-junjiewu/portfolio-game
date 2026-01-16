@@ -9,6 +9,7 @@ export type Project = {
   category: ProjectCategory;
   date: string;
   image?: string;
+  githubUrl?: string;
 };
 
 export type ExperienceItem = {
@@ -49,45 +50,38 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   },
   projects: [
     {
-      title: "Aurora Transit",
+      title: "Personal Portfolio",
       category: "software",
-      date: "May 2024",
+      date: "December 2025",
       description:
-        "Transit planner that lets riders simulate future routes in a stylized 3D city using Babylon.js and GraphQL.",
-      stack: ["Babylon.js", "React", "GraphQL", "Web Audio API"],
-      image: "/vite.svg",
+        "You are looking at this right now! This is my personal portfolio website, built with React and modern JavaScript to showcase my projects, skills, and experience in one centralized platform. The site focuses on clean UI, responsive layouts, and maintainable component-based architecture. It also serves as a scalable foundation for future enhancements, including backend integration, APIs, and database-driven content.",
+      stack: [
+        "React",
+        "JavaScript",
+        "CSS",
+        "Responsive Design",
+        "Component-Based Architecture",
+        "UI/UX Principles",
+        "Git"
+      ],
+      githubUrl: "https://github.com/jay-junjiewu/portfolio-game"
     },
     {
-      title: "Biolume AR Guide",
+      title: "RankIt Website (Hackathon)",
       category: "software",
-      date: "February 2024",
+      date: "March 24th - 26th 2025",
       description:
-        "Mobile web app blending AR portals with live environmental data for science museums.",
-      stack: ["React Native Web", "Three.js", "Expo"],
-      image: "/vite.svg",
-    },
-    {
-      title: "Field Notes OS",
-      category: "software",
-      date: "October 2023",
-      description:
-        "Offline-first research companion for humanitarian field teams that syncs via WebRTC mesh networks.",
-      stack: ["TypeScript", "IndexedDB", "WebRTC", "PWA"],
-      image: "/vite.svg",
-    },
-    {
-      title: "Canvas Beats",
-      category: "software",
-      date: "June 2023",
-      description:
-        "Modular audio workstation in the browser with drag-to-patch synth nodes and multiplayer editing.",
-      stack: ["React", "Tone.js", "Colyseus"],
-      image: "/vite.svg",
+        "As a Hackathon project, I worked on the backend of RankIt website in a team of two (my teammate focused on the frontend). RankIt is a platform built for UNSW students to rank a variety of categories related to UNSW, including courses, food, restaurants, toilets, and more. The backend is built using ExpressJS in the Node.js environment, utilizing JavaScript. Firebase serves as the NoSQL database for real-time data storage, and Supabase is used for image storage. The frontend was developed with React and TypeScript, utilizing Node.js for the development environment and build tools.",
+      stack: [
+        "React", "JavaScript", "TypeScript", "Express.js", "Firebase", "Supabase", "NoSQL Database", "RESTful API"
+      ],
+      image: "/assets/rankit/website_thumbnail.png",
+      githubUrl: "https://github.com/FiveRankers/RankIt"
     },
     {
       title: "Guitar Power Amplifier",
       category: "electrical",
-      date: "September 2024 - December 2024",
+      date: "September - December 2024",
       description:
         "A guitar power amplifier for loudspeakers that delivers clear, high-quality audio with optimal efficiency. It takes weak stereo signals from audio jacks or microphones, amplifies them, and preserves signal integrity while minimizing total harmonic distortion (THD). The design features a multi-stage cascaded approach with separate stages for signal gain and power output, offering precise control over both audio clarity and efficiency.",
       stack: ["Power Electronics", "PCB Design", "KiCad"],
@@ -96,7 +90,7 @@ export const PORTFOLIO_DATA: PortfolioContent = {
     {
       title: "Ambient Sound Monitor System",
       category: "electrical",
-      date: "May 2024 - August 2024",
+      date: "May - August 2024",
       description:
         "This project is designed for users who may struggle to stay aware of their surroundings or frequently operate in noisy environments. It leverages advanced real-time processing to detect key sounds and deliver alerts through haptic and visual feedback, helping users stay aware in such environments.",
       stack: ["C", "FreeRTOS", "Digital Signal Processing", "Embedded Firmware"],

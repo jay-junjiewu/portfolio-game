@@ -1,12 +1,25 @@
 import type { BuildingKey } from "../data/cityLayout";
 import { CITY_LAYOUT } from "../data/cityLayout";
 import { PANEL_TITLES, PORTFOLIO_DATA, projectSlug, type ProjectCategory } from "../data/portfolioData";
-import { useState, type KeyboardEvent, type MouseEvent, type ReactElement } from "react";
+import { useEffect, useState, type KeyboardEvent, type MouseEvent, type ReactElement } from "react";
 
 type PortfolioPanelProps = {
   activeKey: BuildingKey | null;
   onClose: () => void;
   onProjectOpen: (slug: string) => void;
+};
+
+const readProjectCategory = (): ProjectCategory => {
+  if (typeof window === "undefined") return "software";
+  try {
+    const stored = window.localStorage.getItem("ui:projectCategory");
+    if (stored === "software" || stored === "electrical") {
+      return stored;
+    }
+  } catch {
+    return "software";
+  }
+  return "software";
 };
 
 const MailIcon = () => (
@@ -134,44 +147,53 @@ const renderContent = (
                 if (target.closest("a")) {
                   return;
                 }
+                if (project.githubUrl) {
+                  window.open(project.githubUrl, "_blank", "noopener,noreferrer");
+                  return;
+                }
                 onProjectOpen(slug);
               };
               const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
+                  if (project.githubUrl) {
+                    window.open(project.githubUrl, "_blank", "noopener,noreferrer");
+                    return;
+                  }
                   onProjectOpen(slug);
                 }
               };
+              const hasImage = Boolean(project.image);
               return (
                 <div
                   key={project.title}
-                  className="project-card project-card-wide project-card-link"
+                  className={`project-card project-card-link ${hasImage ? "project-card-wide" : "project-card-text"}`}
                   role="link"
                   tabIndex={0}
                   onClick={handleCardClick}
                   onKeyDown={handleCardKeyDown}
                 >
-                {project.image && (
-                  <div className="project-thumb">
-                    <img src={project.image} alt={project.title} />
-                  </div>
-                )}
-                <div className="project-meta">
-                  <div className="project-topline">
-                    <div>
-                      <h3>{project.title}</h3>
-                      <span className="muted">{project.date}</span>
+                  {project.image && (
+                    <div className="project-thumb">
+                      <img src={project.image} alt={project.title} />
+                    </div>
+                  )}
+                  <div className="project-meta">
+                    <div className="project-topline">
+                      <div>
+                        <h3>{project.title}</h3>
+                        <span className="muted">{project.date}</span>
+                      </div>
+                    </div>
+                    <p>{project.description}</p>
+                    <div className="chip-row">
+                      {project.stack.map((tech) => (
+                        <span className="chip" key={tech}>
+                          {tech}
+                        </span>
+                      ))}
                     </div>
                   </div>
-                  <p>{project.description}</p>
-                  <div className="chip-row">
-                    {project.stack.map((tech) => (
-                      <span className="chip" key={tech}>
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
                 </div>
               );
             })}
@@ -268,12 +290,21 @@ const renderContent = (
 };
 
 const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelProps) => {
-  const [projectTab, setProjectTab] = useState<ProjectCategory>("software");
+  const [projectTab, setProjectTab] = useState<ProjectCategory>(readProjectCategory);
   const isOpen = Boolean(activeKey);
   const isCompact = activeKey === "about" || activeKey === "skills" || activeKey === "contact";
   const building = CITY_LAYOUT.find(
     (entry) => entry.type === "main" && entry.key === activeKey
   );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem("ui:projectCategory", projectTab);
+    } catch {
+      return;
+    }
+  }, [projectTab]);
 
   return (
     <>

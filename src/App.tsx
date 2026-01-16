@@ -9,8 +9,20 @@ import TopBar from "./components/TopBar";
 import type { BuildingKey } from "./data/cityLayout";
 import type { SceneControls } from "./scene/createScene";
 
+const readDayMode = () => {
+  if (typeof window === "undefined") return true;
+  try {
+    const stored = window.localStorage.getItem("ui:dayMode");
+    if (stored === "night") return false;
+    if (stored === "day") return true;
+  } catch {
+    return true;
+  }
+  return true;
+};
+
 const App = () => {
-  const [isDay, setIsDay] = useState(true);
+  const [isDay, setIsDay] = useState(readDayMode);
   const [activeBuilding, setActiveBuilding] = useState<BuildingKey | null>(null);
   const [showControls, setShowControls] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -63,6 +75,15 @@ const App = () => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleProjectClose, isProjectRoute, showControls]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem("ui:dayMode", isDay ? "day" : "night");
+    } catch {
+      return;
+    }
+  }, [isDay]);
 
   const toggleDay = () => {
     setIsDay((prev) => !prev);
