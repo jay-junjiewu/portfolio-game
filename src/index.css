@@ -563,40 +563,6 @@ body {
   pointer-events: auto;
 }
 
-.mini-map {
-  position: fixed;
-  left: 2rem;
-  bottom: 2rem;
-  width: 160px;
-  height: 160px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 20px 35px rgba(8, 15, 35, 0.35);
-  z-index: 2;
-}
-
-.mini-map-dot {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.7;
-}
-
-.mini-map-dot.main {
-  background: #ff946e;
-}
-
-.mini-map-dot.decor {
-  background: #3182ce;
-}
-
-.mini-map-dot.active {
-  background: #2dd4bf;
-  box-shadow: 0 0 0 6px rgba(45, 212, 191, 0.25);
-}
-
 .orientation-widget {
   --axis-x: #ff5a5f;
   --axis-y: #7bd64f;

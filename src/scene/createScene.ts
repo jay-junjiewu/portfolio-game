@@ -16,7 +16,6 @@ import {
 import { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";
 import type { BuildingKey } from "../data/cityLayout";
 import { CITY_LAYOUT, CITY_TILE_SIZE } from "../data/cityLayout";
-import { decorateScene } from "./decorate";
 import type { LoadedBuilding } from "./loadBuilding";
 import { loadBuilding } from "./loadBuilding";
 import { setupPicking } from "./picking";
@@ -363,7 +362,6 @@ export const createCityScene = async (
   const camera = setupCamera(scene, canvas);
   const disposeTouchRotation = setupTwoFingerRotation(scene, camera);
   const { hemi, directional, shadowGenerator } = setupLights(scene);
-  decorateScene(scene);
 
   const loadedBuildings: LoadedBuilding[] = [];
   for (const entry of CITY_LAYOUT) {

@@ -25,7 +25,7 @@ const TopBar = ({
       <div className="top-bar-content">
         <div className="top-bar-row">
           <div className="brand">
-            <span className="brand-title">Junjie (Jay) Wu</span>
+            <span className="brand-title">Junjie Wu</span>
           </div>
           <button
             type="button"
