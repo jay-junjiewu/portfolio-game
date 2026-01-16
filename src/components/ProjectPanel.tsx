@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import { PORTFOLIO_DATA, projectSlug } from "../data/portfolioData";
-import AuroraTransitDetails from "./projects/AuroraTransitDetails";
+import AmbientSoundMonitorSystemDetails from "./projects/AmbientSoundMonitorSystemDetails";
+import GuitarPowerAmplifierDetails from "./projects/GuitarPowerAmplifierDetails";
 
 type ProjectPanelProps = {
   onClose: () => void;
@@ -18,11 +19,27 @@ const ProjectPanel = ({ onClose }: ProjectPanelProps) => {
 
   const renderProjectDetails = () => {
     switch (slug) {
-      case "aurora-transit":
-        return <AuroraTransitDetails />;
+      case "guitar-power-amplifier":
+        return <GuitarPowerAmplifierDetails />;
+      case "ambient-sound-monitor-system":
+        return <AmbientSoundMonitorSystemDetails />;
       default:
+        if (!project) return null;
         return (
           <>
+            {project.image && (
+              <div className="project-thumb project-thumb-detail">
+                <img src={project.image} alt={project.title} />
+              </div>
+            )}
+            <p>{project.description}</p>
+            <div className="chip-row">
+              {project.stack.map((tech) => (
+                <span className="chip" key={tech}>
+                  {tech}
+                </span>
+              ))}
+            </div>
           </>
         );
     }

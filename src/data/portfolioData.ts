@@ -9,8 +9,6 @@ export type Project = {
   category: ProjectCategory;
   date: string;
   image?: string;
-  link?: string;
-  externalLink?: string;
 };
 
 export type ExperienceItem = {
@@ -57,8 +55,6 @@ export const PORTFOLIO_DATA: PortfolioContent = {
       description:
         "Transit planner that lets riders simulate future routes in a stylized 3D city using Babylon.js and GraphQL.",
       stack: ["Babylon.js", "React", "GraphQL", "Web Audio API"],
-      link: "https://example.com/aurora",
-      externalLink: "https://github.com/example/aurora",
       image: "/vite.svg",
     },
     {
@@ -68,8 +64,6 @@ export const PORTFOLIO_DATA: PortfolioContent = {
       description:
         "Mobile web app blending AR portals with live environmental data for science museums.",
       stack: ["React Native Web", "Three.js", "Expo"],
-      link: "https://example.com/biolume",
-      externalLink: "https://dribbble.com/example/biolume",
       image: "/vite.svg",
     },
     {
@@ -79,8 +73,6 @@ export const PORTFOLIO_DATA: PortfolioContent = {
       description:
         "Offline-first research companion for humanitarian field teams that syncs via WebRTC mesh networks.",
       stack: ["TypeScript", "IndexedDB", "WebRTC", "PWA"],
-      link: "https://example.com/fieldnotes",
-      externalLink: "https://github.com/example/fieldnotes",
       image: "/vite.svg",
     },
     {
@@ -90,31 +82,25 @@ export const PORTFOLIO_DATA: PortfolioContent = {
       description:
         "Modular audio workstation in the browser with drag-to-patch synth nodes and multiplayer editing.",
       stack: ["React", "Tone.js", "Colyseus"],
-      link: "https://example.com/canvasbeats",
-      externalLink: "https://github.com/example/canvasbeats",
       image: "/vite.svg",
     },
     {
-      title: "GridSense Edge Monitor",
+      title: "Guitar Power Amplifier",
       category: "electrical",
-      date: "January 2024",
+      date: "September 2024 - December 2024",
       description:
-        "Low-power hardware module that logs sensor data and streams telemetry to a React dashboard for industrial sites.",
-      stack: ["STM32", "LoRa", "MQTT", "React"],
-      link: "https://example.com/gridsense",
-      externalLink: "https://github.com/example/gridsense",
-      image: "/vite.svg",
+        "A guitar power amplifier for loudspeakers that delivers clear, high-quality audio with optimal efficiency. It takes weak stereo signals from audio jacks or microphones, amplifies them, and preserves signal integrity while minimizing total harmonic distortion (THD). The design features a multi-stage cascaded approach with separate stages for signal gain and power output, offering precise control over both audio clarity and efficiency.",
+      stack: ["Power Electronics", "PCB Design", "KiCad"],
+      image: "/assets/guitar-power-amplifier/3D1.png",
     },
     {
-      title: "Solar Array Balancer",
+      title: "Ambient Sound Monitor System",
       category: "electrical",
-      date: "August 2023",
+      date: "May 2024 - August 2024",
       description:
-        "MPPT controller prototype with a companion SPA that visualizes live current/voltage curves and firmware updates.",
-      stack: ["KiCad", "ESP32", "TypeScript", "D3.js"],
-      link: "https://example.com/solar-array",
-      externalLink: "https://github.com/example/solar-array",
-      image: "/vite.svg",
+        "This project is designed for users who may struggle to stay aware of their surroundings or frequently operate in noisy environments. It leverages advanced real-time processing to detect key sounds and deliver alerts through haptic and visual feedback, helping users stay aware in such environments.",
+      stack: ["C", "FreeRTOS", "Digital Signal Processing", "Embedded Firmware"],
+      image: "/assets/ambient-sound-monitor-system/3d.png",
     },
   ],
   skills: [
