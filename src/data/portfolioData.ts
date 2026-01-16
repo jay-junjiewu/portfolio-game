@@ -112,20 +112,30 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   ],
   skills: [
     {
-      category: "Languages",
-      items: ["TypeScript", "Python", "Go", "C#"],
+      category: "Programming Languages",
+      items: ["C++", "C", "JavaScript", "Python", "SQL", "Verilog HDL"],
     },
     {
       category: "Frontend",
-      items: ["React", "Babylon.js", "Three.js", "Tailwind", "WebGL"],
+      items: ["React.js", "HTML5", "CSS3", "Responsive Design"],
     },
     {
-      category: "Backend & DevOps",
-      items: ["Node.js", "tRPC", "PostgreSQL", "Docker", "AWS"],
+      category: "Backend & Database",
+      items: ["Node.js", "Express.js", "RESTful APIs", "PostgreSQL"],
     },
     {
-      category: "Creative Tech",
-      items: ["Shader Graph", "Web Audio", "Game Feel", "UX Research"],
+      category: "Electrical & Embedded Systems",
+      items: [
+        "FPGA Design",
+        "Power",
+        "Signal Processing",
+        "Analog & Digital Electronics",
+        "Embedded C",
+      ],
+    },
+    {
+      category: "EDA & Simulation Tools",
+      items: ["Altium Designer", "KiCad", "MATLAB", "Simulink"],
     },
   ],
   experience: [
