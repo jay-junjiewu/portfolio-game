@@ -79,6 +79,17 @@ export const PORTFOLIO_DATA: PortfolioContent = {
       githubUrl: "https://github.com/FiveRankers/RankIt"
     },
     {
+      title: "Audio Equaliser in C++",
+      category: "software",
+      date: "December 2024 - February 2025",
+      description:
+        "I built a 5-band audio equaliser using C++ STL. The equaliser reads in an audio file and allows users to apply various gains to 5 frequency bands (sub-bass, bass, midrange, upper midrange, treble). It can also process stereo audio, apply dynamic range compression, and save the result into an audio file.",
+      stack: [
+        "C++", "MATLAB", "Digital Signal Processing", "Real-Time Processing"
+      ],
+      image: "/assets/audio-equaliser/time.png",
+    },
+    {
       title: "Guitar Power Amplifier",
       category: "electrical",
       date: "September - December 2024",

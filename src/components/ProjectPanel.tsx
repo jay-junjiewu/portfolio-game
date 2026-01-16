@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import { PORTFOLIO_DATA, projectSlug } from "../data/portfolioData";
 import AmbientSoundMonitorSystemDetails from "./projects/AmbientSoundMonitorSystemDetails";
+import AudioEqualiserDetails from "./projects/AudioEqualiserDetails";
 import GuitarPowerAmplifierDetails from "./projects/GuitarPowerAmplifierDetails";
 
 type ProjectPanelProps = {
@@ -19,6 +20,8 @@ const ProjectPanel = ({ onClose }: ProjectPanelProps) => {
 
   const renderProjectDetails = () => {
     switch (slug) {
+      case "audio-equaliser-in-c":
+        return <AudioEqualiserDetails />;
       case "guitar-power-amplifier":
         return <GuitarPowerAmplifierDetails />;
       case "ambient-sound-monitor-system":
