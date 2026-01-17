@@ -217,7 +217,19 @@ const renderContent = (
             <div key={job.company} className="experience-card">
               <h3>{job.role}</h3>
               <p className="muted">
-                {job.company} · {job.period}
+                {job.companyUrl ? (
+                  <a
+                    className="experience-company-link"
+                    href={job.companyUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {job.company}
+                  </a>
+                ) : (
+                  job.company
+                )}{" "}
+                · {job.period}
               </p>
               <ul>
                 {job.highlights.map((item) => (

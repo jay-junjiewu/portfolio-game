@@ -14,6 +14,7 @@ export type Project = {
 
 export type ExperienceItem = {
   company: string;
+  companyUrl?: string;
   role: string;
   period: string;
   highlights: string[];
@@ -138,21 +139,21 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   ],
   experience: [
     {
-      company: "Wayfinder Labs",
-      role: "Lead Creative Developer",
-      period: "2022 — Present",
+      company: "Sunswift Racing",
+      companyUrl: "https://www.sunswift.com",
+      role: "Project Lead",
+      period: "January 2024 - December 2024",
       highlights: [
-        "Guided a cross-disciplinary team delivering immersive product demos for Fortune 100 clients.",
-        "Architected a reusable WebGL micro-frontends system that cut integration time by 40%.",
+        "Led the Electrical Project of Sunswift Racing's latest EV: Sunswift 8. My role includes R&D, design, technical analyses, risk assessment, and management within the energy systems department.",
       ],
     },
     {
-      company: "Northwind Studio",
-      role: "Senior Software Engineer",
-      period: "2019 — 2022",
+      company: "Sunswift Racing",
+      companyUrl: "https://www.sunswift.com",
+      role: "Electrical Engineer",
+      period: "September 2023 - January 2024",
       highlights: [
-        "Owned the interaction model for a city-building training tool across desktop and mixed reality.",
-        "Built telemetry pipelines to evaluate player intent and inform UX decisions.",
+        "Worked on power electronics, embedded firmware, power delivery, and renewable photovoltaic systems on the Sunswift EV.",
       ],
     },
   ],

@@ -728,6 +728,17 @@ body {
   margin-bottom: 0.25rem;
 }
 
+.experience-company-link {
+  color: inherit;
+  font-weight: 600;
+  color: #1752ff;
+  text-decoration: none;
+}
+
+.experience-company-link:hover {
+  text-decoration: underline;
+}
+
 .muted {
   color: #5c6b82;
   margin: 0;
