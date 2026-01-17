@@ -98,6 +98,14 @@ const LinkedInIcon = () => (
   </svg>
 );
 
+const formatLinkSource = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+};
+
 const renderContent = (
   key: BuildingKey,
   projectsCategory: ProjectCategory,
@@ -236,6 +244,31 @@ const renderContent = (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
+              {job.links && job.links.length > 0 ? (
+                <div className="experience-links">
+                  {job.links.map((link) => (
+                    <a
+                      key={`${link.url}-${link.title}`}
+                      className="experience-link-card"
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {link.image ? (
+                        <span className="experience-link-thumb">
+                          <img src={link.image} alt="" loading="lazy" />
+                        </span>
+                      ) : null}
+                      <span className="experience-link-copy">
+                        <span className="experience-link-source">
+                          {link.source ?? formatLinkSource(link.url)}
+                        </span>
+                        <span className="experience-link-title">{link.title}</span>
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              ) : null}
             </div>
           ))}
         </div>

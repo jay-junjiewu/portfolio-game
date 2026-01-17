@@ -12,12 +12,20 @@ export type Project = {
   githubUrl?: string;
 };
 
+export type ExperienceLink = {
+  title: string;
+  url: string;
+  image?: string;
+  source?: string;
+};
+
 export type ExperienceItem = {
   company: string;
   companyUrl?: string;
   role: string;
   period: string;
   highlights: string[];
+  links?: ExperienceLink[];
 };
 
 export type PortfolioContent = {
@@ -139,6 +147,15 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   ],
   experience: [
     {
+      company: "UNSW",
+      companyUrl: "https://www.unsw.edu.au/engineering/our-schools/electrical-engineering-telecommunications",
+      role: "Lab Demonstrator",
+      period: "January 2024 - Present",
+      highlights: [
+        "Coordinated, assisted, and assessed students in UNSW electrical engineering labs.",
+      ],
+    },
+    {
       company: "Sunswift Racing",
       companyUrl: "https://www.sunswift.com",
       role: "Project Lead",
@@ -155,6 +172,14 @@ export const PORTFOLIO_DATA: PortfolioContent = {
       highlights: [
         "Worked on power electronics, embedded firmware, power delivery, and renewable photovoltaic systems on the Sunswift EV.",
       ],
+      links: [
+        {
+          title: "EV record breakers! Sunswift 7 goes 1000km on a single charge in world's best time",
+          url: "https://www.unsw.edu.au/newsroom/news/2022/10/ev-record-breakers-sunswift-7-goes-1000km-on-a-single-charge-in-worlds-best-time",
+          image: "https://www.unsw.edu.au/content/dam/images/unsw-wide/general/news/2023-05-newsroom-migration/2023-03-Image61a.cropimg.width=1920.crop=basic.jpg",
+          source: "Sunswift"
+        }
+      ],
     },
   ],
   contact: {
@@ -170,7 +195,7 @@ export const PORTFOLIO_DATA: PortfolioContent = {
 export const PANEL_TITLES: Record<BuildingKey, string> = {
   about: "About",
   projects: "Projects",
-  skills: "Skills",
   experience: "Experience",
+  skills: "Skills",
   contact: "Contact",
 };

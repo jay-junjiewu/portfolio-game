@@ -728,6 +728,68 @@ body {
   margin-bottom: 0.25rem;
 }
 
+.experience-links {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+}
+
+.experience-link-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 14px;
+  border: 1px solid rgba(16, 37, 72, 0.08);
+  background: rgba(8, 18, 48, 0.05);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.experience-link-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(23, 82, 255, 0.35);
+  box-shadow: 0 10px 18px rgba(12, 22, 42, 0.12);
+}
+
+.experience-link-thumb {
+  width: 120px;
+  height: 80px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(8, 18, 48, 0.12);
+  flex-shrink: 0;
+}
+
+.experience-link-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.experience-link-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.experience-link-source {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #5c6b82;
+}
+
+.experience-link-title {
+  font-weight: 600;
+  color: #162238;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .experience-company-link {
   color: inherit;
   font-weight: 600;
@@ -943,5 +1005,20 @@ body {
     right: 0.6rem;
     top: 3.6rem;
     transform: scale(0.78);
+  }
+
+  .experience-link-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .experience-link-thumb {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .experience-link-title {
+    white-space: normal;
   }
 }

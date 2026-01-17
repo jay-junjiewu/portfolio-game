@@ -39,23 +39,23 @@ const TopBar = ({
           </button>
         </div>
         <nav className={`nav-links ${menuOpen ? "open" : ""}`}>
-          <button type="button" className="nav-link" onClick={onToggleControls}>
-            Help
-          </button>
           <button type="button" className="nav-link" onClick={() => handleNav("about")}>
             About
           </button>
           <button type="button" className="nav-link" onClick={() => handleNav("projects")}>
             Projects
           </button>
-          <button type="button" className="nav-link" onClick={() => handleNav("skills")}>
-            Skills
-          </button>
           <button type="button" className="nav-link" onClick={() => handleNav("experience")}>
             Experience
           </button>
+          <button type="button" className="nav-link" onClick={() => handleNav("skills")}>
+            Skills
+          </button>
           <button type="button" className="nav-link" onClick={() => handleNav("contact")}>
             Contact
+          </button>
+          <button type="button" className="nav-link" onClick={onToggleControls}>
+            Help
           </button>
           <button type="button" className="toggle" onClick={onToggleDay}>
             <span className={`toggle-dot ${isDay ? "day" : "night"}`} />
