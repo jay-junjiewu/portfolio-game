@@ -94,7 +94,7 @@ const App = () => {
   };
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${isDay ? "day" : "night"}`}>
       <BabylonCanvas
         isDay={isDay}
         onBuildingSelect={handleBuildingSelect}

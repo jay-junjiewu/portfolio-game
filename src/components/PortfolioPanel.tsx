@@ -222,7 +222,7 @@ const renderContent = (
       return (
         <div className="panel-section">
           {PORTFOLIO_DATA.experience.map((job) => (
-            <div key={job.company} className="experience-card">
+            <div key={`${job.company}-${job.role}-${job.period}`} className="experience-card">
               <h3>{job.role}</h3>
               <p className="muted">
                 {job.companyUrl ? (
@@ -364,7 +364,7 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelPro
                 Close
               </button>
             </div>
-            <div className="panel-body">
+            <div className="panel-body" key={activeKey ?? "closed"}>
               {renderContent(activeKey, projectTab, setProjectTab, onProjectOpen)}
             </div>
           </>

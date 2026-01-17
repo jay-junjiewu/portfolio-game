@@ -242,6 +242,135 @@ body {
   opacity: 1;
 }
 
+.app-shell.night .controls-panel,
+.app-shell.night .portfolio-panel {
+  background: linear-gradient(180deg, rgba(16, 24, 38, 0.95), rgba(16, 24, 38, 0.88));
+  color: #e8f0ff;
+  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.45);
+}
+
+.app-shell.night .ghost-button {
+  border-color: rgba(216, 230, 255, 0.18);
+  background: rgba(16, 24, 38, 0.9);
+  color: #e8f0ff;
+}
+
+.app-shell.night .ghost-button:hover {
+  background: rgba(24, 36, 56, 0.95);
+}
+
+.app-shell.night .project-card,
+.app-shell.night .experience-card,
+.app-shell.night .experience-link-card {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(216, 230, 255, 0.08);
+}
+
+.app-shell.night .contact-card {
+  border-color: rgba(216, 230, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.app-shell.night .contact-card:hover {
+  border-color: rgba(124, 197, 255, 0.6);
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.35);
+}
+
+.app-shell.night .contact-card.static:hover {
+  border-color: rgba(216, 230, 255, 0.12);
+}
+
+.app-shell.night .contact-icon {
+  background: rgba(124, 197, 255, 0.2);
+  color: #9ec8ff;
+}
+
+.app-shell.night .contact-icon.location {
+  background: rgba(125, 211, 252, 0.18);
+  color: #8fd0ff;
+}
+
+.app-shell.night .project-card-heading a {
+  color: #9ec8ff;
+}
+
+.app-shell.night .text-link {
+  color: #9ec8ff;
+}
+
+.app-shell.night .tab {
+  background: rgba(216, 230, 255, 0.12);
+  color: #d8e6ff;
+  box-shadow: inset 0 0 0 1px rgba(216, 230, 255, 0.2);
+}
+
+.app-shell.night .tab.active {
+  background: #1f6fff;
+  color: #f2f6ff;
+  box-shadow: 0 10px 25px rgba(31, 111, 255, 0.35);
+}
+
+.app-shell.night .chip {
+  background: rgba(216, 230, 255, 0.14);
+  color: #e8f0ff;
+}
+
+.app-shell.night .panel-body {
+  scrollbar-color: rgba(124, 197, 255, 0.6) rgba(255, 255, 255, 0.08);
+}
+
+.app-shell.night .panel-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.app-shell.night .panel-body::-webkit-scrollbar-thumb {
+  background: rgba(124, 197, 255, 0.5);
+}
+
+.app-shell.night .muted {
+  color: rgba(216, 230, 255, 0.7);
+}
+
+.app-shell.night .project-detail .project-links .chip {
+  background: rgba(124, 197, 255, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(124, 197, 255, 0.3);
+  color: #d8e6ff;
+}
+
+.app-shell.night .project-detail .project-links .chip:hover {
+  background: rgba(124, 197, 255, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(124, 197, 255, 0.45);
+}
+
+.app-shell.night .carousel-dot {
+  background: rgba(216, 230, 255, 0.35);
+}
+
+.app-shell.night .carousel-dot.active {
+  background: #9ec8ff;
+  box-shadow: 0 0 0 4px rgba(158, 200, 255, 0.3);
+}
+
+.app-shell.night .contact-label,
+.app-shell.night .experience-link-source {
+  color: rgba(216, 230, 255, 0.65);
+}
+
+.app-shell.night .experience-link-title {
+  color: #e8f0ff;
+}
+
+.app-shell.night .experience-company-link {
+  color: #9ec8ff;
+}
+
+.app-shell.night .experience-company-link:hover {
+  color: #d8e6ff;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
 .controls-header {
   display: flex;
   justify-content: space-between;
@@ -323,6 +452,24 @@ body {
   padding-right: 0.3rem;
   flex: 1;
   min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(23, 82, 255, 0.35) rgba(8, 18, 48, 0.08);
+}
+
+.panel-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.panel-body::-webkit-scrollbar-track {
+  background: rgba(8, 18, 48, 0.08);
+  border-radius: 999px;
+}
+
+.panel-body::-webkit-scrollbar-thumb {
+  background: rgba(23, 82, 255, 0.35);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 .panel-section p {
@@ -628,6 +775,17 @@ body {
   color: inherit;
 }
 
+.text-link {
+  color: #1752ff;
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.text-link:hover {
+  border-bottom-color: currentColor;
+}
+
 .skill-group {
   margin-bottom: 1rem;
 }
@@ -791,14 +949,17 @@ body {
 }
 
 .experience-company-link {
-  color: inherit;
+  color: #1c3f7c;
   font-weight: 600;
-  color: #1752ff;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .experience-company-link:hover {
+  color: #1752ff;
   text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
 }
 
 .muted {
