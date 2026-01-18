@@ -43,10 +43,10 @@ const isMobileDevice = () => {
 const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
   const target = new Vector3(0, 4, 0);
   const isMobile = isMobileDevice();
-  const initialRadius = isMobile ? 42 : 32;
+  const initialRadius = isMobile ? 52 : 42;
   const camera = new ArcRotateCamera(
     "city-camera",
-    Math.PI / 4,
+    3* Math.PI / 4,
     1,
     initialRadius,
     target,

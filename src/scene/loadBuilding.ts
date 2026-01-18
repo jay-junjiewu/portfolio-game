@@ -74,6 +74,9 @@ const getBounds = (data: {
   return { min, max };
 };
 
+const BUBBLE_TEXTURE_SCALE = 4;
+const BUBBLE_TEXTURE_SIZE = 256 * BUBBLE_TEXTURE_SCALE;
+
 const createIconBubble = (
   scene: Scene,
   entryId: string,
@@ -82,30 +85,30 @@ const createIconBubble = (
 ) => {
   const texture = new DynamicTexture(
     `${entryId}-bubble-tex`,
-    { width: 256, height: 256 },
+    { width: BUBBLE_TEXTURE_SIZE, height: BUBBLE_TEXTURE_SIZE },
     scene,
     false
   );
   const ctx = texture.getContext() as CanvasRenderingContext2D | null;
   let measured = 0;
   if (ctx) {
-    ctx.clearRect(0, 0, 256, 256);
+    ctx.clearRect(0, 0, BUBBLE_TEXTURE_SIZE, BUBBLE_TEXTURE_SIZE);
     ctx.save();
-    ctx.translate(256, 0);
+    ctx.translate(BUBBLE_TEXTURE_SIZE, 0);
     ctx.scale(-1, 1);
-    ctx.font = "bold 40px 'Space Grotesk', sans-serif";
+    ctx.font = `bold ${40 * BUBBLE_TEXTURE_SCALE}px 'Space Grotesk', sans-serif`;
     measured = ctx.measureText(label).width;
-    const bubbleWidth = Math.min(240, measured + 60);
-    const bubbleHeight = 138;
-    const radius = 40;
-    const x = 128;
-    const y = 110;
+    const bubbleWidth = Math.min(240 * BUBBLE_TEXTURE_SCALE, measured + 60 * BUBBLE_TEXTURE_SCALE);
+    const bubbleHeight = 138 * BUBBLE_TEXTURE_SCALE;
+    const radius = 40 * BUBBLE_TEXTURE_SCALE;
+    const x = 128 * BUBBLE_TEXTURE_SCALE;
+    const y = 110 * BUBBLE_TEXTURE_SCALE;
     const left = x - bubbleWidth / 2;
     const top = y - bubbleHeight / 2;
 
     ctx.fillStyle = "#fdfdfd";
     ctx.strokeStyle = "#1a1a1a";
-    ctx.lineWidth = 9;
+    ctx.lineWidth = 9 * BUBBLE_TEXTURE_SCALE;
     ctx.beginPath();
     ctx.moveTo(left + radius, top);
     ctx.lineTo(left + bubbleWidth - radius, top);
@@ -299,7 +302,10 @@ export const loadBuilding = async (
       labelText
     );
     const minWorldWidth = Math.max(0.9, requestedScale * 0.45);
-    const worldWidth = Math.min(2.4, Math.max(minWorldWidth, (measured / 256) * 1.8));
+    const worldWidth = Math.min(
+      2.4,
+      Math.max(minWorldWidth, (measured / BUBBLE_TEXTURE_SIZE) * 1.8)
+    );
     const worldHeight = worldWidth * 0.84;
     const bubble = MeshBuilder.CreatePlane(
       `${entry.id}-bubble`,
