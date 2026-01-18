@@ -16,6 +16,12 @@ const BabylonCanvas = ({
   onSceneReady,
   onLoadingChange,
 }: BabylonCanvasProps) => {
+  const isMobileDevice = () => {
+    if (typeof window === "undefined") return false;
+    const coarsePointer = window.matchMedia?.("(pointer: coarse)").matches ?? false;
+    const smallViewport = window.matchMedia?.("(max-width: 900px)").matches ?? false;
+    return coarsePointer || smallViewport;
+  };
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const controlsRef = useRef<SceneControls | null>(null);
   const onBuildingSelectRef = useRef(onBuildingSelect);
@@ -35,7 +41,12 @@ const BabylonCanvas = ({
     if (!canvas) return;
 
     onLoadingChangeRef.current?.(true);
-    const engine = new Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+    const engine = new Engine(
+      canvas,
+      true,
+      { preserveDrawingBuffer: true, stencil: true },
+      isMobileDevice()
+    );
     let disposed = false;
 
     (async () => {
