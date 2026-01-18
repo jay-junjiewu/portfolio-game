@@ -74,7 +74,7 @@ body {
 
 .brand-title {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.25rem;
 }
 
 .top-bar.night .brand-title {
@@ -128,10 +128,10 @@ body {
   flex-direction: column;
   gap: 0.6rem;
   background: rgba(5, 10, 20, 0.35);
-  backdrop-filter: blur(3px);
   z-index: 5;
   color: #f2f6ff;
   font-weight: 600;
+  pointer-events: none;
 }
 
 .spinner {

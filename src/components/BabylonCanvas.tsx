@@ -41,6 +41,11 @@ const BabylonCanvas = ({
     (async () => {
       const controls = await createCityScene(engine, canvas, {
         onBuildingSelect: (key) => onBuildingSelectRef.current?.(key),
+        onAssetsLoaded: () => {
+          if (!disposed) {
+            onLoadingChangeRef.current?.(false);
+          }
+        },
       });
       if (disposed) {
         controls.dispose();
@@ -53,7 +58,6 @@ const BabylonCanvas = ({
         controls.scene.render();
       });
       canvas.focus();
-      onLoadingChangeRef.current?.(false);
     })();
 
     const handleResize = () => {

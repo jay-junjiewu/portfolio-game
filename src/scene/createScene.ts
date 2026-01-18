@@ -21,6 +21,7 @@ import { setupPicking } from "./picking";
 
 export type SceneCallbacks = {
   onBuildingSelect: (key: BuildingKey | null) => void;
+  onAssetsLoaded?: () => void;
 };
 
 export type SceneControls = {
@@ -363,10 +364,6 @@ export const createCityScene = async (
   const { hemi, directional, shadowGenerator } = setupLights(scene);
 
   const loadedBuildings: LoadedBuilding[] = [];
-  for (const entry of CITY_LAYOUT) {
-    const building = await loadBuilding(scene, entry, shadowGenerator);
-    loadedBuildings.push(building);
-  }
 
   type AnimationSegment =
     | { type: "move"; start: Vector3; end: Vector3; duration: number }
@@ -387,7 +384,80 @@ export const createCityScene = async (
     basePosition: Vector3;
     loop: boolean;
     rotationOffset: number;
+    startTime: number;
   }> = [];
+
+  let animationObserverActive = false;
+  const ensureAnimationObserver = () => {
+    if (animationObserverActive) return;
+    animationObserverActive = true;
+    scene.onBeforeRenderObservable.add(() => {
+      const now = performance.now() / 1000;
+      animatedDecor.forEach(({ root, segments, totalDuration, loop, basePosition, rotationOffset, startTime }) => {
+        if (!segments.length || totalDuration <= 0) return;
+        const elapsed = now - startTime;
+        if (!loop && elapsed >= totalDuration) {
+          const last = segments[segments.length - 1];
+          const finalPosition =
+            last.type === "pause"
+              ? last.position
+              : last.type === "turn"
+              ? last.end
+              : last.end;
+          root.position.x = finalPosition.x;
+          root.position.z = finalPosition.z;
+          root.position.y = basePosition.y;
+          return;
+        }
+        const cycleTime = loop ? elapsed % totalDuration : Math.min(elapsed, totalDuration);
+        let remaining = cycleTime;
+        for (const segment of segments) {
+          if (remaining <= segment.duration) {
+            const progress = segment.duration > 0 ? remaining / segment.duration : 1;
+            if (segment.type === "pause") {
+              root.position.x = segment.position.x;
+              root.position.z = segment.position.z;
+              root.position.y = basePosition.y;
+              return;
+            }
+            if (segment.type === "turn") {
+              const position = quadraticPoint(segment.start, segment.control, segment.end, progress);
+              const tangent = quadraticTangent(segment.start, segment.control, segment.end, progress);
+              root.position.x = position.x;
+              root.position.z = position.z;
+              root.position.y = basePosition.y;
+              if (tangent.lengthSquared() > 0.0001) {
+                const heading = Math.atan2(tangent.x, tangent.z);
+                root.rotation.y = heading + rotationOffset;
+              }
+              return;
+            }
+            const position = Vector3.Lerp(segment.start, segment.end, progress);
+            const direction = segment.end.subtract(segment.start);
+            root.position.x = position.x;
+            root.position.z = position.z;
+            root.position.y = basePosition.y;
+            if (direction.lengthSquared() > 0.0001) {
+              const heading = Math.atan2(direction.x, direction.z);
+              root.rotation.y = heading + rotationOffset;
+            }
+            return;
+          }
+          remaining -= segment.duration;
+        }
+        const fallback = segments[segments.length - 1];
+        const fallbackPosition =
+          fallback.type === "pause"
+            ? fallback.position
+            : fallback.type === "turn"
+            ? fallback.end
+            : fallback.end;
+        root.position.x = fallbackPosition.x;
+        root.position.z = fallbackPosition.z;
+        root.position.y = basePosition.y;
+      });
+    });
+  };
 
   const quadraticPoint = (start: Vector3, control: Vector3, end: Vector3, t: number) => {
     const oneMinus = 1 - t;
@@ -476,7 +546,20 @@ export const createCityScene = async (
   };
 
   const halfTile = CITY_TILE_SIZE / 2;
-  loadedBuildings.forEach((building) => {
+  let isDayMode = true;
+  const applyDayModeToBuilding = (building: LoadedBuilding, isDay: boolean) => {
+    if (building.glowMesh) {
+      building.glowMesh.isVisible = !isDay;
+    }
+    building.meshes.forEach((mesh) => {
+      const mat = mesh.material as StandardMaterial | null;
+      if (!mat || !mat.emissiveColor) return;
+      const colorValue = isDay ? 0.02 : 0.22;
+      mat.emissiveColor = new Color3(colorValue, colorValue, colorValue);
+    });
+  };
+
+  const registerAnimated = (building: LoadedBuilding) => {
     const sequence = building.entry.animation;
     if (!sequence || sequence.type !== "sequence" || sequence.steps.length === 0) return;
     const basePosition = building.root.position.clone();
@@ -505,77 +588,35 @@ export const createCityScene = async (
       basePosition,
       loop: sequence.loop !== false,
       rotationOffset,
+      startTime: performance.now() / 1000,
     });
-  });
+    ensureAnimationObserver();
+  };
 
-  if (animatedDecor.length) {
-    const startTime = performance.now() / 1000;
-    scene.onBeforeRenderObservable.add(() => {
-      const elapsed = performance.now() / 1000 - startTime;
-      animatedDecor.forEach(({ root, segments, totalDuration, loop, basePosition, rotationOffset }) => {
-        if (!segments.length || totalDuration <= 0) return;
-        if (!loop && elapsed >= totalDuration) {
-          const last = segments[segments.length - 1];
-          const finalPosition =
-            last.type === "pause"
-              ? last.position
-              : last.type === "turn"
-              ? last.end
-              : last.end;
-          root.position.x = finalPosition.x;
-          root.position.z = finalPosition.z;
-          root.position.y = basePosition.y;
-          return;
-        }
-        const cycleTime = loop ? elapsed % totalDuration : Math.min(elapsed, totalDuration);
-        let remaining = cycleTime;
-        for (const segment of segments) {
-          if (remaining <= segment.duration) {
-            const progress = segment.duration > 0 ? remaining / segment.duration : 1;
-            if (segment.type === "pause") {
-              root.position.x = segment.position.x;
-              root.position.z = segment.position.z;
-              root.position.y = basePosition.y;
-              return;
-            }
-            if (segment.type === "turn") {
-              const position = quadraticPoint(segment.start, segment.control, segment.end, progress);
-              const tangent = quadraticTangent(segment.start, segment.control, segment.end, progress);
-              root.position.x = position.x;
-              root.position.z = position.z;
-              root.position.y = basePosition.y;
-              if (tangent.lengthSquared() > 0.0001) {
-                const heading = Math.atan2(tangent.x, tangent.z);
-                root.rotation.y = heading + rotationOffset;
-              }
-              return;
-            }
-            const position = Vector3.Lerp(segment.start, segment.end, progress);
-            const direction = segment.end.subtract(segment.start);
-            root.position.x = position.x;
-            root.position.z = position.z;
-            root.position.y = basePosition.y;
-            if (direction.lengthSquared() > 0.0001) {
-              const heading = Math.atan2(direction.x, direction.z);
-              root.rotation.y = heading + rotationOffset;
-            }
-            return;
-          }
-          remaining -= segment.duration;
-        }
-        const fallback = segments[segments.length - 1];
-        const fallbackPosition =
-          fallback.type === "pause"
-            ? fallback.position
-            : fallback.type === "turn"
-            ? fallback.end
-            : fallback.end;
-        root.position.x = fallbackPosition.x;
-        root.position.z = fallbackPosition.z;
-        root.position.y = basePosition.y;
-      });
-    });
-  }
+  const addLoadedBuilding = (building: LoadedBuilding) => {
+    loadedBuildings.push(building);
+    applyDayModeToBuilding(building, isDayMode);
+    registerAnimated(building);
+  };
+
+  const mainEntries = CITY_LAYOUT.filter((entry) => entry.type === "main");
+  const otherEntries = CITY_LAYOUT.filter((entry) => entry.type !== "main");
+  const mainBuildings = await Promise.all(
+    mainEntries.map((entry) => loadBuilding(scene, entry, shadowGenerator))
+  );
+  mainBuildings.forEach(addLoadedBuilding);
+
+  const loadRemaining = (async () => {
+    const batchSize = 8;
+    for (let i = 0; i < otherEntries.length; i += batchSize) {
+      const batch = otherEntries.slice(i, i + batchSize);
+      const batchBuildings = await Promise.all(
+        batch.map((entry) => loadBuilding(scene, entry, shadowGenerator))
+      );
+      batchBuildings.forEach(addLoadedBuilding);
+    }
+  })();
+  loadRemaining.then(() => callbacks.onAssetsLoaded?.()).catch(() => callbacks.onAssetsLoaded?.());
 
   const disposePicking = setupPicking(scene, loadedBuildings, {
     onSelect: callbacks.onBuildingSelect,
@@ -592,6 +633,7 @@ export const createCityScene = async (
   let orbitAnimationFrame: number | null = null;
 
   const setDayMode = (isDay: boolean) => {
+    isDayMode = isDay;
     scene.clearColor = isDay
       ? new Color4(0.84, 0.93, 0.86, 1)
       : new Color4(0.04, 0.05, 0.08, 1);
@@ -607,17 +649,7 @@ export const createCityScene = async (
       ? Color3.Black()
       : Color3.FromHexString("#111111");
 
-    loadedBuildings.forEach((building) => {
-      if (building.glowMesh) {
-        building.glowMesh.isVisible = !isDay;
-      }
-      building.meshes.forEach((mesh) => {
-        const mat = mesh.material as StandardMaterial | null;
-        if (!mat || !mat.emissiveColor) return;
-        const colorValue = isDay ? 0.02 : 0.22;
-        mat.emissiveColor = new Color3(colorValue, colorValue, colorValue);
-      });
-    });
+    loadedBuildings.forEach((building) => applyDayModeToBuilding(building, isDay));
   };
 
   const focusOnBuilding = (key: BuildingKey | null) => {
