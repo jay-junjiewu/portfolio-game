@@ -14,8 +14,7 @@ import {
   Vector3,
 } from "@babylonjs/core";
 import { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";
-import type { BuildingKey } from "../data/cityLayout";
-import { CITY_LAYOUT, CITY_TILE_SIZE } from "../data/cityLayout";
+import { CITY_LAYOUT, CITY_TILE_SIZE, type BuildingKey, type AnimationSequence } from "../data/cityLayout";
 import type { LoadedBuilding } from "./loadBuilding";
 import { loadBuilding } from "./loadBuilding";
 import { setupPicking } from "./picking";
@@ -367,6 +366,215 @@ export const createCityScene = async (
   for (const entry of CITY_LAYOUT) {
     const building = await loadBuilding(scene, entry, shadowGenerator);
     loadedBuildings.push(building);
+  }
+
+  type AnimationSegment =
+    | { type: "move"; start: Vector3; end: Vector3; duration: number }
+    | { type: "pause"; position: Vector3; duration: number }
+    | {
+        type: "turn";
+        start: Vector3;
+        control: Vector3;
+        end: Vector3;
+        duration: number;
+      };
+
+  const animatedDecor: Array<{
+    root: LoadedBuilding["root"];
+    sequence: AnimationSequence;
+    segments: AnimationSegment[];
+    totalDuration: number;
+    basePosition: Vector3;
+    loop: boolean;
+    rotationOffset: number;
+  }> = [];
+
+  const quadraticPoint = (start: Vector3, control: Vector3, end: Vector3, t: number) => {
+    const oneMinus = 1 - t;
+    const p0 = start.scale(oneMinus * oneMinus);
+    const p1 = control.scale(2 * oneMinus * t);
+    const p2 = end.scale(t * t);
+    return p0.add(p1).add(p2);
+  };
+
+  const quadraticTangent = (start: Vector3, control: Vector3, end: Vector3, t: number) => {
+    const oneMinus = 1 - t;
+    const term1 = control.subtract(start).scale(2 * oneMinus);
+    const term2 = end.subtract(control).scale(2 * t);
+    return term1.add(term2);
+  };
+
+  const estimateQuadraticLength = (start: Vector3, control: Vector3, end: Vector3) => {
+    let length = 0;
+    const steps = 12;
+    let prev = start;
+    for (let i = 1; i <= steps; i += 1) {
+      const t = i / steps;
+      const point = quadraticPoint(start, control, end, t);
+      length += Vector3.Distance(prev, point);
+      prev = point;
+    }
+    return length;
+  };
+
+  const buildSegments = (
+    basePosition: Vector3,
+    sequence: AnimationSequence,
+    halfTile: number
+  ) => {
+    const segments: AnimationSegment[] = [];
+    let cursor = basePosition.clone();
+    const resolvePoint = (
+      point: { x: number; z: number; space?: "layout" | "world" },
+      y: number
+    ) => {
+      const space = point.space ?? "layout";
+      const offset = space === "layout" ? halfTile : 0;
+      return new Vector3(point.x + offset, y, point.z + offset);
+    };
+
+    sequence.steps.forEach((step) => {
+      if (step.type === "pause") {
+        const duration = Math.max(step.duration, 0);
+        if (duration <= 0) return;
+        segments.push({ type: "pause", position: cursor.clone(), duration });
+        return;
+      }
+
+      if (step.type === "move") {
+        const target = resolvePoint(step.target, basePosition.y);
+        const distance = Vector3.Distance(cursor, target);
+        if (distance <= 0.0001) return;
+        const speed = Math.max(step.speed, 0.01);
+        const duration = distance / speed;
+        segments.push({ type: "move", start: cursor.clone(), end: target, duration });
+        cursor = target;
+        return;
+      }
+
+      if (step.type === "turn") {
+        const start = resolvePoint(step.from, basePosition.y);
+        const control = resolvePoint(step.corner, basePosition.y);
+        const end = resolvePoint(step.to, basePosition.y);
+        cursor = start;
+        const length = estimateQuadraticLength(start, control, end);
+        const speed = Math.max(step.speed, 0.01);
+        const duration = length / speed;
+        if (duration <= 0) return;
+        segments.push({
+          type: "turn",
+          start,
+          control,
+          end,
+          duration,
+        });
+        cursor = end;
+      }
+    });
+
+    return segments;
+  };
+
+  const halfTile = CITY_TILE_SIZE / 2;
+  loadedBuildings.forEach((building) => {
+    const sequence = building.entry.animation;
+    if (!sequence || sequence.type !== "sequence" || sequence.steps.length === 0) return;
+    const basePosition = building.root.position.clone();
+    const segments = buildSegments(basePosition, sequence, halfTile);
+    const totalDuration = segments.reduce((sum, seg) => sum + seg.duration, 0);
+    if (totalDuration <= 0) return;
+    const baseRotation = building.entry.rotation?.y ?? 0;
+    const firstSegment = segments.find((seg) => seg.type !== "pause");
+    const initialHeading = (() => {
+      if (!firstSegment) return 0;
+      if (firstSegment.type === "move") {
+        const dir = firstSegment.end.subtract(firstSegment.start);
+        if (dir.lengthSquared() < 0.0001) return 0;
+        return Math.atan2(dir.x, dir.z);
+      }
+      const tangent = quadraticTangent(firstSegment.start, firstSegment.control, firstSegment.end, 0);
+      if (tangent.lengthSquared() < 0.0001) return 0;
+      return Math.atan2(tangent.x, tangent.z);
+    })();
+    const rotationOffset = baseRotation - initialHeading;
+    animatedDecor.push({
+      root: building.root,
+      sequence,
+      segments,
+      totalDuration,
+      basePosition,
+      loop: sequence.loop !== false,
+      rotationOffset,
+    });
+  });
+
+  if (animatedDecor.length) {
+    const startTime = performance.now() / 1000;
+    scene.onBeforeRenderObservable.add(() => {
+      const elapsed = performance.now() / 1000 - startTime;
+      animatedDecor.forEach(({ root, segments, totalDuration, loop, basePosition, rotationOffset }) => {
+        if (!segments.length || totalDuration <= 0) return;
+        if (!loop && elapsed >= totalDuration) {
+          const last = segments[segments.length - 1];
+          const finalPosition =
+            last.type === "pause"
+              ? last.position
+              : last.type === "turn"
+              ? last.end
+              : last.end;
+          root.position.x = finalPosition.x;
+          root.position.z = finalPosition.z;
+          root.position.y = basePosition.y;
+          return;
+        }
+        const cycleTime = loop ? elapsed % totalDuration : Math.min(elapsed, totalDuration);
+        let remaining = cycleTime;
+        for (const segment of segments) {
+          if (remaining <= segment.duration) {
+            const progress = segment.duration > 0 ? remaining / segment.duration : 1;
+            if (segment.type === "pause") {
+              root.position.x = segment.position.x;
+              root.position.z = segment.position.z;
+              root.position.y = basePosition.y;
+              return;
+            }
+            if (segment.type === "turn") {
+              const position = quadraticPoint(segment.start, segment.control, segment.end, progress);
+              const tangent = quadraticTangent(segment.start, segment.control, segment.end, progress);
+              root.position.x = position.x;
+              root.position.z = position.z;
+              root.position.y = basePosition.y;
+              if (tangent.lengthSquared() > 0.0001) {
+                const heading = Math.atan2(tangent.x, tangent.z);
+                root.rotation.y = heading + rotationOffset;
+              }
+              return;
+            }
+            const position = Vector3.Lerp(segment.start, segment.end, progress);
+            const direction = segment.end.subtract(segment.start);
+            root.position.x = position.x;
+            root.position.z = position.z;
+            root.position.y = basePosition.y;
+            if (direction.lengthSquared() > 0.0001) {
+              const heading = Math.atan2(direction.x, direction.z);
+              root.rotation.y = heading + rotationOffset;
+            }
+            return;
+          }
+          remaining -= segment.duration;
+        }
+        const fallback = segments[segments.length - 1];
+        const fallbackPosition =
+          fallback.type === "pause"
+            ? fallback.position
+            : fallback.type === "turn"
+            ? fallback.end
+            : fallback.end;
+        root.position.x = fallbackPosition.x;
+        root.position.z = fallbackPosition.z;
+        root.position.y = basePosition.y;
+      });
+    });
   }
 
   const disposePicking = setupPicking(scene, loadedBuildings, {

@@ -5,6 +5,46 @@ export type BuildingKey =
   | "experience"
   | "contact";
 
+export type AnimationStep =
+  | {
+    type: "move";
+    target: {
+      x: number;
+      z: number;
+      space?: "layout" | "world";
+    };
+    speed: number;
+  }
+  | {
+    type: "pause";
+    duration: number;
+  }
+  | {
+    type: "turn";
+    from: {
+      x: number;
+      z: number;
+      space?: "layout" | "world";
+    };
+    corner: {
+      x: number;
+      z: number;
+      space?: "layout" | "world";
+    };
+    to: {
+      x: number;
+      z: number;
+      space?: "layout" | "world";
+    };
+    speed: number;
+  };
+
+export type AnimationSequence = {
+  type: "sequence";
+  steps: AnimationStep[];
+  loop?: boolean;
+};
+
 export type BasePlacement = {
   id: string;
   name: string;
@@ -12,6 +52,7 @@ export type BasePlacement = {
   position: { x: number; y?: number; z: number };
   targetScale?: number;
   rotation?: { y: number };
+  animation?: AnimationSequence;
   isPortfolio?: boolean;
 };
 
@@ -3843,7 +3884,7 @@ const ROAD_GRID: RoadPlacement[] = [
     modelPath: "roads-models/OBJ format/road-intersection-path.obj",
     position: { x: TILE_SIZE * 8, z: TILE_SIZE * 5 },
     targetScale: TILE_SIZE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -3852,7 +3893,7 @@ const ROAD_GRID: RoadPlacement[] = [
     modelPath: "roads-models/OBJ format/road-end-round.obj",
     position: { x: TILE_SIZE * -7, z: TILE_SIZE * 5 },
     targetScale: TILE_SIZE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -3869,7 +3910,7 @@ const ROAD_GRID: RoadPlacement[] = [
     modelPath: "roads-models/OBJ format/road-crossroad-path.obj",
     position: { x: TILE_SIZE * -5, z: TILE_SIZE * 5 },
     targetScale: TILE_SIZE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -3974,7 +4015,7 @@ const ROAD_GRID: RoadPlacement[] = [
     modelPath: "roads-models/OBJ format/road-end-round.obj",
     position: { x: TILE_SIZE * -7, z: TILE_SIZE * 8 },
     targetScale: TILE_SIZE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -3991,7 +4032,7 @@ const ROAD_GRID: RoadPlacement[] = [
     modelPath: "roads-models/OBJ format/road-intersection-path.obj",
     position: { x: TILE_SIZE * -5, z: TILE_SIZE * 8 },
     targetScale: TILE_SIZE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4123,7 +4164,7 @@ const ROAD_GRID: RoadPlacement[] = [
     modelPath: "roads-models/OBJ format/road-bend-square.obj",
     position: { x: TILE_SIZE * 8, z: TILE_SIZE * 2 },
     targetScale: TILE_SIZE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4188,7 +4229,7 @@ const ROAD_GRID: RoadPlacement[] = [
     modelPath: "roads-models/OBJ format/road-bend.obj",
     position: { x: TILE_SIZE * 4, z: TILE_SIZE * -2 },
     targetScale: TILE_SIZE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4242,7 +4283,7 @@ const ROAD_GRID: RoadPlacement[] = [
     modelPath: "roads-models/OBJ format/road-bend.obj",
     position: { x: TILE_SIZE * 4, z: TILE_SIZE * -8 },
     targetScale: TILE_SIZE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4313,7 +4354,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-a.obj",
     position: { x: TILE_SIZE * -0.66, z: TILE_SIZE * 1 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 2* (Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4348,7 +4389,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-c.obj",
     position: { x: TILE_SIZE * -3.5, z: TILE_SIZE * 1 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4356,7 +4397,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/building-n.obj",
     position: { x: TILE_SIZE * -3.5, z: TILE_SIZE * -0.5 },
-    targetScale: 2*UNIFORM_SCALE,
+    targetScale: 2 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -4365,7 +4406,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "industrial-models/OBJ format/building-a.obj",
     position: { x: TILE_SIZE * 3.5, z: TILE_SIZE * -0.5 },
-    targetScale: 1.8*UNIFORM_SCALE,
+    targetScale: 1.8 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -4374,8 +4415,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "industrial-models/OBJ format/building-b.obj",
     position: { x: TILE_SIZE * 3.5, z: TILE_SIZE * 1 },
-    targetScale: 1.8*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 1.8 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4384,7 +4425,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "industrial-models/OBJ format/building-d.obj",
     position: { x: TILE_SIZE * 5, z: TILE_SIZE * 0.5 },
     targetScale: 1.8 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4393,7 +4434,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "industrial-models/OBJ format/building-c.obj",
     position: { x: TILE_SIZE * 6.4, z: TILE_SIZE * 0.5 },
     targetScale: 2.2 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4402,7 +4443,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "industrial-models/OBJ format/building-r.obj",
     position: { x: TILE_SIZE * 8, z: TILE_SIZE * 0.5 },
     targetScale: 2 * UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4411,7 +4452,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "industrial-models/OBJ format/building-m.obj",
     position: { x: TILE_SIZE * 6, z: TILE_SIZE * -2 },
     targetScale: 2.3 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4420,7 +4461,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "industrial-models/OBJ format/building-m.obj",
     position: { x: TILE_SIZE * 6, z: TILE_SIZE * -4.3 },
     targetScale: 2.3 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4429,7 +4470,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "industrial-models/OBJ format/building-n.obj",
     position: { x: TILE_SIZE * 5.4, z: TILE_SIZE * -7.3 },
     targetScale: 1.8 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4437,8 +4478,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "industrial-models/OBJ format/building-s.obj",
     position: { x: TILE_SIZE * 7.6, z: TILE_SIZE * -1.5 },
-    targetScale: 2*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 2 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4446,8 +4487,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "industrial-models/OBJ format/building-s.obj",
     position: { x: TILE_SIZE * 7.6, z: TILE_SIZE * -3.5 },
-    targetScale: 2*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 2 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4455,8 +4496,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "industrial-models/OBJ format/building-s.obj",
     position: { x: TILE_SIZE * 7.6, z: TILE_SIZE * -5.5 },
-    targetScale: 2*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 2 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4464,8 +4505,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "industrial-models/OBJ format/building-s.obj",
     position: { x: TILE_SIZE * 7.6, z: TILE_SIZE * -7.5 },
-    targetScale: 2*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 2 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4474,7 +4515,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "industrial-models/OBJ format/detail-tank.obj",
     position: { x: TILE_SIZE * 6.8, z: TILE_SIZE * -6 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4483,7 +4524,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "industrial-models/OBJ format/detail-tank.obj",
     position: { x: TILE_SIZE * 6.8, z: TILE_SIZE * -7 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4492,7 +4533,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "industrial-models/OBJ format/detail-tank.obj",
     position: { x: TILE_SIZE * 5, z: TILE_SIZE * -7 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4501,7 +4542,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * 7, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4510,7 +4551,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * 6, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4519,7 +4560,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * 7, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4528,7 +4569,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * 6, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4537,7 +4578,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * 4, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4546,7 +4587,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * 5, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4555,7 +4596,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * 4, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4564,7 +4605,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * 5, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4573,7 +4614,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * 4, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4582,7 +4623,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-t.obj",
     position: { x: TILE_SIZE * 2.5, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4591,7 +4632,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-t.obj",
     position: { x: TILE_SIZE * 2.5, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4600,7 +4641,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-c.obj",
     position: { x: TILE_SIZE * 1.5, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4609,7 +4650,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-c.obj",
     position: { x: TILE_SIZE * 1.5, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4618,7 +4659,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-t.obj",
     position: { x: TILE_SIZE * 0.5, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4627,7 +4668,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-t.obj",
     position: { x: TILE_SIZE * 0.5, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4636,7 +4677,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-c.obj",
     position: { x: TILE_SIZE * -0.5, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4645,7 +4686,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-c.obj",
     position: { x: TILE_SIZE * -0.5, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4654,7 +4695,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-t.obj",
     position: { x: TILE_SIZE * -1.5, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4663,7 +4704,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-t.obj",
     position: { x: TILE_SIZE * -1.5, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4672,7 +4713,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-c.obj",
     position: { x: TILE_SIZE * -2.5, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4681,7 +4722,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-c.obj",
     position: { x: TILE_SIZE * -2.5, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4708,7 +4749,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * -6.25, z: TILE_SIZE * 4 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4717,7 +4758,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * -6.25, z: TILE_SIZE * 3 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4726,7 +4767,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * -7.25, z: TILE_SIZE * 4 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4735,7 +4776,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * -7.25, z: TILE_SIZE * 3 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4744,7 +4785,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * -6.25, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4753,7 +4794,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * -6.25, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4762,7 +4803,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * -7.25, z: TILE_SIZE * 7 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4771,7 +4812,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "suburban-models/OBJ format/building-type-l.obj",
     position: { x: TILE_SIZE * -7.25, z: TILE_SIZE * 6 },
     targetScale: 1.1 * UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4780,7 +4821,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "commerical-models/OBJ format/building-d.obj",
     position: { x: TILE_SIZE * 3.5, z: TILE_SIZE * 4 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4789,7 +4830,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "commerical-models/OBJ format/building-f.obj",
     position: { x: TILE_SIZE * 2.5, z: TILE_SIZE * 4 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4798,7 +4839,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "commerical-models/OBJ format/building-a.obj",
     position: { x: TILE_SIZE * -3.5, z: TILE_SIZE * 4 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4806,8 +4847,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -2.3, z: TILE_SIZE * 3 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4815,8 +4856,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * -3.2, z: TILE_SIZE * 2.7 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4824,8 +4865,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -2.7, z: TILE_SIZE * 3.7 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4833,8 +4874,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -0.7, z: TILE_SIZE * 2.9 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4842,8 +4883,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -0.2, z: TILE_SIZE * 3.2 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4851,8 +4892,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * 1.2, z: TILE_SIZE * 3.8 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4860,8 +4901,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 0.2, z: TILE_SIZE * 4 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4869,8 +4910,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 1.9, z: TILE_SIZE * 2.7 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4878,8 +4919,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * -1.7, z: TILE_SIZE * 3.7 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4887,8 +4928,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * 3.9, z: TILE_SIZE * 2.7 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4896,8 +4937,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * 4.7, z: TILE_SIZE * 2.4 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4905,8 +4946,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 4.2, z: TILE_SIZE * 3.7 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4914,8 +4955,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * 5.4, z: TILE_SIZE * 3.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4923,8 +4964,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 6.4, z: TILE_SIZE * 3.7 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4932,8 +4973,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 6.8, z: TILE_SIZE * 2.7 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4941,8 +4982,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -8.4, z: TILE_SIZE * 2.7 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4950,8 +4991,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -8.4, z: TILE_SIZE * 3.7 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4959,8 +5000,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * -8.2, z: TILE_SIZE * 5.2 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4968,8 +5009,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * -8.4, z: TILE_SIZE * 4.8 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4977,8 +5018,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -8.2, z: TILE_SIZE * 7.2 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4986,8 +5027,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * -7.8, z: TILE_SIZE * 8 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -4995,8 +5036,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 3, z: TILE_SIZE * 6.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5004,8 +5045,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 4.5, z: TILE_SIZE * -1.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5013,8 +5054,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * 4.5, z: TILE_SIZE * -2.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5022,8 +5063,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * 4.5, z: TILE_SIZE * -3.8 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5031,8 +5072,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 4.5, z: TILE_SIZE * -4.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5040,8 +5081,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 4.5, z: TILE_SIZE * -5.8 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5049,8 +5090,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 4.5, z: TILE_SIZE * -8 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5058,8 +5099,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/detail-parasol-b.obj",
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * 3.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5067,8 +5108,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/detail-parasol-b.obj",
     position: { x: TILE_SIZE * 1, z: TILE_SIZE * 3.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5076,8 +5117,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/detail-parasol-b.obj",
     position: { x: TILE_SIZE * 5, z: TILE_SIZE * 3.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5085,8 +5126,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "suburban-models/OBJ format/planter.obj",
     position: { x: TILE_SIZE * 6.5, z: TILE_SIZE * 3.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5094,7 +5135,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/building-k.obj",
     position: { x: TILE_SIZE * -7, z: TILE_SIZE * 0.25 },
-    targetScale: 2*UNIFORM_SCALE,
+    targetScale: 2 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5103,8 +5144,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/building-k.obj",
     position: { x: TILE_SIZE * -6, z: TILE_SIZE * 0.25 },
-    targetScale: 2*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 2 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5112,7 +5153,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/building-j.obj",
     position: { x: TILE_SIZE * -6.5, z: TILE_SIZE * -2 },
-    targetScale: 2*UNIFORM_SCALE,
+    targetScale: 2 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5121,7 +5162,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/building-j.obj",
     position: { x: TILE_SIZE * -6.5, z: TILE_SIZE * -4 },
-    targetScale: 2*UNIFORM_SCALE,
+    targetScale: 2 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5130,7 +5171,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/building-j.obj",
     position: { x: TILE_SIZE * -6.5, z: TILE_SIZE * -6 },
-    targetScale: 2*UNIFORM_SCALE,
+    targetScale: 2 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5140,7 +5181,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-c.obj",
     position: { x: TILE_SIZE * -5, z: TILE_SIZE * -3 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5149,7 +5190,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-d.obj",
     position: { x: TILE_SIZE * -4, z: TILE_SIZE * -3 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5157,8 +5198,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/building-k.obj",
     position: { x: TILE_SIZE * -3.5, z: TILE_SIZE * -7 },
-    targetScale: 2*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 2 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5166,8 +5207,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/building-k.obj",
     position: { x: TILE_SIZE * -3, z: TILE_SIZE * -4.5 },
-    targetScale: 2*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 2 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5184,8 +5225,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "suburban-models/OBJ format/planter.obj",
     position: { x: TILE_SIZE * -4.5, z: TILE_SIZE * -5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5193,8 +5234,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/detail-awning-wide.obj",
     position: { x: TILE_SIZE * -5.2, z: TILE_SIZE * -7.5 },
-    targetScale: 1.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 1.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5202,8 +5243,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * -5.5, z: TILE_SIZE * -4.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5211,8 +5252,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -5.5, z: TILE_SIZE * -4.9 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5220,8 +5261,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * -4, z: TILE_SIZE * -6.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5229,8 +5270,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -4.4, z: TILE_SIZE * -6.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5238,8 +5279,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -6.8, z: TILE_SIZE * -7.5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5247,8 +5288,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "industrial-models/OBJ format/building-t.obj",
     position: { x: TILE_SIZE * 2.8, z: TILE_SIZE * -4.3 },
-    targetScale: 1.5*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 1.5 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5256,8 +5297,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "industrial-models/OBJ format/building-p.obj",
     position: { x: TILE_SIZE * 2.7, z: TILE_SIZE * -5.5 },
-    targetScale: 1.5*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 1.5 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5265,8 +5306,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "industrial-models/OBJ format/building-q.obj",
     position: { x: TILE_SIZE * 2.8, z: TILE_SIZE * -6.9 },
-    targetScale: 1.5*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 1.5 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5274,8 +5315,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "industrial-models/OBJ format/building-g.obj",
     position: { x: TILE_SIZE * 1.2, z: TILE_SIZE * -6.9 },
-    targetScale: 1.5*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 1.5 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5284,7 +5325,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-a.obj",
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * -3 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5293,7 +5334,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "commerical-models/OBJ format/building-skyscraper-b.obj",
     position: { x: TILE_SIZE * 2, z: TILE_SIZE * -3 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5301,8 +5342,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/detail-overhang-wide.obj",
     position: { x: TILE_SIZE * 0.5, z: TILE_SIZE * -2.5 },
-    targetScale: 1.8*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 1.8 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5310,8 +5351,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/detail-overhang-wide.obj",
     position: { x: TILE_SIZE * 0.5, z: TILE_SIZE * -3 },
-    targetScale: 1.8*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 1.8 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5320,7 +5361,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     modelPath: "commerical-models/OBJ format/building-c.obj",
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * -4 },
     targetScale: UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5328,8 +5369,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -1.3, z: TILE_SIZE * -4.9 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5337,8 +5378,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -1.3, z: TILE_SIZE * -5.4 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5346,8 +5387,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -0.9, z: TILE_SIZE * -5.2 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5355,8 +5396,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_020.obj",
     position: { x: TILE_SIZE * -0.1, z: TILE_SIZE * -7.3 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5364,8 +5405,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "tiles-models/roadTile_019.obj",
     position: { x: TILE_SIZE * 1.7, z: TILE_SIZE * -4.3 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5373,8 +5414,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/detail-parasol-b.obj",
     position: { x: TILE_SIZE * 0.5, z: TILE_SIZE * -5 },
-    targetScale: 0.6*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.6 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5382,7 +5423,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -1.55, z: TILE_SIZE * -3 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5391,8 +5432,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -2.45, z: TILE_SIZE * -4 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5400,7 +5441,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -1.55, z: TILE_SIZE * -5 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5409,8 +5450,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -2.45, z: TILE_SIZE * -6 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5418,7 +5459,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -1.55, z: TILE_SIZE * -7 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5427,7 +5468,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 4.45, z: TILE_SIZE * -3 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5436,8 +5477,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 3.55, z: TILE_SIZE * -4 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5445,7 +5486,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 4.45, z: TILE_SIZE * -5 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5454,8 +5495,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 3.55, z: TILE_SIZE * -6 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5463,7 +5504,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 4.45, z: TILE_SIZE * -7 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5472,7 +5513,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -7.55, z: TILE_SIZE * 1 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5481,8 +5522,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -8.45, z: TILE_SIZE * 0 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5490,7 +5531,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -7.55, z: TILE_SIZE * -1 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5499,8 +5540,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -8.45, z: TILE_SIZE * -2 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5508,7 +5549,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -7.55, z: TILE_SIZE * -3 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5517,8 +5558,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -8.45, z: TILE_SIZE * -4 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5526,7 +5567,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -7.55, z: TILE_SIZE * -5 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5535,8 +5576,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -8.45, z: TILE_SIZE * -6 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5544,7 +5585,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -7.55, z: TILE_SIZE * -7 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5553,7 +5594,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -4.55, z: TILE_SIZE * 1 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5562,8 +5603,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -5.45, z: TILE_SIZE * 0 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5571,7 +5612,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -4.55, z: TILE_SIZE * -1 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5580,7 +5621,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -1.55, z: TILE_SIZE * 1 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5589,8 +5630,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -2.45, z: TILE_SIZE * 0 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5598,7 +5639,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -1.55, z: TILE_SIZE * -1 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5607,8 +5648,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 1.55, z: TILE_SIZE * 1 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5616,7 +5657,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 2.45, z: TILE_SIZE * 0 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -5625,8 +5666,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 1.55, z: TILE_SIZE * -1 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5634,8 +5675,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -8.2, z: TILE_SIZE * -8.2 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2.5*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2.5 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5643,8 +5684,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -7, z: TILE_SIZE * -7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5652,8 +5693,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -6, z: TILE_SIZE * -8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5661,8 +5702,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -5, z: TILE_SIZE * -7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5670,8 +5711,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -4, z: TILE_SIZE * -8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5679,8 +5720,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -3, z: TILE_SIZE * -7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5688,8 +5729,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * -7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5697,8 +5738,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 0, z: TILE_SIZE * -8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5706,8 +5747,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 1, z: TILE_SIZE * -7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5715,8 +5756,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 2, z: TILE_SIZE * -8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5724,8 +5765,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 3, z: TILE_SIZE * -7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5733,8 +5774,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -8.15 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 1.5*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 1.5 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5742,8 +5783,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -5, z: TILE_SIZE * -2.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5751,8 +5792,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -3, z: TILE_SIZE * -1.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5760,8 +5801,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * -2.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5769,8 +5810,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 1, z: TILE_SIZE * -1.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5778,8 +5819,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 3, z: TILE_SIZE * -2.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5787,8 +5828,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -7, z: TILE_SIZE * 2.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5796,8 +5837,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -6, z: TILE_SIZE * 1.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5805,8 +5846,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -4, z: TILE_SIZE * 1.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5814,8 +5855,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -3, z: TILE_SIZE * 2.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5823,8 +5864,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * 2.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5832,8 +5873,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 0, z: TILE_SIZE * 1.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5841,8 +5882,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 1, z: TILE_SIZE * 2.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5850,8 +5891,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 3, z: TILE_SIZE * 1.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5859,8 +5900,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 4, z: TILE_SIZE * 2.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5868,8 +5909,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 5, z: TILE_SIZE * 1.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5877,8 +5918,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 6, z: TILE_SIZE * 2.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5886,8 +5927,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 7, z: TILE_SIZE * 1.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5895,8 +5936,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -7.45, z: TILE_SIZE * 5 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5904,8 +5945,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -7.45, z: TILE_SIZE * 8 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5913,8 +5954,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -4, z: TILE_SIZE * 4.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5922,8 +5963,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -3, z: TILE_SIZE * 5.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5931,8 +5972,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -2, z: TILE_SIZE * 4.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5940,8 +5981,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * 5.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5949,8 +5990,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 0, z: TILE_SIZE * 4.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5958,8 +5999,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 1, z: TILE_SIZE * 5.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5967,8 +6008,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 2, z: TILE_SIZE * 4.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5976,8 +6017,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 3, z: TILE_SIZE * 5.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5985,8 +6026,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 4, z: TILE_SIZE * 4.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -5994,8 +6035,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 5, z: TILE_SIZE * 5.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6003,8 +6044,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 6, z: TILE_SIZE * 4.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6012,8 +6053,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 7, z: TILE_SIZE * 5.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6021,8 +6062,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -6, z: TILE_SIZE * 8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6030,8 +6071,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -4, z: TILE_SIZE * 8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6039,8 +6080,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -3, z: TILE_SIZE * 7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6048,8 +6089,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -2, z: TILE_SIZE * 8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6057,8 +6098,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * 7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6066,8 +6107,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 0, z: TILE_SIZE * 8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6075,8 +6116,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 1, z: TILE_SIZE * 7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6084,8 +6125,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 2, z: TILE_SIZE * 8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6093,8 +6134,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 3, z: TILE_SIZE * 7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6102,8 +6143,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 4, z: TILE_SIZE * 8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6111,8 +6152,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 5, z: TILE_SIZE * 7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6120,8 +6161,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 6, z: TILE_SIZE * 8.45 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6129,8 +6170,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 7, z: TILE_SIZE * 7.55 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6138,8 +6179,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 8.15 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 0.5*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 0.5 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6147,8 +6188,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 7.55, z: TILE_SIZE * 3 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6156,7 +6197,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 8.45, z: TILE_SIZE * 4 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6165,8 +6206,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 7.55, z: TILE_SIZE * 6 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6174,7 +6215,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * 8.45, z: TILE_SIZE * 7 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6183,7 +6224,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -4.55, z: TILE_SIZE * 3 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6192,8 +6233,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -5.45, z: TILE_SIZE * 4 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6201,7 +6242,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -4.55, z: TILE_SIZE * 6 },
-    targetScale: 0.3*UNIFORM_SCALE,
+    targetScale: 0.3 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6210,34 +6251,34 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "roads-models/OBJ format/light-curved.obj",
     position: { x: TILE_SIZE * -5.45, z: TILE_SIZE * 7 },
-    targetScale: 0.3*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.3 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/ambulance.obj",
-    position: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -1 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    position: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -1 },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/delivery-flat.obj",
-    position: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 0 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    position: { x: TILE_SIZE * -1.85, z: TILE_SIZE * 0 },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/firetruck.obj",
-    position: { x: TILE_SIZE * 1, z: TILE_SIZE * 1.85 },
-    targetScale: 0.75*UNIFORM_SCALE,
+    position: { x: TILE_SIZE * 1, z: TILE_SIZE * 2.15 },
+    targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6245,8 +6286,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/garbage-truck.obj",
-    position: { x: TILE_SIZE * 5, z: TILE_SIZE * 4.85 },
-    targetScale: 0.75*UNIFORM_SCALE,
+    position: { x: TILE_SIZE * 5, z: TILE_SIZE * 5.15 },
+    targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6254,8 +6295,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/hatchback-sports.obj",
-    position: { x: TILE_SIZE * -2, z: TILE_SIZE * 4.85 },
-    targetScale: 0.75*UNIFORM_SCALE,
+    position: { x: TILE_SIZE * -2, z: TILE_SIZE * 5.15 },
+    targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6263,9 +6304,9 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/police.obj",
-    position: { x: TILE_SIZE * 1, z: TILE_SIZE * 5.15 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    position: { x: TILE_SIZE * 1, z: TILE_SIZE * 4.85 },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6273,8 +6314,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "car-models/OBJ format/race-future.obj",
     position: { x: TILE_SIZE * 1, z: TILE_SIZE * -8.15 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6282,8 +6323,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "car-models/OBJ format/race.obj",
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * -8.15 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6291,7 +6332,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "car-models/OBJ format/sedan.obj",
     position: { x: TILE_SIZE * -6, z: TILE_SIZE * -7.85 },
-    targetScale: 0.65*UNIFORM_SCALE,
+    targetScale: 0.65 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6300,17 +6341,17 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "car-models/OBJ format/sedan-sports.obj",
     position: { x: TILE_SIZE * -4, z: TILE_SIZE * -8.15 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/suv-luxury.obj",
-    position: { x: TILE_SIZE * 3, z: TILE_SIZE * 8.15 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 3*(Math.PI / 2) },
+    position: { x: TILE_SIZE * 3, z: TILE_SIZE * 7.85 },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6318,8 +6359,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "car-models/OBJ format/suv.obj",
     position: { x: TILE_SIZE * -8.15, z: TILE_SIZE * -6 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6327,8 +6368,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "car-models/OBJ format/taxi.obj",
     position: { x: TILE_SIZE * -7.85, z: TILE_SIZE * -1 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6336,8 +6377,8 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "car-models/OBJ format/tractor-police.obj",
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * -6.5 },
-    targetScale: 0.9*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.9 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6345,7 +6386,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "car-models/OBJ format/tractor-shovel.obj",
     position: { x: TILE_SIZE * 5.5, z: TILE_SIZE * -8 },
-    targetScale: 0.9*UNIFORM_SCALE,
+    targetScale: 0.9 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6354,7 +6395,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "car-models/OBJ format/tractor.obj",
     position: { x: TILE_SIZE * -4.5, z: TILE_SIZE * -4 },
-    targetScale: 0.9*UNIFORM_SCALE,
+    targetScale: 0.9 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6362,9 +6403,9 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/truck-flat.obj",
-    position: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 0 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 0*(Math.PI / 2) },
+    position: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 0 },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 0 * (Math.PI / 2) },
   },
   {
     id: "",
@@ -6372,17 +6413,74 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "car-models/OBJ format/truck.obj",
     position: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -5 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/van.obj",
-    position: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -5 },
-    targetScale: 0.75*UNIFORM_SCALE,
-    rotation: { y: 2*(Math.PI / 2) },
+    position: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -5 },
+    targetScale: 0.75 * UNIFORM_SCALE,
+    rotation: { y: 2 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -7.75, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -7.75, space: "layout" },
+          corner: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -8.15, space: "layout" },
+          to: { x: TILE_SIZE * -2.25, z: TILE_SIZE * -8.15, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -7.2, z: TILE_SIZE * -8.15, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * -7.2, z: TILE_SIZE * -8.15, space: "layout" },
+          corner: { x: TILE_SIZE * -8.15, z: TILE_SIZE * -8.15, space: "layout" },
+          to: { x: TILE_SIZE * -8.15, z: TILE_SIZE * -7.2, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -8.15, z: TILE_SIZE * 1.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * -8.15, z: TILE_SIZE * 1.45, space: "layout" },
+          corner: { x: TILE_SIZE * -8.15, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * -7.45, z: TILE_SIZE * 2.15, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -5.25, z: TILE_SIZE * 2.15, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -5.25, z: TILE_SIZE * 2.15, space: "layout" },
+          corner: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 1.75, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.45, space: "layout" },
+          corner: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * -4.45, z: TILE_SIZE * -1.85, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -2.9, z: TILE_SIZE * -1.85, space: "layout" }, speed: 3 },
+        { type: "pause", duration: 2 },
+        { type: "move", target: { x: TILE_SIZE * -2.25, z: TILE_SIZE * -1.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -2.25, z: TILE_SIZE * -1.85, space: "layout" },
+          corner: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -2.25, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -5, space: "layout" }, speed: 3 },
+      ],
+    },
   },
 ];
 
