@@ -52,7 +52,11 @@ export const setupPicking = (
 
   let hovered: LoadedBuilding | null = null;
   let lastSelectionAt = 0;
-  const tapDistanceSq = 24 * 24;
+  const isCoarsePointer =
+    typeof window !== "undefined" &&
+    (window.matchMedia?.("(pointer: coarse)").matches ?? false);
+  const tapDistancePx = isCoarsePointer ? 48 : 24;
+  const tapDistanceSq = tapDistancePx * tapDistancePx;
   const activeTouchPointers = new Set<number>();
   let touchStartId: number | null = null;
   let touchStartX = 0;
@@ -66,7 +70,9 @@ export const setupPicking = (
       return { x: scene.pointerX, y: scene.pointerY };
     }
     const rect = canvas.getBoundingClientRect();
-    return { x: clientX - rect.left, y: clientY - rect.top };
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
   };
 
   const pickAtPointer = (pointerInfo?: PointerInfo, event?: PointerEvent) => {
