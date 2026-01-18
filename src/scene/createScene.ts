@@ -33,13 +33,22 @@ export type SceneControls = {
   dispose: () => void;
 };
 
+const isMobileDevice = () => {
+  if (typeof window === "undefined") return false;
+  const coarsePointer = window.matchMedia?.("(pointer: coarse)").matches ?? false;
+  const smallViewport = window.matchMedia?.("(max-width: 900px)").matches ?? false;
+  return coarsePointer || smallViewport;
+};
+
 const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
   const target = new Vector3(0, 4, 0);
+  const isMobile = isMobileDevice();
+  const initialRadius = isMobile ? 42 : 32;
   const camera = new ArcRotateCamera(
     "city-camera",
     Math.PI / 4,
     1,
-    32,
+    initialRadius,
     target,
     scene
   );
@@ -62,7 +71,7 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
   pointerInput.buttons = [0];
   pointerInput.angularSensibilityX = 10000;
   pointerInput.angularSensibilityY = 10000;
-  pointerInput.panningSensibility = 450;
+  pointerInput.panningSensibility = isMobile ? 240 : 450;
   pointerInput.pinchZoom = true;
   pointerInput.multiTouchPanning = false;
   pointerInput.multiTouchPanAndZoom = false;

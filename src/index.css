@@ -1193,6 +1193,11 @@ body {
     transform: translateY(110%);
     width: 100%;
   }
+  .portfolio-panel.compact {
+    bottom: 0;
+    height: 80vh;
+    max-height: 80vh;
+  }
   .portfolio-panel.open {
     transform: translateY(0);
   }
