@@ -76,6 +76,19 @@ export const PORTFOLIO_DATA: PortfolioContent = {
       githubUrl: "https://github.com/jay-junjiewu/portfolio-game"
     },
     {
+      title: "Vinoos Website (Freelance)",
+      category: "software",
+      date: "May 2025",
+      description:
+        "I built a responsive product catalog website for a fish tank company using React and modern JavaScript practices, focusing on component-based architecture and reusable UI patterns. The site allows visitors to easily browse and view the company's products with an emphasis on high-quality visual presentation. For the database, I integrated Supabase for backend services to handle image storage.",
+      stack: [
+        "React", "JavaScript", "Supabase", "Responsive Design", "Component-Based Architecture",
+        "UI/UX Principles", "Git"
+      ],
+      image: "/assets/vinoos/website_thumbnail.png",
+      githubUrl: "https://github.com/jay-junjiewu/Vinoos"
+    },
+    {
       title: "RankIt Website (Hackathon)",
       category: "software",
       date: "March 24th - 26th 2025",
@@ -101,16 +114,25 @@ export const PORTFOLIO_DATA: PortfolioContent = {
     {
       title: "Guitar Power Amplifier",
       category: "electrical",
-      date: "September - December 2024",
+      date: "September 2024 - December 2024",
       description:
         "A guitar power amplifier for loudspeakers that delivers clear, high-quality audio with optimal efficiency. It takes weak stereo signals from audio jacks or microphones, amplifies them, and preserves signal integrity while minimizing total harmonic distortion (THD). The design features a multi-stage cascaded approach with separate stages for signal gain and power output, offering precise control over both audio clarity and efficiency.",
       stack: ["Power Electronics", "PCB Design", "KiCad"],
       image: "/assets/guitar-power-amplifier/3D1.png",
     },
     {
+      title: "Sunswift Racing: MPPT Project",
+      category: "electrical",
+      date: "September 2023 - December 2024",
+      description:
+        "I worked on an electric vehicle that set a Guinness World Record and won the 2023 Bridgestone World Solar Challenge. As the project lead for the Energy Systems Department, I was in charge of the MPPT (Maximum Power Point Tracking) project.",
+      stack: ["Power Distribution", "Power Electronics", "Altium", "Team Leadership", "Project Management"],
+      image: "/assets/sunswift/SR7.jpg",
+    },
+    {
       title: "Ambient Sound Monitor System",
       category: "electrical",
-      date: "May - August 2024",
+      date: "May 2024 - August 2024",
       description:
         "This project is designed for users who may struggle to stay aware of their surroundings or frequently operate in noisy environments. It leverages advanced real-time processing to detect key sounds and deliver alerts through haptic and visual feedback, helping users stay aware in such environments.",
       stack: ["C", "FreeRTOS", "Digital Signal Processing", "Embedded Firmware"],

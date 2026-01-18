@@ -4,6 +4,7 @@ import { PORTFOLIO_DATA, projectSlug } from "../data/portfolioData";
 import AmbientSoundMonitorSystemDetails from "./projects/AmbientSoundMonitorSystemDetails";
 import AudioEqualiserDetails from "./projects/AudioEqualiserDetails";
 import GuitarPowerAmplifierDetails from "./projects/GuitarPowerAmplifierDetails";
+import SunswiftDetails from "./projects/SunswiftDetails";
 
 type ProjectPanelProps = {
   onClose: () => void;
@@ -26,6 +27,8 @@ const ProjectPanel = ({ onClose }: ProjectPanelProps) => {
         return <GuitarPowerAmplifierDetails />;
       case "ambient-sound-monitor-system":
         return <AmbientSoundMonitorSystemDetails />;
+      case "sunswift-racing-mppt-project":
+        return <SunswiftDetails />;
       default:
         if (!project) return null;
         return (

@@ -342,6 +342,17 @@ body {
   box-shadow: inset 0 0 0 1px rgba(124, 197, 255, 0.45);
 }
 
+.app-shell.night .pdf-link {
+  border-color: rgba(216, 230, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #d8e6ff;
+}
+
+.app-shell.night .pdf-link:hover {
+  border-color: rgba(124, 197, 255, 0.6);
+  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.35);
+}
+
 .app-shell.night .carousel-dot {
   background: rgba(216, 230, 255, 0.35);
 }
@@ -710,6 +721,29 @@ body {
 .project-detail .project-links .chip:hover {
   background: rgba(23, 82, 255, 0.12);
   box-shadow: inset 0 0 0 1px rgba(23, 82, 255, 0.25);
+}
+
+.pdf-container {
+  display: flex;
+  justify-content: center;
+  margin: 0.6rem 0;
+}
+
+.pdf-link {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(16, 37, 72, 0.18);
+  background: rgba(8, 18, 48, 0.06);
+  color: #1c3f7c;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.pdf-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(23, 82, 255, 0.35);
+  box-shadow: 0 10px 18px rgba(12, 22, 42, 0.12);
 }
 
 .project-tabs {
@@ -1155,7 +1189,7 @@ body {
     left: 0;
     right: 0;
     border-radius: 24px 24px 0 0;
-    height: 70vh;
+    height: 90vh;
     transform: translateY(110%);
     width: 100%;
   }
@@ -1181,5 +1215,13 @@ body {
 
   .experience-link-title {
     white-space: normal;
+  }
+
+  .project-card-wide {
+    grid-template-columns: 1fr;
+  }
+
+  .project-thumb {
+    width: 100%;
   }
 }
