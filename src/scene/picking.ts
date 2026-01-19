@@ -59,8 +59,8 @@ export const setupPicking = (
   const tapDistanceSq = tapDistancePx * tapDistancePx;
   const activeTouchPointers = new Set<number>();
   let touchStartId: number | null = null;
-  let touchStartX = 0;
-  let touchStartY = 0;
+  let touchStartClientX = 0;
+  let touchStartClientY = 0;
   let touchMoved = false;
   let touchStartBuilding: LoadedBuilding | null = null;
 
@@ -152,10 +152,9 @@ export const setupPicking = (
     }
     activeTouchPointers.add(event.pointerId);
     if (activeTouchPointers.size === 1) {
-      const start = getCanvasPosition(event.clientX, event.clientY);
       touchStartId = event.pointerId;
-      touchStartX = start.x;
-      touchStartY = start.y;
+      touchStartClientX = event.clientX;
+      touchStartClientY = event.clientY;
       touchMoved = false;
       touchStartBuilding = pickAtPointer(undefined, event);
     } else {
@@ -171,9 +170,8 @@ export const setupPicking = (
     if (event.pointerId !== touchStartId) {
       return;
     }
-    const current = getCanvasPosition(event.clientX, event.clientY);
-    const dx = current.x - touchStartX;
-    const dy = current.y - touchStartY;
+    const dx = event.clientX - touchStartClientX;
+    const dy = event.clientY - touchStartClientY;
     if (dx * dx + dy * dy > tapDistanceSq) {
       touchMoved = true;
       touchStartBuilding = null;
