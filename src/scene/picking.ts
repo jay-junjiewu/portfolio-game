@@ -53,7 +53,7 @@ export const setupPicking = (
   let hovered: LoadedBuilding | null = null;
   let lastSelectionAt = 0;
   let lastTouchAt = 0;
-  const ghostClickWindowMs = 700;
+  const ghostClickWindowMs = 10;
   const isCoarsePointer =
     typeof window !== "undefined" &&
     (window.matchMedia?.("(pointer: coarse)").matches ?? false);
