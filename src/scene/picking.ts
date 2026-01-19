@@ -60,12 +60,6 @@ export const setupPicking = (
   const supportsPointerEvents = typeof window !== "undefined" && "PointerEvent" in window;
   const tapDistancePx = isCoarsePointer ? 48 : 24;
   const tapDistanceSq = tapDistancePx * tapDistancePx;
-  const activeTouchPointers = new Set<number>();
-  let touchStartId: number | null = null;
-  let touchStartClientX = 0;
-  let touchStartClientY = 0;
-  let touchMoved = false;
-  let touchStartBuilding: LoadedBuilding | null = null;
 
   const getCanvasPosition = (clientX: number, clientY: number) => {
     const canvas = scene.getEngine().getRenderingCanvas();
@@ -124,72 +118,36 @@ export const setupPicking = (
     const event = pointerInfo.event as PointerEvent;
     const isTouch = isTouchPointer(event);
     switch (pointerInfo.type) {
-      case PointerEventTypes.POINTERDOWN: {
-        if (!isTouch) {
-          break;
-        }
-        activeTouchPointers.add(event.pointerId);
-        if (activeTouchPointers.size === 1) {
-          touchStartId = event.pointerId;
-          touchStartClientX = event.clientX;
-          touchStartClientY = event.clientY;
-          touchMoved = false;
-          touchStartBuilding = pickAtPointer(pointerInfo, event);
-        } else {
-          touchMoved = true;
-          touchStartBuilding = null;
-        }
-        break;
-      }
       case PointerEventTypes.POINTERMOVE: {
         if (isTouch) {
-          if (event.pointerId !== touchStartId) {
-            return;
-          }
-          const dx = event.clientX - touchStartClientX;
-          const dy = event.clientY - touchStartClientY;
-          if (dx * dx + dy * dy > tapDistanceSq) {
-            touchMoved = true;
-            touchStartBuilding = null;
-          }
           return;
         }
         const building = pickAtPointer();
         handleHoverChange(building);
         break;
       }
-      case PointerEventTypes.POINTERUP: {
-        if (isTouch) {
-          const isPrimaryTouch = event.pointerId === touchStartId;
-          activeTouchPointers.delete(event.pointerId);
-          if (isPrimaryTouch) {
-            const shouldTap = !touchMoved && activeTouchPointers.size === 0;
-            const building = touchStartBuilding ?? pickAtPointer(pointerInfo, event);
-            touchStartId = null;
-            touchMoved = false;
-            touchStartBuilding = null;
-            if (shouldTap) {
-              handleHoverChange(building);
-              selectBuilding(building);
-            }
-          }
-          if (activeTouchPointers.size === 0) {
-            touchStartId = null;
-            touchMoved = false;
-            touchStartBuilding = null;
-          }
-          lastTouchAt = Date.now();
-          return;
-        }
+      case PointerEventTypes.POINTERTAP: {
         if (event.pointerType === "mouse" && Date.now() - lastTouchAt < ghostClickWindowMs) {
           return;
         }
-        if (event.pointerType === "mouse" && event.button !== 0) {
+        const building = pickAtPointer(pointerInfo, event);
+        if (isTouch) {
+          handleHoverChange(building);
+          lastTouchAt = Date.now();
+        }
+        selectBuilding(building);
+        break;
+      }
+      case PointerEventTypes.POINTERDOUBLETAP: {
+        if (event.pointerType === "mouse" && Date.now() - lastTouchAt < ghostClickWindowMs) {
           return;
         }
         const building = pickAtPointer(pointerInfo, event);
-        const clickCount = event.detail && event.detail > 0 ? event.detail : 1;
-        selectBuilding(building, clickCount);
+        if (isTouch) {
+          handleHoverChange(building);
+          lastTouchAt = Date.now();
+        }
+        selectBuilding(building, 2);
         break;
       }
       default:
@@ -261,6 +219,7 @@ export const setupPicking = (
     const building = pickInfo?.pickedMesh
       ? findBuildingFromMesh(pickInfo.pickedMesh, buildingMap)
       : null;
+    handleHoverChange(building);
     selectBuilding(building);
     lastTouchAt = Date.now();
     resetFallbackTouch();
