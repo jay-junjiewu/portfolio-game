@@ -1,7 +1,7 @@
 import type { BuildingKey } from "../data/cityLayout";
 import { CITY_LAYOUT } from "../data/cityLayout";
 import { PANEL_TITLES, PORTFOLIO_DATA, projectSlug, type ProjectCategory } from "../data/portfolioData";
-import { useEffect, useState, type KeyboardEvent, type MouseEvent, type ReactElement } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactElement } from "react";
 
 type PortfolioPanelProps = {
   activeKey: BuildingKey | null;
@@ -338,9 +338,18 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelPro
   const [projectTab, setProjectTab] = useState<ProjectCategory>(readProjectCategory);
   const isOpen = Boolean(activeKey);
   const isCompact = activeKey === "about" || activeKey === "skills" || activeKey === "contact";
+  const openAtRef = useRef<number | null>(null);
   const building = CITY_LAYOUT.find(
     (entry) => entry.type === "main" && entry.key === activeKey
   );
+
+  useEffect(() => {
+    if (activeKey) {
+      openAtRef.current = Date.now();
+    } else {
+      openAtRef.current = null;
+    }
+  }, [activeKey]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -350,6 +359,13 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelPro
       return;
     }
   }, [projectTab]);
+
+  const handleOverlayClick = () => {
+    if (openAtRef.current && Date.now() - openAtRef.current < 50) {
+      return;
+    }
+    onClose();
+  };
 
   return (
     <>
@@ -374,7 +390,7 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelPro
           </div>
         )}
       </aside>
-      <div className={`panel-overlay ${isOpen ? "visible" : ""}`} onClick={onClose} />
+      <div className={`panel-overlay ${isOpen ? "visible" : ""}`} onClick={handleOverlayClick} />
     </>
   );
 };
