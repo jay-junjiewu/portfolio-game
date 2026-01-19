@@ -89,6 +89,11 @@ export const setupPicking = (
 
   const isTouchPointer = (event: PointerEvent) =>
     event.pointerType === "touch" || event.pointerType === "pen";
+  const isTouchLikeEvent = (event: PointerEvent) => {
+    if (isTouchPointer(event)) return true;
+    return Boolean((event as PointerEvent & { sourceCapabilities?: { firesTouchEvents?: boolean } })
+      .sourceCapabilities?.firesTouchEvents);
+  };
 
   const selectBuilding = (building: LoadedBuilding | null, clickCount = 1) => {
     if (building && building.entry.type === "main") {
@@ -116,7 +121,7 @@ export const setupPicking = (
 
   const observer = scene.onPointerObservable.add((pointerInfo) => {
     const event = pointerInfo.event as PointerEvent;
-    const isTouch = isTouchPointer(event);
+    const isTouch = isTouchLikeEvent(event);
     switch (pointerInfo.type) {
       case PointerEventTypes.POINTERMOVE: {
         if (isTouch) {
@@ -127,7 +132,7 @@ export const setupPicking = (
         break;
       }
       case PointerEventTypes.POINTERTAP: {
-        if (event.pointerType === "mouse" && Date.now() - lastTouchAt < ghostClickWindowMs) {
+        if (!isTouch && Date.now() - lastTouchAt < ghostClickWindowMs) {
           return;
         }
         const building = pickAtPointer(pointerInfo, event);
@@ -139,7 +144,7 @@ export const setupPicking = (
         break;
       }
       case PointerEventTypes.POINTERDOUBLETAP: {
-        if (event.pointerType === "mouse" && Date.now() - lastTouchAt < ghostClickWindowMs) {
+        if (!isTouch && Date.now() - lastTouchAt < ghostClickWindowMs) {
           return;
         }
         const building = pickAtPointer(pointerInfo, event);
