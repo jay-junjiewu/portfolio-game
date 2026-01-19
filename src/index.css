@@ -1138,6 +1138,9 @@ body {
     position: relative;
     width: 100%;
   }
+  .top-bar-row {
+    position: relative;
+  }
   .nav-links {
     display: none;
     width: 100%;
@@ -1158,6 +1161,13 @@ body {
   }
   .hamburger {
     display: flex;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0.6rem 0.4rem;
+    margin-left: 0;
   }
   .orientation-widget {
     right: 0.75rem;
