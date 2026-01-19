@@ -52,6 +52,8 @@ export const setupPicking = (
 
   let hovered: LoadedBuilding | null = null;
   let lastSelectionAt = 0;
+  let lastTouchAt = 0;
+  const ghostClickWindowMs = 700;
   const isCoarsePointer =
     typeof window !== "undefined" &&
     (window.matchMedia?.("(pointer: coarse)").matches ?? false);
@@ -176,6 +178,10 @@ export const setupPicking = (
             touchMoved = false;
             touchStartBuilding = null;
           }
+          lastTouchAt = Date.now();
+          return;
+        }
+        if (event.pointerType === "mouse" && Date.now() - lastTouchAt < ghostClickWindowMs) {
           return;
         }
         if (event.pointerType === "mouse" && event.button !== 0) {
@@ -256,6 +262,7 @@ export const setupPicking = (
       ? findBuildingFromMesh(pickInfo.pickedMesh, buildingMap)
       : null;
     selectBuilding(building);
+    lastTouchAt = Date.now();
     resetFallbackTouch();
   };
 
