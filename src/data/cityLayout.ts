@@ -81,9 +81,9 @@ const MAIN_BUILDINGS: BuildingPlacement[] = [
     id: "about",
     type: "main",
     key: "about",
-    name: "Studio Pavilion",
-    modelPath: "commerical-models/OBJ format/building-skyscraper-d.obj",
-    position: { x: 0, z: 0 },
+    name: "",
+    modelPath: "commerical-models/OBJ format/building-skyscraper-a.obj",
+    position: { x: TILE_SIZE * 3, z: TILE_SIZE * 3 },
     targetScale: UNIFORM_SCALE,
     isPortfolio: true,
   },
@@ -91,9 +91,9 @@ const MAIN_BUILDINGS: BuildingPlacement[] = [
     id: "projects",
     type: "main",
     key: "projects",
-    name: "Innovation Arcade",
-    modelPath: "commerical-models/OBJ format/building-skyscraper-a.obj",
-    position: { x: TILE_SIZE * 3, z: TILE_SIZE * 3 },
+    name: "",
+    modelPath: "commerical-models/OBJ format/building-skyscraper-d.obj",
+    position: { x: TILE_SIZE * 0, z: TILE_SIZE * 0 },
     targetScale: UNIFORM_SCALE,
     isPortfolio: true,
   },
@@ -101,9 +101,9 @@ const MAIN_BUILDINGS: BuildingPlacement[] = [
     id: "skills",
     type: "main",
     key: "skills",
-    name: "Learning Tower",
-    modelPath: "commerical-models/OBJ format/building-skyscraper-b.obj",
-    position: { x: TILE_SIZE * -4, z: TILE_SIZE * 3 },
+    name: "",
+    modelPath: "commerical-models/OBJ format/building-skyscraper-c.obj",
+    position: { x: TILE_SIZE * 3, z: TILE_SIZE * -3 },
     targetScale: UNIFORM_SCALE,
     isPortfolio: true,
   },
@@ -111,9 +111,9 @@ const MAIN_BUILDINGS: BuildingPlacement[] = [
     id: "experience",
     type: "main",
     key: "experience",
-    name: "Experience Exchange",
-    modelPath: "commerical-models/OBJ format/building-skyscraper-c.obj",
-    position: { x: TILE_SIZE * 3, z: TILE_SIZE * -3 },
+    name: "",
+    modelPath: "commerical-models/OBJ format/building-skyscraper-b.obj",
+    position: { x: TILE_SIZE * -4, z: TILE_SIZE * 3 },
     targetScale: UNIFORM_SCALE,
     isPortfolio: true,
   },
@@ -121,7 +121,7 @@ const MAIN_BUILDINGS: BuildingPlacement[] = [
     id: "contact",
     type: "main",
     key: "contact",
-    name: "Signal Center",
+    name: "",
     modelPath: "commerical-models/OBJ format/building-skyscraper-e.obj",
     position: { x: TILE_SIZE * -3, z: TILE_SIZE * -3 },
     targetScale: UNIFORM_SCALE,
@@ -6316,6 +6316,93 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     position: { x: TILE_SIZE * 1, z: TILE_SIZE * -8.15 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: 3 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * -1.75, z: TILE_SIZE * -8.15, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -1.75, z: TILE_SIZE * -8.15, space: "layout" },
+          corner: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -8.15, space: "layout" },
+          to: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -7.75, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 1.75, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 1.75, space: "layout" },
+          corner: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * -2.55, z: TILE_SIZE * 2.15, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 2.15, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 2.15, space: "layout" },
+          corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 2.55, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.75, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.75, space: "layout" },
+          corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 5.15, space: "layout" },
+          to: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 5.15, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 5.15, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 5.15, space: "layout" },
+          corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 5.15, space: "layout" },
+          to: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 4.75, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 2.25, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 2.25, space: "layout" },
+          corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 1.85, space: "layout" },
+          to: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 1.85, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 2.55, z: TILE_SIZE * 1.85, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 2.55, z: TILE_SIZE * 1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.85, space: "layout" },
+          to: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.45, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" },
+          corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 2.55, z: TILE_SIZE * -1.85, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -2.55, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" },
+          corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -8.15, space: "layout" },
+          to: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -8.15, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 1, z: TILE_SIZE * -8.15, space: "layout" }, speed: 10 },
+      ],
+    },
   },
   {
     id: "",
@@ -6325,6 +6412,93 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     position: { x: TILE_SIZE * -1, z: TILE_SIZE * -8.15 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: 3 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * -1.75, z: TILE_SIZE * -8.15, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -1.75, z: TILE_SIZE * -8.15, space: "layout" },
+          corner: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -8.15, space: "layout" },
+          to: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -7.75, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 1.75, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 1.75, space: "layout" },
+          corner: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * -2.55, z: TILE_SIZE * 2.15, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 2.15, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 2.15, space: "layout" },
+          corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 2.55, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.75, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.75, space: "layout" },
+          corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 5.15, space: "layout" },
+          to: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 5.15, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 5.15, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 5.15, space: "layout" },
+          corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 5.15, space: "layout" },
+          to: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 4.75, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 2.25, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 2.25, space: "layout" },
+          corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 1.85, space: "layout" },
+          to: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 1.85, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 2.55, z: TILE_SIZE * 1.85, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 2.55, z: TILE_SIZE * 1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.85, space: "layout" },
+          to: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.45, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" },
+          corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 2.55, z: TILE_SIZE * -1.85, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -2.55, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" }, speed: 10 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" },
+          corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -8.15, space: "layout" },
+          to: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -8.15, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * -1, z: TILE_SIZE * -8.15, space: "layout" }, speed: 10 },
+      ],
+    },
   },
   {
     id: "",
@@ -6343,6 +6517,61 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     position: { x: TILE_SIZE * -4, z: TILE_SIZE * -8.15 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: 3 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * -7.2, z: TILE_SIZE * -8.15, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * -7.2, z: TILE_SIZE * -8.15, space: "layout" },
+          corner: { x: TILE_SIZE * -8.15, z: TILE_SIZE * -8.15, space: "layout" },
+          to: { x: TILE_SIZE * -8.15, z: TILE_SIZE * -7.2, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -8.15, z: TILE_SIZE * 1.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * -8.15, z: TILE_SIZE * 1.45, space: "layout" },
+          corner: { x: TILE_SIZE * -8.15, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * -7.45, z: TILE_SIZE * 2.15, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 1.75, z: TILE_SIZE * 2.15, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 1.75, z: TILE_SIZE * 2.15, space: "layout" },
+          corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.75, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" },
+          corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 2.55, z: TILE_SIZE * -1.85, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -2.55, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" },
+          corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -8.15, space: "layout" },
+          to: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -8.15, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4, z: TILE_SIZE * -8.15, space: "layout" }, speed: 3 },
+      ],
+    },
   },
   {
     id: "",
@@ -6421,7 +6650,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/van.obj",
-    position: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -5 },
+    position: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -2 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: 2 * (Math.PI / 2) },
     animation: {
@@ -6478,7 +6707,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           to: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -2.25, space: "layout" },
           speed: 2,
         },
-        { type: "move", target: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -5, space: "layout" }, speed: 3 },
+        { type: "move", target: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -2, space: "layout" }, speed: 3 },
       ],
     },
   },

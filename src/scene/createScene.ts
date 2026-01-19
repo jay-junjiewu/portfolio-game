@@ -614,6 +614,7 @@ export const createCityScene = async (
     mainEntries.map((entry) => loadBuilding(scene, entry, shadowGenerator))
   );
   mainBuildings.forEach(addLoadedBuilding);
+  callbacks.onAssetsLoaded?.();
 
   const loadRemaining = (async () => {
     const batchSize = 8;
