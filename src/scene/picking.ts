@@ -55,6 +55,7 @@ export const setupPicking = (
   const isCoarsePointer =
     typeof window !== "undefined" &&
     (window.matchMedia?.("(pointer: coarse)").matches ?? false);
+  const supportsPointerEvents = typeof window !== "undefined" && "PointerEvent" in window;
   const tapDistancePx = isCoarsePointer ? 48 : 24;
   const tapDistanceSq = tapDistancePx * tapDistancePx;
   const activeTouchPointers = new Set<number>();
@@ -119,9 +120,36 @@ export const setupPicking = (
 
   const observer = scene.onPointerObservable.add((pointerInfo) => {
     const event = pointerInfo.event as PointerEvent;
+    const isTouch = isTouchPointer(event);
     switch (pointerInfo.type) {
+      case PointerEventTypes.POINTERDOWN: {
+        if (!isTouch) {
+          break;
+        }
+        activeTouchPointers.add(event.pointerId);
+        if (activeTouchPointers.size === 1) {
+          touchStartId = event.pointerId;
+          touchStartClientX = event.clientX;
+          touchStartClientY = event.clientY;
+          touchMoved = false;
+          touchStartBuilding = pickAtPointer(pointerInfo, event);
+        } else {
+          touchMoved = true;
+          touchStartBuilding = null;
+        }
+        break;
+      }
       case PointerEventTypes.POINTERMOVE: {
-        if (isTouchPointer(event)) {
+        if (isTouch) {
+          if (event.pointerId !== touchStartId) {
+            return;
+          }
+          const dx = event.clientX - touchStartClientX;
+          const dy = event.clientY - touchStartClientY;
+          if (dx * dx + dy * dy > tapDistanceSq) {
+            touchMoved = true;
+            touchStartBuilding = null;
+          }
           return;
         }
         const building = pickAtPointer();
@@ -129,7 +157,25 @@ export const setupPicking = (
         break;
       }
       case PointerEventTypes.POINTERUP: {
-        if (isTouchPointer(event)) {
+        if (isTouch) {
+          const isPrimaryTouch = event.pointerId === touchStartId;
+          activeTouchPointers.delete(event.pointerId);
+          if (isPrimaryTouch) {
+            const shouldTap = !touchMoved && activeTouchPointers.size === 0;
+            const building = touchStartBuilding ?? pickAtPointer(pointerInfo, event);
+            touchStartId = null;
+            touchMoved = false;
+            touchStartBuilding = null;
+            if (shouldTap) {
+              handleHoverChange(building);
+              selectBuilding(building);
+            }
+          }
+          if (activeTouchPointers.size === 0) {
+            touchStartId = null;
+            touchMoved = false;
+            touchStartBuilding = null;
+          }
           return;
         }
         if (event.pointerType === "mouse" && event.button !== 0) {
@@ -140,79 +186,24 @@ export const setupPicking = (
         selectBuilding(building, clickCount);
         break;
       }
+      case PointerEventTypes.POINTERCANCEL: {
+        if (!isTouch) {
+          break;
+        }
+        activeTouchPointers.delete(event.pointerId);
+        if (activeTouchPointers.size === 0) {
+          touchStartId = null;
+          touchMoved = false;
+          touchStartBuilding = null;
+        }
+        break;
+      }
       default:
         break;
     }
   });
 
   const inputElement = scene.getEngine().getInputElement();
-  const handlePointerDown = (event: PointerEvent) => {
-    if (!isTouchPointer(event)) {
-      return;
-    }
-    activeTouchPointers.add(event.pointerId);
-    if (activeTouchPointers.size === 1) {
-      touchStartId = event.pointerId;
-      touchStartClientX = event.clientX;
-      touchStartClientY = event.clientY;
-      touchMoved = false;
-      touchStartBuilding = pickAtPointer(undefined, event);
-    } else {
-      touchMoved = true;
-      touchStartBuilding = null;
-    }
-  };
-
-  const handlePointerMove = (event: PointerEvent) => {
-    if (!isTouchPointer(event)) {
-      return;
-    }
-    if (event.pointerId !== touchStartId) {
-      return;
-    }
-    const dx = event.clientX - touchStartClientX;
-    const dy = event.clientY - touchStartClientY;
-    if (dx * dx + dy * dy > tapDistanceSq) {
-      touchMoved = true;
-      touchStartBuilding = null;
-    }
-  };
-
-  const handlePointerUp = (event: PointerEvent) => {
-    if (!isTouchPointer(event)) {
-      return;
-    }
-    const isPrimaryTouch = event.pointerId === touchStartId;
-    activeTouchPointers.delete(event.pointerId);
-    if (isPrimaryTouch) {
-      const shouldTap = !touchMoved && activeTouchPointers.size === 0;
-      const building = touchStartBuilding ?? pickAtPointer(undefined, event);
-      touchStartId = null;
-      touchMoved = false;
-      touchStartBuilding = null;
-      if (shouldTap) {
-        selectBuilding(building);
-      }
-    }
-    if (activeTouchPointers.size === 0) {
-      touchStartId = null;
-      touchMoved = false;
-      touchStartBuilding = null;
-    }
-  };
-
-  const handlePointerCancel = (event: PointerEvent) => {
-    if (!isTouchPointer(event)) {
-      return;
-    }
-    activeTouchPointers.delete(event.pointerId);
-    if (activeTouchPointers.size === 0) {
-      touchStartId = null;
-      touchMoved = false;
-      touchStartBuilding = null;
-    }
-  };
-
   let fallbackTouchId: number | null = null;
   let fallbackTouchStartX = 0;
   let fallbackTouchStartY = 0;
@@ -284,11 +275,7 @@ export const setupPicking = (
     resetFallbackTouch();
   };
 
-  if (inputElement) {
-    inputElement.addEventListener("pointerdown", handlePointerDown, { passive: true });
-    inputElement.addEventListener("pointermove", handlePointerMove, { passive: true });
-    inputElement.addEventListener("pointerup", handlePointerUp, { passive: true });
-    inputElement.addEventListener("pointercancel", handlePointerCancel, { passive: true });
+  if (inputElement && !supportsPointerEvents) {
     inputElement.addEventListener("touchstart", handleTouchStart, { passive: true });
     inputElement.addEventListener("touchmove", handleTouchMove, { passive: true });
     inputElement.addEventListener("touchend", handleTouchEnd, { passive: true });
@@ -298,11 +285,7 @@ export const setupPicking = (
   return () => {
     applyOutline(hovered, false);
     scene.onPointerObservable.remove(observer);
-    if (inputElement) {
-      inputElement.removeEventListener("pointerdown", handlePointerDown);
-      inputElement.removeEventListener("pointermove", handlePointerMove);
-      inputElement.removeEventListener("pointerup", handlePointerUp);
-      inputElement.removeEventListener("pointercancel", handlePointerCancel);
+    if (inputElement && !supportsPointerEvents) {
       inputElement.removeEventListener("touchstart", handleTouchStart);
       inputElement.removeEventListener("touchmove", handleTouchMove);
       inputElement.removeEventListener("touchend", handleTouchEnd);
