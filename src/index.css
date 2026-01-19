@@ -1167,6 +1167,10 @@ body {
     text-align: left;
     padding: 0.6rem 0.75rem;
   }
+  .toggle {
+    width: auto;
+    align-self: flex-start;
+  }
   .top-bar.night .nav-links {
     background: inherit;
   }
@@ -1190,7 +1194,7 @@ body {
 
 @media (max-width: 640px) {
   .top-bar {
-    padding: 0.5rem 0.8rem;
+    padding: 0.8rem 0.9rem;
   }
   .nav-links {
     width: 100%;

@@ -39,6 +39,10 @@ const TopBar = ({
           </button>
         </div>
         <nav className={`nav-links ${menuOpen ? "open" : ""}`}>
+          <button type="button" className="toggle" onClick={onToggleDay}>
+            <span className={`toggle-dot ${isDay ? "day" : "night"}`} />
+            <span className="toggle-label">{isDay ? "Day" : "Night"}</span>
+          </button>
           <button type="button" className="nav-link" onClick={() => handleNav("about")}>
             About
           </button>
@@ -56,10 +60,6 @@ const TopBar = ({
           </button>
           <button type="button" className="nav-link" onClick={onToggleControls}>
             Help
-          </button>
-          <button type="button" className="toggle" onClick={onToggleDay}>
-            <span className={`toggle-dot ${isDay ? "day" : "night"}`} />
-            <span className="toggle-label">{isDay ? "Day" : "Night"}</span>
           </button>
         </nav>
       </div>
