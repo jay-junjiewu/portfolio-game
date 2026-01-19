@@ -186,18 +186,6 @@ export const setupPicking = (
         selectBuilding(building, clickCount);
         break;
       }
-      case PointerEventTypes.POINTERCANCEL: {
-        if (!isTouch) {
-          break;
-        }
-        activeTouchPointers.delete(event.pointerId);
-        if (activeTouchPointers.size === 0) {
-          touchStartId = null;
-          touchMoved = false;
-          touchStartBuilding = null;
-        }
-        break;
-      }
       default:
         break;
     }
