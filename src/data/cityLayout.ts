@@ -4397,7 +4397,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     name: "",
     modelPath: "commerical-models/OBJ format/building-n.obj",
     position: { x: TILE_SIZE * -3.5, z: TILE_SIZE * -0.5 },
-    targetScale: 2 * UNIFORM_SCALE,
+    targetScale: 2.15 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
   {
@@ -6259,34 +6259,180 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/ambulance.obj",
-    position: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -1 },
+    position: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -0.85 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: 2 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -0.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -0.85, space: "layout" },
+          corner: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -1.25, space: "layout" },
+          to: { x: TILE_SIZE * -2.25, z: TILE_SIZE * -1.25, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -3.2, z: TILE_SIZE * -1.25, space: "layout" }, speed: 3 },
+        { type: "pause", duration: 6 },
+        { type: "move", target: { x: TILE_SIZE * -3.3, z: TILE_SIZE * -1.25, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -3.3, z: TILE_SIZE * -1.25, space: "layout" },
+          corner: { x: TILE_SIZE * -4, z: TILE_SIZE * -1.55, space: "layout" },
+          to: { x: TILE_SIZE * -3.3, z: TILE_SIZE * -1.85, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 1.45, z: TILE_SIZE * -1.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 1.45, z: TILE_SIZE * -1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 1.85, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 1.85, z: TILE_SIZE * -1.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 1.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 1.45, space: "layout" },
+          corner: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 1.85, space: "layout" },
+          to: { x: TILE_SIZE * 1.45, z: TILE_SIZE * 1.85, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -1.45, z: TILE_SIZE * 1.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -1.45, z: TILE_SIZE * 1.85, space: "layout" },
+          corner: { x: TILE_SIZE * -1.85, z: TILE_SIZE * 1.85, space: "layout" },
+          to: { x: TILE_SIZE * -1.85, z: TILE_SIZE * 1.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -0.85, space: "layout" }, speed: 3 },
+      ],
+    },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/delivery-flat.obj",
-    position: { x: TILE_SIZE * -1.85, z: TILE_SIZE * 0 },
+    position: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 7.85 },
     targetScale: 0.75 * UNIFORM_SCALE,
-    rotation: { y: 2 * (Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * -4.45, z: TILE_SIZE * 7.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.45, z: TILE_SIZE * 7.85, space: "layout" },
+          corner: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 7.85, space: "layout" },
+          to: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 7.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 3, space: "layout" }, speed: 3 },
+        { type: "pause", duration: 2 },
+        { type: "move", target: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.45, space: "layout" },
+          corner: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * -4.45, z: TILE_SIZE * -1.85, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 1.45, z: TILE_SIZE * -1.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 1.45, z: TILE_SIZE * -1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 1.85, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 1.85, z: TILE_SIZE * -1.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 1.75, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 1.75, space: "layout" },
+          corner: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * 2.25, z: TILE_SIZE * 2.15, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 2.15, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 2.15, space: "layout" },
+          corner: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 2.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 4.15, space: "layout" }, speed: 3 },
+        { type: "pause", duration: 2 },
+        { type: "move", target: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 7.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 7.45, space: "layout" },
+          corner: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 7.85, space: "layout" },
+          to: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 7.85, space: "layout" },
+          speed: 2,
+        },
+      ],
+    },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/firetruck.obj",
-    position: { x: TILE_SIZE * 1, z: TILE_SIZE * 2.15 },
+    position: { x: TILE_SIZE * -3, z: TILE_SIZE * 2.15 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 2.15, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 2.15, space: "layout" },
+          corner: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 2.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 4.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 4.45, space: "layout" },
+          corner: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 4.85, space: "layout" },
+          to: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 4.85, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.45, z: TILE_SIZE * 4.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.45, z: TILE_SIZE * 4.85, space: "layout" },
+          corner: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 4.85, space: "layout" },
+          to: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 4.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 2.55, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 2.55, space: "layout" },
+          corner: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * -4.45, z: TILE_SIZE * 2.15, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -3, z: TILE_SIZE * 2.15, space: "layout" }, speed: 3 },
+      ],
+    },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/garbage-truck.obj",
-    position: { x: TILE_SIZE * 5, z: TILE_SIZE * 5.15 },
+    position: { x: TILE_SIZE * 4.8, z: TILE_SIZE * -0.5 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
@@ -6295,18 +6441,144 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/hatchback-sports.obj",
-    position: { x: TILE_SIZE * -2, z: TILE_SIZE * 5.15 },
+    position: { x: TILE_SIZE * -2, z: TILE_SIZE * 4.85 },
     targetScale: 0.75 * UNIFORM_SCALE,
-    rotation: { y: (Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 4.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 4.85, space: "layout" },
+          corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.85, space: "layout" },
+          to: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 5.25, space: "layout" },
+          speed: 3,
+        },
+        { type: "move", target: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 7.75, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 7.75, space: "layout" },
+          corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 8.15, space: "layout" },
+          to: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 8.15, space: "layout" },
+          speed: 3,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 8.15, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 8.15, space: "layout" },
+          corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 8.15, space: "layout" },
+          to: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 7.45, space: "layout" },
+          speed: 3,
+        },
+        { type: "move", target: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 5.25, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 5.25, space: "layout" },
+          corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 4.85, space: "layout" },
+          to: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 4.85, space: "layout" },
+          speed: 3,
+        },
+        { type: "move", target: { x: TILE_SIZE * -2, z: TILE_SIZE * 4.85, space: "layout" }, speed: 3 },
+      ],
+    },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/police.obj",
-    position: { x: TILE_SIZE * 1, z: TILE_SIZE * 4.85 },
+    position: { x: TILE_SIZE * 3, z: TILE_SIZE * -8.15 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: 3 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * -1.75, z: TILE_SIZE * -8.15, space: "layout" }, speed: 9 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -1.75, z: TILE_SIZE * -8.15, space: "layout" },
+          corner: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -8.15, space: "layout" },
+          to: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -7.75, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 1.75, space: "layout" }, speed: 9 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 1.75, space: "layout" },
+          corner: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * -2.55, z: TILE_SIZE * 2.15, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 2.15, space: "layout" }, speed: 9 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 2.15, space: "layout" },
+          corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 2.55, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.75, space: "layout" }, speed: 9 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.75, space: "layout" },
+          corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 5.15, space: "layout" },
+          to: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 5.15, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 5.15, space: "layout" }, speed: 9 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 5.15, space: "layout" },
+          corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 5.15, space: "layout" },
+          to: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 4.75, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 2.25, space: "layout" }, speed: 9 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 2.25, space: "layout" },
+          corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 1.85, space: "layout" },
+          to: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 1.85, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 2.55, z: TILE_SIZE * 1.85, space: "layout" }, speed: 9 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 2.55, z: TILE_SIZE * 1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.85, space: "layout" },
+          to: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.45, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" }, speed: 9 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" },
+          corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 2.55, z: TILE_SIZE * -1.85, space: "layout" },
+          speed: 8,
+        },
+        { type: "move", target: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" }, speed: 9 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -2.55, space: "layout" },
+          speed: 7,
+        },
+        { type: "move", target: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" }, speed: 9 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" },
+          corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -8.15, space: "layout" },
+          to: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -8.15, space: "layout" },
+          speed: 7,
+        },
+        { type: "move", target: { x: TILE_SIZE * 3, z: TILE_SIZE * -8.15, space: "layout" }, speed: 9 },
+      ],
+    },
   },
   {
     id: "",
@@ -6326,7 +6598,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * -1.75, z: TILE_SIZE * -8.15, space: "layout" },
           corner: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -8.15, space: "layout" },
           to: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -7.75, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 1.75, space: "layout" }, speed: 10 },
         {
@@ -6334,7 +6606,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 1.75, space: "layout" },
           corner: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 2.15, space: "layout" },
           to: { x: TILE_SIZE * -2.55, z: TILE_SIZE * 2.15, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 2.15, space: "layout" }, speed: 10 },
         {
@@ -6342,7 +6614,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 2.15, space: "layout" },
           corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 2.15, space: "layout" },
           to: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 2.55, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.75, space: "layout" }, speed: 10 },
         {
@@ -6350,7 +6622,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.75, space: "layout" },
           corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 5.15, space: "layout" },
           to: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 5.15, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 5.15, space: "layout" }, speed: 10 },
         {
@@ -6358,7 +6630,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 5.15, space: "layout" },
           corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 5.15, space: "layout" },
           to: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 4.75, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 2.25, space: "layout" }, speed: 10 },
         {
@@ -6366,7 +6638,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 2.25, space: "layout" },
           corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 1.85, space: "layout" },
           to: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 1.85, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 2.55, z: TILE_SIZE * 1.85, space: "layout" }, speed: 10 },
         {
@@ -6374,7 +6646,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 2.55, z: TILE_SIZE * 1.85, space: "layout" },
           corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.85, space: "layout" },
           to: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.45, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" }, speed: 10 },
         {
@@ -6382,7 +6654,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" },
           corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.85, space: "layout" },
           to: { x: TILE_SIZE * 2.55, z: TILE_SIZE * -1.85, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" }, speed: 10 },
         {
@@ -6390,7 +6662,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" },
           corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -1.85, space: "layout" },
           to: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -2.55, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" }, speed: 10 },
         {
@@ -6398,7 +6670,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" },
           corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -8.15, space: "layout" },
           to: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -8.15, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 1, z: TILE_SIZE * -8.15, space: "layout" }, speed: 10 },
       ],
@@ -6422,7 +6694,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * -1.75, z: TILE_SIZE * -8.15, space: "layout" },
           corner: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -8.15, space: "layout" },
           to: { x: TILE_SIZE * -2.15, z: TILE_SIZE * -7.75, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 1.75, space: "layout" }, speed: 10 },
         {
@@ -6430,7 +6702,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 1.75, space: "layout" },
           corner: { x: TILE_SIZE * -2.15, z: TILE_SIZE * 2.15, space: "layout" },
           to: { x: TILE_SIZE * -2.55, z: TILE_SIZE * 2.15, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 2.15, space: "layout" }, speed: 10 },
         {
@@ -6438,7 +6710,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 2.15, space: "layout" },
           corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 2.15, space: "layout" },
           to: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 2.55, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.75, space: "layout" }, speed: 10 },
         {
@@ -6446,7 +6718,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.75, space: "layout" },
           corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 5.15, space: "layout" },
           to: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 5.15, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 5.15, space: "layout" }, speed: 10 },
         {
@@ -6454,7 +6726,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 5.15, space: "layout" },
           corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 5.15, space: "layout" },
           to: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 4.75, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 2.25, space: "layout" }, speed: 10 },
         {
@@ -6462,7 +6734,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 2.25, space: "layout" },
           corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 1.85, space: "layout" },
           to: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 1.85, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 2.55, z: TILE_SIZE * 1.85, space: "layout" }, speed: 10 },
         {
@@ -6470,7 +6742,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 2.55, z: TILE_SIZE * 1.85, space: "layout" },
           corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.85, space: "layout" },
           to: { x: TILE_SIZE * 2.15, z: TILE_SIZE * 1.45, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" }, speed: 10 },
         {
@@ -6478,7 +6750,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.45, space: "layout" },
           corner: { x: TILE_SIZE * 2.15, z: TILE_SIZE * -1.85, space: "layout" },
           to: { x: TILE_SIZE * 2.55, z: TILE_SIZE * -1.85, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" }, speed: 10 },
         {
@@ -6486,7 +6758,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -1.85, space: "layout" },
           corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -1.85, space: "layout" },
           to: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -2.55, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" }, speed: 10 },
         {
@@ -6494,7 +6766,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           from: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -7.45, space: "layout" },
           corner: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -8.15, space: "layout" },
           to: { x: TILE_SIZE * 3.45, z: TILE_SIZE * -8.15, space: "layout" },
-          speed: 8,
+          speed: 5,
         },
         { type: "move", target: { x: TILE_SIZE * -1, z: TILE_SIZE * -8.15, space: "layout" }, speed: 10 },
       ],
@@ -6505,7 +6777,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/sedan.obj",
-    position: { x: TILE_SIZE * -6, z: TILE_SIZE * -7.85 },
+    position: { x: TILE_SIZE * -7, z: TILE_SIZE * 5.15 },
     targetScale: 0.65 * UNIFORM_SCALE,
     rotation: { y: (Math.PI / 2) },
   },
@@ -6578,16 +6850,55 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/suv-luxury.obj",
-    position: { x: TILE_SIZE * 3, z: TILE_SIZE * 7.85 },
+    position: { x: TILE_SIZE * 3, z: TILE_SIZE * 8.15 },
     targetScale: 0.75 * UNIFORM_SCALE,
-    rotation: { y: 3 * (Math.PI / 2) },
+    rotation: { y: 1 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 8.15, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.7
+          from: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 8.15, space: "layout" },
+          corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 8.15, space: "layout" },
+          to: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 7.45, space: "layout" },
+          speed: 3,
+        },
+        { type: "move", target: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 5.25, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 5.25, space: "layout" },
+          corner: { x: TILE_SIZE * 8.15, z: TILE_SIZE * 4.85, space: "layout" },
+          to: { x: TILE_SIZE * 7.75, z: TILE_SIZE * 4.85, space: "layout" },
+          speed: 3,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 4.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 4.85, space: "layout" },
+          corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 4.85, space: "layout" },
+          to: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 5.25, space: "layout" },
+          speed: 3,
+        },
+        { type: "move", target: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 7.75, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 7.75, space: "layout" },
+          corner: { x: TILE_SIZE * -5.15, z: TILE_SIZE * 8.15, space: "layout" },
+          to: { x: TILE_SIZE * -4.75, z: TILE_SIZE * 8.15, space: "layout" },
+          speed: 3,
+        },
+        { type: "move", target: { x: TILE_SIZE * 3, z: TILE_SIZE * 8.15, space: "layout" }, speed: 3 },
+      ],
+    },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/suv.obj",
-    position: { x: TILE_SIZE * -8.15, z: TILE_SIZE * -6 },
+    position: { x: TILE_SIZE * 4.85, z: TILE_SIZE * -6.15 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: 0 * (Math.PI / 2) },
   },
@@ -6596,9 +6907,66 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/taxi.obj",
-    position: { x: TILE_SIZE * -7.85, z: TILE_SIZE * -1 },
+    position: { x: TILE_SIZE * 0, z: TILE_SIZE * 7.85 },
     targetScale: 0.75 * UNIFORM_SCALE,
-    rotation: { y: 2 * (Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * -4.45, z: TILE_SIZE * 7.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.45, z: TILE_SIZE * 7.85, space: "layout" },
+          corner: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 7.85, space: "layout" },
+          to: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 7.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.45, space: "layout" },
+          corner: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * -4.45, z: TILE_SIZE * -1.85, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 1.45, z: TILE_SIZE * -1.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 1.45, z: TILE_SIZE * -1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 1.85, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 1.85, z: TILE_SIZE * -1.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 1.75, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 1.75, space: "layout" },
+          corner: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * 2.25, z: TILE_SIZE * 2.15, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 2.15, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 2.15, space: "layout" },
+          corner: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 2.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 4.15, space: "layout" }, speed: 3 },
+        { type: "pause", duration: 2 },
+        { type: "move", target: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 7.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 7.45, space: "layout" },
+          corner: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 7.85, space: "layout" },
+          to: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 7.85, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 0, z: TILE_SIZE * 7.85, space: "layout" }, speed: 3 }, 
+      ],
+    },
   },
   {
     id: "",
@@ -6635,22 +7003,79 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
     position: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 0 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: 0 * (Math.PI / 2) },
+    animation: {
+      type: "sequence",
+      loop: true,
+      steps: [
+        { type: "move", target: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 1.75, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 1.75, space: "layout" },
+          corner: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * 2.25, z: TILE_SIZE * 2.15, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 2.15, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 2.15, space: "layout" },
+          corner: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 2.15, space: "layout" },
+          to: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 2.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 4.15, space: "layout" }, speed: 3 },
+        { type: "pause", duration: 2 },
+        { type: "move", target: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 7.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 7.45, space: "layout" },
+          corner: { x: TILE_SIZE * 7.85, z: TILE_SIZE * 7.85, space: "layout" },
+          to: { x: TILE_SIZE * 7.45, z: TILE_SIZE * 7.85, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.45, z: TILE_SIZE * 7.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.45, z: TILE_SIZE * 7.85, space: "layout" },
+          corner: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 7.85, space: "layout" },
+          to: { x: TILE_SIZE * -4.85, z: TILE_SIZE * 7.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.45, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.45, space: "layout" },
+          corner: { x: TILE_SIZE * -4.85, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * -4.45, z: TILE_SIZE * -1.85, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 1.45, z: TILE_SIZE * -1.85, space: "layout" }, speed: 3 },
+        {
+          type: "turn", // 0.4
+          from: { x: TILE_SIZE * 1.45, z: TILE_SIZE * -1.85, space: "layout" },
+          corner: { x: TILE_SIZE * 1.85, z: TILE_SIZE * -1.85, space: "layout" },
+          to: { x: TILE_SIZE * 1.85, z: TILE_SIZE * -1.45, space: "layout" },
+          speed: 2,
+        },
+        { type: "move", target: { x: TILE_SIZE * 1.85, z: TILE_SIZE * 0, space: "layout" }, speed: 3 },
+      ],
+    },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/truck.obj",
-    position: { x: TILE_SIZE * 4.15, z: TILE_SIZE * -5 },
+    position: { x: TILE_SIZE * 6, z: TILE_SIZE * -5.6 },
     targetScale: 0.75 * UNIFORM_SCALE,
-    rotation: { y: 2 * (Math.PI / 2) },
+    rotation: { y: 3 * (Math.PI / 2) },
   },
   {
     id: "",
     type: "decor",
     name: "",
     modelPath: "car-models/OBJ format/van.obj",
-    position: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -2 },
+    position: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -3 },
     targetScale: 0.75 * UNIFORM_SCALE,
     rotation: { y: 2 * (Math.PI / 2) },
     animation: {
@@ -6707,7 +7132,7 @@ const MANUAL_FILL_BUILDINGS: DecorativePlacement[] = [
           to: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -2.25, space: "layout" },
           speed: 2,
         },
-        { type: "move", target: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -2, space: "layout" }, speed: 3 },
+        { type: "move", target: { x: TILE_SIZE * -1.85, z: TILE_SIZE * -3, space: "layout" }, speed: 3 },
       ],
     },
   },
