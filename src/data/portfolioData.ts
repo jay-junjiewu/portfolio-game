@@ -169,6 +169,17 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   ],
   experience: [
     {
+      company: "Ausgrid",
+      companyUrl: "https://www.ausgrid.com.au/",
+      role: "Electrical Engineering Intern",
+      period: "January 2026 - February 2026",
+      highlights: [
+        "Designed and implemented a scalable end-to-end Python-based machine-learning pipeline to model constraint-violation probabilities from time-series electrical features.",
+        "Conducted counterfactual evaluations to quantify intervention effects as reductions in predicted risk-minutes, with validation against observed outcomes.",
+        "Developed scalable asset model evaluation workflows, producing confidence-bounded risk metrics for asset ranking, comparison, and downstream decision-support integration."
+      ],
+    },
+    {
       company: "UNSW",
       companyUrl: "https://www.unsw.edu.au/engineering/our-schools/electrical-engineering-telecommunications",
       role: "Lab Demonstrator",
