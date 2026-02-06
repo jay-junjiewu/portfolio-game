@@ -59,7 +59,7 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   },
   projects: [
     {
-      title: "vmsim",
+      title: "Virtual Memory System Emulator C++",
       category: "software",
       date: "January 2026",
       description:
