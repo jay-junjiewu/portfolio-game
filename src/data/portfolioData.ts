@@ -59,6 +59,21 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   },
   projects: [
     {
+      title: "vmsim",
+      category: "software",
+      date: "January 2026",
+      description:
+        "vmsim is a C++ virtual memory system emulator that replays memory-access traces through a configurable VM subsystem. It simulates a multi-level page table, a set-associative TLB with optional ASID support, page faults, frame allocation, and multiple eviction policies (FIFO, Clock, LRU, Aging). The simulator includes optional swap-backed paging, a detailed cycle-based cost model, and AMAT calculation, enabling quantitative analysis of memory-system design tradeoffs. It outputs detailed performance statistics in both human-readable and JSON formats for further evaluation.",
+      stack: [
+        "C++",
+        "Operating Systems",
+        "Virtual Memory Systems",
+        "Page Tables",
+        "TLB Simulation",
+      ],
+      githubUrl: "https://github.com/jay-junjiewu/vmsim"
+    },
+    {
       title: "Personal Portfolio",
       category: "software",
       date: "December 2025",
