@@ -184,14 +184,21 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   ],
   experience: [
     {
+      company: "AtomCraft",
+      companyUrl: "https://www.atomcraft.com.au/",
+      role: "Electrical Engineer",
+      period: "February 2026 - Present",
+      highlights: [
+        "Currently working with supercapacitor based pulsed power systems to deliver rapid high-current discharges for plasma generation and experimental applications related to fusion and tokamak research."
+      ],
+    },
+    {
       company: "Ausgrid",
       companyUrl: "https://www.ausgrid.com.au/",
       role: "Electrical Engineering Intern",
       period: "January 2026 - February 2026",
       highlights: [
-        "Designed and implemented a scalable end-to-end Python-based machine-learning pipeline to model constraint-violation probabilities from time-series electrical features.",
-        "Conducted counterfactual evaluations to quantify intervention effects as reductions in predicted risk-minutes, with validation against observed outcomes.",
-        "Developed scalable asset model evaluation workflows, producing confidence-bounded risk metrics for asset ranking, comparison, and downstream decision-support integration."
+        "Analyzed LV network data to model PV-driven voltage non-compliance risk, developed scalable machine-learning models to quantify intervention impacts, and translated results into DER planning metrics aligned with Australian regulatory standards."
       ],
     },
     {
@@ -224,7 +231,7 @@ export const PORTFOLIO_DATA: PortfolioContent = {
         {
           title: "EV record breakers! Sunswift 7 goes 1000km on a single charge in world's best time",
           url: "https://www.unsw.edu.au/newsroom/news/2022/10/ev-record-breakers-sunswift-7-goes-1000km-on-a-single-charge-in-worlds-best-time",
-          image: "https://www.unsw.edu.au/content/dam/images/unsw-wide/general/news/2023-05-newsroom-migration/2023-03-Image61a.cropimg.width=1920.crop=basic.jpg",
+          image: "/assets/sunswift/SR7_road.jpg",
           source: "Sunswift"
         }
       ],
