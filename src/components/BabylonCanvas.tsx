@@ -2,6 +2,7 @@ import { Engine } from "@babylonjs/core";
 import { useEffect, useRef } from "react";
 import type { BuildingKey } from "../data/cityLayout";
 import { createCityScene, type SceneControls } from "../scene/createScene";
+import { isMobileDevice } from "../utils/device";
 
 type BabylonCanvasProps = {
   isDay: boolean;
@@ -16,12 +17,6 @@ const BabylonCanvas = ({
   onSceneReady,
   onLoadingChange,
 }: BabylonCanvasProps) => {
-  const isMobileDevice = () => {
-    if (typeof window === "undefined") return false;
-    const coarsePointer = window.matchMedia?.("(pointer: coarse)").matches ?? false;
-    const smallViewport = window.matchMedia?.("(max-width: 900px)").matches ?? false;
-    return coarsePointer || smallViewport;
-  };
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const controlsRef = useRef<SceneControls | null>(null);
   const onBuildingSelectRef = useRef(onBuildingSelect);

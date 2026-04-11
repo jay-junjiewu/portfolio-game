@@ -18,6 +18,7 @@ import { CITY_LAYOUT, CITY_TILE_SIZE, type BuildingKey, type AnimationSequence }
 import type { LoadedBuilding } from "./loadBuilding";
 import { loadBuilding } from "./loadBuilding";
 import { setupPicking } from "./picking";
+import { isMobileDevice } from "../utils/device";
 
 export type SceneCallbacks = {
   onBuildingSelect: (key: BuildingKey | null) => void;
@@ -30,14 +31,8 @@ export type SceneControls = {
   setDayMode: (isDay: boolean) => void;
   setCameraOrbit: (alpha: number, beta: number) => void;
   focusOnBuilding: (key: BuildingKey | null) => void;
+  startCameraTour: (onComplete?: () => void) => () => void;
   dispose: () => void;
-};
-
-const isMobileDevice = () => {
-  if (typeof window === "undefined") return false;
-  const coarsePointer = window.matchMedia?.("(pointer: coarse)").matches ?? false;
-  const smallViewport = window.matchMedia?.("(max-width: 900px)").matches ?? false;
-  return coarsePointer || smallViewport;
 };
 
 const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
@@ -683,6 +678,130 @@ export const createCityScene = async (
     camera.target = defaultCameraState.target.clone();
   };
 
+  const startCameraTour = (onComplete?: () => void): (() => void) => {
+    if (orbitAnimationFrame !== null) {
+      window.cancelAnimationFrame(orbitAnimationFrame);
+      orbitAnimationFrame = null;
+    }
+
+    camera.detachControl();
+    camera.inertialAlphaOffset = 0;
+    camera.inertialBetaOffset = 0;
+    camera.inertialRadiusOffset = 0;
+
+    const easeInOut = (t: number): number => t * t * (3 - 2 * t);
+
+    type TourWaypoint = {
+      alpha: number;
+      beta: number;
+      radius: number;
+      tx: number;
+      tz: number;
+      moveDuration: number;
+      pauseDuration: number;
+    };
+
+    const isMobile = isMobileDevice();
+    const closeRadius = isMobile ? 36 : 28;
+    const homeRadius = isMobile ? 52 : 42;
+
+    const waypoints: TourWaypoint[] = [
+      // 0: high overview — snap here instantly, then pause
+      { alpha: (3 * Math.PI) / 4, beta: 0.48, radius: 58, tx: 0, tz: 0, moveDuration: 0, pauseDuration: 600 },
+      // 1: Projects (city centre)
+      { alpha: Math.PI / 2, beta: 0.82, radius: closeRadius, tx: 0, tz: 0, moveDuration: 1600, pauseDuration: 650 },
+      // 2: About (NE  12, 12)
+      { alpha: (3 * Math.PI) / 4, beta: 0.78, radius: closeRadius + 2, tx: 12, tz: 12, moveDuration: 1600, pauseDuration: 650 },
+      // 3: Experience (NW  -16, 12)
+      { alpha: Math.PI, beta: 0.78, radius: closeRadius + 4, tx: -16, tz: 12, moveDuration: 1800, pauseDuration: 650 },
+      // 4: Contact (SW  -12, -12)
+      { alpha: Math.PI / 4, beta: 0.78, radius: closeRadius + 2, tx: -12, tz: -12, moveDuration: 1800, pauseDuration: 650 },
+      // 5: Skills (SE  12, -12)
+      { alpha: -(Math.PI / 4), beta: 0.78, radius: closeRadius + 2, tx: 12, tz: -12, moveDuration: 1600, pauseDuration: 650 },
+      // 6: return home
+      { alpha: (3 * Math.PI) / 4, beta: 1, radius: homeRadius, tx: 0, tz: 0, moveDuration: 2000, pauseDuration: 0 },
+    ];
+
+    // Snap to initial overview position
+    const first = waypoints[0];
+    camera.alpha = first.alpha;
+    camera.beta = first.beta;
+    camera.radius = first.radius;
+    camera.target.set(first.tx, 4, first.tz);
+
+    let cancelled = false;
+    let tourRafId: number | null = null;
+    let waypointIndex = 0;
+    let segmentStart = performance.now();
+    let phase: "pause" | "move" = "pause";
+    let fromAlpha = first.alpha;
+    let fromBeta = first.beta;
+    let fromRadius = first.radius;
+    let fromTx = first.tx;
+    let fromTz = first.tz;
+
+    const finish = () => {
+      camera.inertialAlphaOffset = 0;
+      camera.inertialBetaOffset = 0;
+      camera.inertialRadiusOffset = 0;
+      camera.attachControl(false, false, -1);
+      if (!cancelled) onComplete?.();
+    };
+
+    const step = (timestamp: number) => {
+      if (cancelled) return;
+      const elapsed = timestamp - segmentStart;
+      const wp = waypoints[waypointIndex];
+
+      if (phase === "pause") {
+        if (elapsed >= wp.pauseDuration) {
+          waypointIndex++;
+          if (waypointIndex >= waypoints.length) {
+            finish();
+            return;
+          }
+          fromAlpha = camera.alpha;
+          fromBeta = camera.beta;
+          fromRadius = camera.radius;
+          fromTx = camera.target.x;
+          fromTz = camera.target.z;
+          segmentStart = timestamp;
+          phase = "move";
+        }
+        tourRafId = window.requestAnimationFrame(step);
+      } else {
+        const nextWp = waypoints[waypointIndex];
+        const t = Math.min(1, elapsed / nextWp.moveDuration);
+        const e = easeInOut(t);
+
+        camera.alpha = fromAlpha + shortestAngle(fromAlpha, nextWp.alpha) * e;
+        camera.beta = fromBeta + (nextWp.beta - fromBeta) * e;
+        camera.radius = fromRadius + (nextWp.radius - fromRadius) * e;
+        camera.target.x = fromTx + (nextWp.tx - fromTx) * e;
+        camera.target.z = fromTz + (nextWp.tz - fromTz) * e;
+
+        if (t >= 1) {
+          camera.alpha = nextWp.alpha;
+          camera.beta = nextWp.beta;
+          camera.radius = nextWp.radius;
+          camera.target.set(nextWp.tx, 4, nextWp.tz);
+          segmentStart = timestamp;
+          phase = "pause";
+        }
+        tourRafId = window.requestAnimationFrame(step);
+      }
+    };
+
+    tourRafId = window.requestAnimationFrame(step);
+
+    return () => {
+      if (cancelled) return;
+      cancelled = true;
+      if (tourRafId !== null) window.cancelAnimationFrame(tourRafId);
+      finish();
+    };
+  };
+
   return {
     scene,
     resetCamera,
@@ -712,6 +831,7 @@ export const createCityScene = async (
       orbitAnimationFrame = window.requestAnimationFrame(step);
     },
     focusOnBuilding,
+    startCameraTour,
     dispose: () => {
       if (orbitAnimationFrame !== null) {
         window.cancelAnimationFrame(orbitAnimationFrame);

@@ -54,10 +54,31 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   about: {
     headline: "Computer Science & Electrical Engineering Student Focused on Software Engineering",
     body: [
-      "Hello there! Welcome to my website :) \n\nI am Junjie Wu, a penultimate Computer Science and Electrical Engineering student at UNSW with a passion for building things and making things work. \n\nMy academic and project work focuses heavily on software development, including building modern web applications using React, developing high-performance and embedded software in C++, and integrating software with hardware in low-level embedded and real-time systems. Alongside this, I've worked on engineering applications in areas such as electric vehicles, power, and audio systems, where software plays a central role in system performance and reliability. \n\nFeel free to reach out for a chat. Let's connect and create a meaningful impact together!",
+      "I'm a final-year Computer Science and Electrical Engineering student at UNSW focused on building high-performance software systems for machine learning applications.\n\nMy experience spans:\n•  Machine Learning: transformer-based speech anonymization, speaker embedding systems, and applied ML for power networks\n•  Software Engineering: C++ and Python for high-performance systems, data processing, and backend pipelines\n•  Real-world Systems: embedded and energy systems, including MPPT and power optimization in a world record-winning solar vehicle",
     ],
   },
   projects: [
+    {
+      title: "Undergraduate Thesis: Transformer-Based Speech Anonymization",
+      category: "software",
+      date: "Present",
+      description:
+        "Designing and implementing deep learning models for speech anonymization using transformer architectures in PyTorch. The system targets speaker identity concealment while preserving linguistic content and naturalness, with applications in privacy-preserving speech processing.",
+      stack: [
+        "Python", "PyTorch", "Transformers", "Deep Learning", "Speech Processing", "Neural Networks",
+      ],
+    },
+    {
+      title: "Machine Learning and Voltage Risk Modelling",
+      category: "software",
+      date: "January 2026",
+      description:
+        "Developed and validated predictive models using real-world operational datasets, applying feature engineering and robustness testing to evaluate intervention trade-offs through structured counterfactual analysis.",
+      stack: [
+        "Python", "Machine Learning", "Feature Engineering", "Counterfactual Analysis", "Data Analysis", "Pandas",
+      ],
+      githubUrl: "https://github.com/jay-junjiewu/voltage_planning_tool",
+    },
     {
       title: "Virtual Memory System Emulator C++",
       category: "software",
@@ -127,6 +148,14 @@ export const PORTFOLIO_DATA: PortfolioContent = {
       image: "/assets/audio-equaliser/time.png",
     },
     {
+      title: "FPGA-Based 5-Stage Pipelined Processor",
+      category: "electrical",
+      date: "May 2025 - August 2025",
+      description:
+        "Built a MIPS-based 5-stage pipelined processor using Verilog HDL within the Xilinx Vivado Design Suite. Performed RTL design, behavioural simulation, synthesis, place-and-route, and deployment on FPGA. Optimised for throughput, minimised pipeline hazards, and verified functionality through comprehensive testbenches and timing-driven verification.",
+      stack: ["Verilog HDL", "Xilinx Vivado", "FPGA", "RTL Design", "MIPS Architecture", "Digital Design"],
+    },
+    {
       title: "Guitar Power Amplifier",
       category: "electrical",
       date: "September 2024 - December 2024",
@@ -157,29 +186,30 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   skills: [
     {
       category: "Programming Languages",
-      items: ["C++", "C", "JavaScript", "Python", "SQL", "Verilog HDL"],
+      items: ["Python", "C++", "C", "JavaScript", "SQL", "Verilog HDL"],
     },
     {
-      category: "Frontend",
-      items: ["React.js", "HTML5", "CSS3", "Responsive Design"],
+      category: "Machine Learning",
+      items: ["PyTorch", "Transformers", "Deep Learning", "Feature Engineering", "Counterfactual Analysis", "Pandas", "Scikit-learn"],
     },
     {
-      category: "Backend & Database",
-      items: ["Node.js", "Express.js", "RESTful APIs", "PostgreSQL"],
+      category: "Software Engineering",
+      items: ["React.js", "Node.js", "Express.js", "RESTful APIs", "HTML5", "CSS3", "PostgreSQL"],
     },
     {
       category: "Electrical & Embedded Systems",
       items: [
         "FPGA Design",
-        "Power",
+        "RTL Design",
+        "Power Electronics",
         "Signal Processing",
         "Analog & Digital Electronics",
         "Embedded C",
       ],
     },
     {
-      category: "EDA & Simulation Tools",
-      items: ["Altium Designer", "KiCad", "MATLAB", "Simulink"],
+      category: "Tools & Platforms",
+      items: ["Altium Designer", "KiCad", "Xilinx Vivado", "MATLAB", "Simulink", "Git"],
     },
   ],
   experience: [

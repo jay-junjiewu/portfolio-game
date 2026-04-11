@@ -155,19 +155,11 @@ const renderContent = (
                 if (target.closest("a")) {
                   return;
                 }
-                if (project.githubUrl) {
-                  window.open(project.githubUrl, "_blank", "noopener,noreferrer");
-                  return;
-                }
                 onProjectOpen(slug);
               };
               const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.preventDefault();
-                  if (project.githubUrl) {
-                    window.open(project.githubUrl, "_blank", "noopener,noreferrer");
-                    return;
-                  }
                   onProjectOpen(slug);
                 }
               };
@@ -325,6 +317,15 @@ const renderContent = (
                 </a>
               );
             })}
+          </div>
+          <div className="project-links">
+            <a
+              className="pdf-link"
+              href="/assets/resume/Junjie_Wu_CV.pdf"
+              download="Junjie_Wu_CV.pdf"
+            >
+              Download CV
+            </a>
           </div>
         </div>
       );

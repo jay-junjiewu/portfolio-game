@@ -21,21 +21,34 @@ const readDayMode = () => {
   return true;
 };
 
+
 const App = () => {
   const [isDay, setIsDay] = useState(readDayMode);
   const [activeBuilding, setActiveBuilding] = useState<BuildingKey | null>(null);
   const [showControls, setShowControls] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [sceneControls, setSceneControls] = useState<SceneControls | null>(null);
+  const [isTourActive, setIsTourActive] = useState(false);
   const controlsRef = useRef<SceneControls | null>(null);
+  const cancelTourRef = useRef<(() => void) | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const isProjectRoute = location.pathname.startsWith("/projects/");
 
+  const handleTourEnd = useCallback(() => {
+    setIsTourActive(false);
+  }, []);
+
   const handleSceneReady = useCallback((controls: SceneControls) => {
     controlsRef.current = controls;
     setSceneControls(controls);
-  }, []);
+    const timeoutId = window.setTimeout(() => {
+      const cancel = controls.startCameraTour(handleTourEnd);
+      cancelTourRef.current = cancel;
+      setIsTourActive(true);
+    }, 400);
+    return () => window.clearTimeout(timeoutId);
+  }, [handleTourEnd]);
 
   const handleBuildingSelect = useCallback(
     (key: BuildingKey | null) => {
@@ -121,6 +134,18 @@ const App = () => {
         />
       )}
       <ControlsPanel open={showControls} onClose={() => setShowControls(false)} />
+      {isTourActive && (
+        <button
+          type="button"
+          className="tour-skip-btn"
+          onClick={() => {
+            cancelTourRef.current?.();
+            handleTourEnd();
+          }}
+        >
+          Skip intro
+        </button>
+      )}
       {isLoading && (
         <div className="loading-overlay">
           <div className="spinner" />

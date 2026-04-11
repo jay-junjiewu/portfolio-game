@@ -4,7 +4,12 @@ import { PORTFOLIO_DATA, projectSlug } from "../data/portfolioData";
 import AmbientSoundMonitorSystemDetails from "./projects/AmbientSoundMonitorSystemDetails";
 import AudioEqualiserDetails from "./projects/AudioEqualiserDetails";
 import GuitarPowerAmplifierDetails from "./projects/GuitarPowerAmplifierDetails";
+import PersonalPortfolioDetails from "./projects/PersonalPortfolioDetails";
+import RankItDetails from "./projects/RankItDetails";
 import SunswiftDetails from "./projects/SunswiftDetails";
+import VirtualMemorySimulatorDetails from "./projects/VirtualMemorySimulatorDetails";
+import VinoosDetails from "./projects/VinoosDetails";
+import VoltagePlanningToolDetails from "./projects/VoltagePlanningToolDetails";
 
 type ProjectPanelProps = {
   onClose: () => void;
@@ -29,6 +34,16 @@ const ProjectPanel = ({ onClose }: ProjectPanelProps) => {
         return <AmbientSoundMonitorSystemDetails />;
       case "sunswift-racing-mppt-project":
         return <SunswiftDetails />;
+      case "machine-learning-and-voltage-risk-modelling":
+        return <VoltagePlanningToolDetails />;
+      case "virtual-memory-system-emulator-c":
+        return <VirtualMemorySimulatorDetails />;
+      case "personal-portfolio":
+        return <PersonalPortfolioDetails />;
+      case "vinoos-website-freelance":
+        return <VinoosDetails />;
+      case "rankit-website-hackathon":
+        return <RankItDetails />;
       default:
         if (!project) return null;
         return (

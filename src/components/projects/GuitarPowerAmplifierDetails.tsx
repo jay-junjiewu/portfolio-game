@@ -80,6 +80,7 @@ const GuitarPowerAmplifierDetails = () => {
           className="carousel-button left"
           aria-label="Previous image"
           onClick={handlePrev}
+          disabled={activeIndex === 0}
         >
           &#10094;
         </button>
@@ -88,6 +89,7 @@ const GuitarPowerAmplifierDetails = () => {
           className="carousel-button right"
           aria-label="Next image"
           onClick={handleNext}
+          disabled={activeIndex === lastIndex}
         >
           &#10095;
         </button>
