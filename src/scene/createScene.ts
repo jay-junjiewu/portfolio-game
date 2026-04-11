@@ -23,6 +23,7 @@ import { isMobileDevice } from "../utils/device";
 export type SceneCallbacks = {
   onBuildingSelect: (key: BuildingKey | null) => void;
   onAssetsLoaded?: () => void;
+  onAllAssetsLoaded?: () => void;
 };
 
 export type SceneControls = {
@@ -621,7 +622,7 @@ export const createCityScene = async (
       batchBuildings.forEach(addLoadedBuilding);
     }
   })();
-  loadRemaining.then(() => callbacks.onAssetsLoaded?.()).catch(() => callbacks.onAssetsLoaded?.());
+  loadRemaining.then(() => callbacks.onAllAssetsLoaded?.()).catch(() => callbacks.onAllAssetsLoaded?.());
 
   const disposePicking = setupPicking(scene, loadedBuildings, {
     onSelect: callbacks.onBuildingSelect,

@@ -42,12 +42,14 @@ const App = () => {
   const handleSceneReady = useCallback((controls: SceneControls) => {
     controlsRef.current = controls;
     setSceneControls(controls);
-    const timeoutId = window.setTimeout(() => {
-      const cancel = controls.startCameraTour(handleTourEnd);
-      cancelTourRef.current = cancel;
-      setIsTourActive(true);
-    }, 400);
-    return () => window.clearTimeout(timeoutId);
+  }, []);
+
+  const handleAllAssetsLoaded = useCallback(() => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+    const cancel = controls.startCameraTour(handleTourEnd);
+    cancelTourRef.current = cancel;
+    setIsTourActive(true);
   }, [handleTourEnd]);
 
   const handleBuildingSelect = useCallback(
@@ -102,10 +104,6 @@ const App = () => {
     setIsDay((prev) => !prev);
   };
 
-  const resetCamera = () => {
-    controlsRef.current?.resetCamera();
-  };
-
   return (
     <div className={`app-shell ${isDay ? "day" : "night"}`}>
       <BabylonCanvas
@@ -113,6 +111,7 @@ const App = () => {
         onBuildingSelect={handleBuildingSelect}
         onSceneReady={handleSceneReady}
         onLoadingChange={setIsLoading}
+        onAllAssetsLoaded={handleAllAssetsLoaded}
       />
       <TopBar
         isDay={isDay}

@@ -9,6 +9,7 @@ type BabylonCanvasProps = {
   onBuildingSelect: (key: BuildingKey | null) => void;
   onSceneReady?: (controls: SceneControls) => void;
   onLoadingChange?: (loading: boolean) => void;
+  onAllAssetsLoaded?: () => void;
 };
 
 const BabylonCanvas = ({
@@ -16,20 +17,23 @@ const BabylonCanvas = ({
   onBuildingSelect,
   onSceneReady,
   onLoadingChange,
+  onAllAssetsLoaded,
 }: BabylonCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const controlsRef = useRef<SceneControls | null>(null);
   const onBuildingSelectRef = useRef(onBuildingSelect);
   const onSceneReadyRef = useRef(onSceneReady);
   const onLoadingChangeRef = useRef(onLoadingChange);
+  const onAllAssetsLoadedRef = useRef(onAllAssetsLoaded);
   const isDayRef = useRef(isDay);
 
   useEffect(() => {
     onBuildingSelectRef.current = onBuildingSelect;
     onSceneReadyRef.current = onSceneReady;
     onLoadingChangeRef.current = onLoadingChange;
+    onAllAssetsLoadedRef.current = onAllAssetsLoaded;
     isDayRef.current = isDay;
-  }, [isDay, onBuildingSelect, onLoadingChange, onSceneReady]);
+  }, [isDay, onBuildingSelect, onLoadingChange, onSceneReady, onAllAssetsLoaded]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -47,9 +51,10 @@ const BabylonCanvas = ({
     (async () => {
       const controls = await createCityScene(engine, canvas, {
         onBuildingSelect: (key) => onBuildingSelectRef.current?.(key),
-        onAssetsLoaded: () => {
+        onAllAssetsLoaded: () => {
           if (!disposed) {
             onLoadingChangeRef.current?.(false);
+            onAllAssetsLoadedRef.current?.();
           }
         },
       });

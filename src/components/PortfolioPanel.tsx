@@ -318,15 +318,6 @@ const renderContent = (
               );
             })}
           </div>
-          <div className="project-links">
-            <a
-              className="pdf-link"
-              href="/assets/resume/Junjie_Wu_CV.pdf"
-              download="Junjie_Wu_CV.pdf"
-            >
-              Download CV
-            </a>
-          </div>
         </div>
       );
     }
