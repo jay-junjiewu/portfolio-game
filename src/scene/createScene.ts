@@ -16,7 +16,7 @@ import {
 import { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";
 import { CITY_LAYOUT, CITY_TILE_SIZE, type BuildingKey, type AnimationSequence } from "../data/cityLayout";
 import type { LoadedBuilding } from "./loadBuilding";
-import { loadBuilding } from "./loadBuilding";
+import { createModelCache, loadBuilding } from "./loadBuilding";
 import { setupPicking } from "./picking";
 import { isMobileDevice } from "../utils/device";
 
@@ -604,20 +604,21 @@ export const createCityScene = async (
     registerAnimated(building);
   };
 
+  const modelCache = createModelCache();
   const mainEntries = CITY_LAYOUT.filter((entry) => entry.type === "main");
   const otherEntries = CITY_LAYOUT.filter((entry) => entry.type !== "main");
   const mainBuildings = await Promise.all(
-    mainEntries.map((entry) => loadBuilding(scene, entry, shadowGenerator))
+    mainEntries.map((entry) => loadBuilding(scene, entry, shadowGenerator, modelCache))
   );
   mainBuildings.forEach(addLoadedBuilding);
   callbacks.onAssetsLoaded?.();
 
   const loadRemaining = (async () => {
-    const batchSize = 8;
+    const batchSize = 32;
     for (let i = 0; i < otherEntries.length; i += batchSize) {
       const batch = otherEntries.slice(i, i + batchSize);
       const batchBuildings = await Promise.all(
-        batch.map((entry) => loadBuilding(scene, entry, shadowGenerator))
+        batch.map((entry) => loadBuilding(scene, entry, shadowGenerator, modelCache))
       );
       batchBuildings.forEach(addLoadedBuilding);
     }

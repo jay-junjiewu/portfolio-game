@@ -24,6 +24,10 @@ export type LoadedBuilding = {
   labelMesh?: AbstractMesh;
 };
 
+export type ModelCache = Map<string, Promise<Mesh[]>>;
+
+export const createModelCache = (): ModelCache => new Map();
+
 const DEFAULT_SCALES: Record<CityEntity["type"], number> = {
   main: 1,
   decor: 1,
@@ -214,10 +218,35 @@ const createFallbackMesh = (
   return [body, labelPlane];
 };
 
+const loadModelTemplate = (
+  scene: Scene,
+  cache: ModelCache,
+  modelPath: string
+): Promise<Mesh[]> => {
+  let cached = cache.get(modelPath);
+  if (cached) return cached;
+  const { root: assetRoot, file } = splitPath(modelPath);
+  cached = SceneLoader.LoadAssetContainerAsync(assetRoot, file, scene).then(
+    (container) => {
+      const templateMeshes = container.meshes.filter(
+        (m): m is Mesh => m instanceof Mesh && m.getTotalVertices() > 0
+      );
+      templateMeshes.forEach((m) => {
+        ensureMaterial(m, scene);
+        m.setEnabled(false);
+      });
+      return templateMeshes;
+    }
+  );
+  cache.set(modelPath, cached);
+  return cached;
+};
+
 export const loadBuilding = async (
   scene: Scene,
   entry: CityEntity,
-  shadowGenerator: ShadowGenerator
+  shadowGenerator: ShadowGenerator,
+  modelCache: ModelCache
 ): Promise<LoadedBuilding> => {
   const root = new TransformNode(`${entry.id}-root`, scene);
   root.rotationQuaternion = null;
@@ -229,12 +258,15 @@ export const loadBuilding = async (
   let meshes: AbstractMesh[] = [];
 
   try {
-    const { root: assetRoot, file } = splitPath(entry.modelPath);
-    const result = await SceneLoader.ImportMeshAsync("", assetRoot, file, scene);
-
-    meshes = result.meshes.filter(
-      (mesh): mesh is AbstractMesh => mesh instanceof AbstractMesh
-    );
+    const template = await loadModelTemplate(scene, modelCache, entry.modelPath);
+    meshes = template
+      .map((source, index) => {
+        const clone = source.clone(`${entry.id}-mesh-${index}`, null, true);
+        if (!clone) return null;
+        clone.setEnabled(true);
+        return clone as AbstractMesh;
+      })
+      .filter((m): m is AbstractMesh => m !== null);
 
     if (!meshes.length) {
       meshes = createFallbackMesh(scene, entry, root);
