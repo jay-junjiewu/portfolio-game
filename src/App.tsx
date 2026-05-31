@@ -27,6 +27,7 @@ const App = () => {
   const [activeBuilding, setActiveBuilding] = useState<BuildingKey | null>(null);
   const [showControls, setShowControls] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMounted, setIsLoadingMounted] = useState(true);
   const [sceneControls, setSceneControls] = useState<SceneControls | null>(null);
   const [isTourActive, setIsTourActive] = useState(false);
   const controlsRef = useRef<SceneControls | null>(null);
@@ -34,6 +35,15 @@ const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isProjectRoute = location.pathname.startsWith("/projects/");
+
+  useEffect(() => {
+    if (isLoading) {
+      setIsLoadingMounted(true);
+      return;
+    }
+    const t = window.setTimeout(() => setIsLoadingMounted(false), 380);
+    return () => window.clearTimeout(t);
+  }, [isLoading]);
 
   const handleTourEnd = useCallback(() => {
     setIsTourActive(false);
@@ -145,10 +155,14 @@ const App = () => {
           Skip intro
         </button>
       )}
-      {isLoading && (
-        <div className="loading-overlay">
+      {isLoadingMounted && (
+        <div className={`loading-overlay${isLoading ? "" : " exiting"}`}>
           <div className="spinner" />
-          <p>Loading city...</p>
+          <div className="loading-hints" aria-live="polite">
+            <span>Building your city…</span>
+            <span>Adding finishing touches…</span>
+            <span>Almost there…</span>
+          </div>
         </div>
       )}
     </div>

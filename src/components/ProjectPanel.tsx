@@ -83,7 +83,7 @@ const ProjectPanel = ({ onClose }: ProjectPanelProps) => {
             {project && <p className="muted">{project.date}</p>}
           </div>
           <button type="button" className="ghost-button" onClick={handleClose}>
-            Close
+            Back
           </button>
         </div>
         <div className="panel-body">
