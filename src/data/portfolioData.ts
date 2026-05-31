@@ -52,9 +52,9 @@ export const projectSlug = (title: string) =>
 
 export const PORTFOLIO_DATA: PortfolioContent = {
   about: {
-    headline: "Computer Science & Electrical Engineering Student Focused on Software Engineering",
+    headline: "Software Engineering Intern @ Tencent | Computer Science & Electrical Engineering @ UNSW",
     body: [
-      "I'm a final-year Computer Science and Electrical Engineering student at UNSW focused on building high-performance software systems for machine learning applications.\n\nMy experience spans:\n•  Machine Learning: transformer-based speech anonymization, speaker embedding systems, and applied ML for power networks\n•  Software Engineering: C++ and Python for high-performance systems, data processing, and backend pipelines\n•  Real-world Systems: embedded and energy systems, including MPPT and power optimization in a world record-winning solar vehicle",
+      "Software engineer focused on low-level, high-performance C++ and systems programming. Final year Computer Science and Electrical Engineering student at UNSW. I work across C++, firmware, hardware, FPGA and RTL design, and real-time software where performance, memory, and timing matter. \n\nCurrently interning at Tencent, working with C++ and Unreal Engine.",
     ],
   },
   projects: [
@@ -214,21 +214,30 @@ export const PORTFOLIO_DATA: PortfolioContent = {
   ],
   experience: [
     {
+      company: "Tencent",
+      companyUrl: "https://www.tencent.com/",
+      role: "Unreal Engine Intern",
+      period: "June 2026 - Present",
+      highlights: [
+        "Currently interning at Tencent, working with C++ and Unreal Engine."
+      ],
+    },
+    {
       company: "AtomCraft",
       companyUrl: "https://www.atomcraft.com.au/",
       role: "Electrical Engineer",
       period: "February 2026 - Present",
       highlights: [
-        "Currently working with supercapacitor based pulsed power systems to deliver rapid high-current discharges for plasma generation and experimental applications related to fusion and tokamak research."
+        "Pulsed power systems research for plasma generation with supercapacitors."
       ],
     },
     {
       company: "Ausgrid",
       companyUrl: "https://www.ausgrid.com.au/",
-      role: "Electrical Engineering Intern",
+      role: "Electrical Engineering Project",
       period: "January 2026 - February 2026",
       highlights: [
-        "Analyzed LV network data to model PV-driven voltage non-compliance risk, developed scalable machine-learning models to quantify intervention impacts, and translated results into DER planning metrics aligned with Australian regulatory standards."
+        "Worked on machine learning and data analysis for an electrical network planning project, modelling voltage risk from rooftop solar."
       ],
     },
     {
@@ -243,19 +252,10 @@ export const PORTFOLIO_DATA: PortfolioContent = {
     {
       company: "Sunswift Racing",
       companyUrl: "https://www.sunswift.com",
-      role: "Project Lead",
-      period: "January 2024 - December 2024",
+      role: "Project Lead & Electrical Engineer",
+      period: "September 2023 - December 2024",
       highlights: [
-        "Led the Electrical Project of Sunswift Racing's latest EV: Sunswift 8. My role includes R&D, design, technical analyses, risk assessment, and management within the energy systems department.",
-      ],
-    },
-    {
-      company: "Sunswift Racing",
-      companyUrl: "https://www.sunswift.com",
-      role: "Electrical Engineer",
-      period: "September 2023 - January 2024",
-      highlights: [
-        "Worked on power electronics, embedded firmware, power delivery, and renewable photovoltaic systems on the Sunswift EV.",
+      "Built embedded firmware in low-level C++ and designed PCBs, and led the electrical team for Sunswift's world-record solar EV."
       ],
       links: [
         {
@@ -268,7 +268,7 @@ export const PORTFOLIO_DATA: PortfolioContent = {
     },
   ],
   contact: {
-    email: "jaywu0045@gmail.com",
+    email: "jaywu0046@gmail.com",
     location: "Sydney, Australia",
     links: [
       { label: "GitHub", url: "https://github.com/jay-junjiewu" },
