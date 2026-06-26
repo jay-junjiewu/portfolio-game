@@ -216,10 +216,10 @@ export const PORTFOLIO_DATA: PortfolioContent = {
     {
       company: "Tencent",
       companyUrl: "https://www.tencent.com/",
-      role: "Unreal Engine Intern",
+      role: "Software Engineering Intern",
       period: "June 2026 - Present",
       highlights: [
-        "Currently interning at Tencent, working with C++ and Unreal Engine."
+        "Working with C++, Python, Unreal Engine 5, C#, .NET, Perforce, REST API design, multithreading, caching, and Git."
       ],
     },
     {
@@ -234,17 +234,17 @@ export const PORTFOLIO_DATA: PortfolioContent = {
     {
       company: "Ausgrid",
       companyUrl: "https://www.ausgrid.com.au/",
-      role: "Electrical Engineering Project",
+      role: "Electrical Engineering Intern",
       period: "January 2026 - February 2026",
       highlights: [
-        "Worked on machine learning and data analysis for an electrical network planning project, modelling voltage risk from rooftop solar."
+        "Worked on machine learning and data analysis for an electrical network planning project in collaboration with UNSW, modelling voltage risk from rooftop solar."
       ],
     },
     {
       company: "UNSW",
       companyUrl: "https://www.unsw.edu.au/engineering/our-schools/electrical-engineering-telecommunications",
       role: "Lab Demonstrator",
-      period: "January 2024 - Present",
+      period: "January 2024 - May 2026",
       highlights: [
         "Coordinated, assisted, and assessed students in UNSW electrical engineering labs.",
       ],
@@ -252,7 +252,7 @@ export const PORTFOLIO_DATA: PortfolioContent = {
     {
       company: "Sunswift Racing",
       companyUrl: "https://www.sunswift.com",
-      role: "Project Lead & Electrical Engineer",
+      role: "Lead Electrical Engineer",
       period: "September 2023 - December 2024",
       highlights: [
       "Built embedded firmware in low-level C++ and designed PCBs, and led the electrical team for Sunswift's world-record solar EV."
