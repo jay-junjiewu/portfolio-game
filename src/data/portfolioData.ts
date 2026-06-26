@@ -69,6 +69,26 @@ export const PORTFOLIO_DATA: PortfolioContent = {
       ],
     },
     {
+      title: "CRM Portal",
+      category: "software",
+      date: "Present",
+      description:
+        "Full-stack CRM and admin portal for a Sydney-based company, with a public contact form and a staff-only dashboard, containerised using Docker and docker-compose. Google OAuth with a server-enforced staff allowlist controls access, and Next.js middleware and httpOnly session cookies guard admin routes. A Flask REST API serves a normalised PostgreSQL schema, with migrations and seed data managed via the Supabase CLI. The Next.js frontend deploys to Vercel and the Dockerised Flask backend runs on a cloud droplet.",
+      stack: [
+        "Next.js", "React", "Flask", "Python", "Supabase", "PostgreSQL", "Docker", "Google OAuth", "Vercel",
+      ],
+    },
+     {
+      title: "Agentic AI Design Workflow",
+      category: "software",
+      date: "June 2026",
+      description:
+        "Built an agentic workflow that integrates a large language model (Claude) with the Figma API through the Model Context Protocol (MCP). The system orchestrates multi-step tool calls, letting the model autonomously plan and execute design operations to generate and iteratively refine UI directly from natural-language specifications. By exposing Figma as a set of MCP tools, the agent can reason about layout, create and edit frames, and converge on a polished design without manual intervention.",
+      stack: [
+        "Claude", "MCP (Model Context Protocol)", "Figma API", "LLM Agents", "Tool Orchestration", "Prompt Engineering",
+      ],
+    },
+    {
       title: "Machine Learning and Voltage Risk Modelling",
       category: "software",
       date: "January 2026",
@@ -93,6 +113,16 @@ export const PORTFOLIO_DATA: PortfolioContent = {
         "TLB Simulation",
       ],
       githubUrl: "https://github.com/jay-junjiewu/vmsim"
+    },
+    {
+      title: "Limit Order Book Matching Engine in C++",
+      category: "software",
+      date: "January 2025",
+      description:
+        "Built a low-latency limit order book and matching engine in modern C++ supporting price-time priority and order add, cancel, and modify operations. Optimised hot-path data structures for deterministic, microsecond-scale matching, modelling core exchange microstructure with an emphasis on predictable performance and minimal allocation on the critical path.",
+      stack: [
+        "C++", "Low-Latency Systems", "Data Structures", "Market Microstructure", "Performance Optimisation",
+      ],
     },
     {
       title: "Personal Portfolio",
