@@ -1482,3 +1482,36 @@ button:active {
     width: 100%;
   }
 }
+
+.about-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.about-photo {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid var(--accent-border);
+}
+
+.about-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.about-name {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.about-role {
+  font-size: 0.9rem;
+  line-height: 1.45;
+}

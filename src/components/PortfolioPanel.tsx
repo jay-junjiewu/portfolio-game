@@ -115,8 +115,20 @@ const renderContent = (
   switch (key) {
     case "about":
       return (
-        <div className="panel-section">
-          <h3>{PORTFOLIO_DATA.about.headline}</h3>
+        <div className="panel-section about-section">
+          <div className="about-header">
+            <img
+              className="about-photo"
+              src="/headshot.jpg"
+              alt="Junjie Wu"
+              width={84}
+              height={84}
+            />
+            <div className="about-intro">
+              <h3 className="about-name">Junjie Wu</h3>
+              <p className="about-role muted">{PORTFOLIO_DATA.about.headline}</p>
+            </div>
+          </div>
           {PORTFOLIO_DATA.about.body.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
