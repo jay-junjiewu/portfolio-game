@@ -1,13 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import BabylonCanvas from "./components/BabylonCanvas";
 import ControlsPanel from "./components/ControlsPanel";
-import OrientationWidget from "./components/OrientationWidget";
 import PortfolioPanel from "./components/PortfolioPanel";
 import ProjectPanel from "./components/ProjectPanel";
 import TopBar from "./components/TopBar";
 import type { BuildingKey } from "./data/cityLayout";
 import type { SceneControls } from "./scene/createScene";
+
+// Babylon.js is heavy (~6 MB). Lazy-load the 3D components so the app shell and
+// loading screen paint immediately, then the engine streams in as a separate chunk.
+const BabylonCanvas = lazy(() => import("./components/BabylonCanvas"));
+const OrientationWidget = lazy(() => import("./components/OrientationWidget"));
 
 const readDayMode = () => {
   if (typeof window === "undefined") return true;
@@ -116,13 +119,15 @@ const App = () => {
 
   return (
     <div className={`app-shell ${isDay ? "day" : "night"}`}>
-      <BabylonCanvas
-        isDay={isDay}
-        onBuildingSelect={handleBuildingSelect}
-        onSceneReady={handleSceneReady}
-        onLoadingChange={setIsLoading}
-        onAllAssetsLoaded={handleAllAssetsLoaded}
-      />
+      <Suspense fallback={null}>
+        <BabylonCanvas
+          isDay={isDay}
+          onBuildingSelect={handleBuildingSelect}
+          onSceneReady={handleSceneReady}
+          onLoadingChange={setIsLoading}
+          onAllAssetsLoaded={handleAllAssetsLoaded}
+        />
+      </Suspense>
       <TopBar
         isDay={isDay}
         onToggleDay={toggleDay}
@@ -132,7 +137,9 @@ const App = () => {
           navigate("/");
         }}
       />
-      <OrientationWidget controls={sceneControls} />
+      <Suspense fallback={null}>
+        <OrientationWidget controls={sceneControls} />
+      </Suspense>
       {isProjectRoute ? (
         <ProjectPanel onClose={handleProjectClose} />
       ) : (
