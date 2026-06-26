@@ -2,19 +2,98 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Junjie Wu</title>
-    <meta name="description" content="Junjie Wu — CS &amp; EE student at UNSW building high-performance software for ML applications." />
+
+    <title>Junjie Wu - Software Engineer & CS/EE Student at UNSW</title>
+    <meta
+      name="description"
+      content="Junjie Wu — software engineer focused on high-performance C++ and systems programming. Computer Science & Electrical Engineering student at UNSW, based in Sydney, Australia."
+    />
+    <meta name="author" content="Junjie Wu" />
+    <link rel="canonical" href="https://www.junjiewu.com/" />
+
+    <!-- Google Search Console: paste your verification token below, then uncomment. -->
+    <!-- <meta name="google-site-verification" content="YOUR_TOKEN_HERE" /> -->
+
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Junjie Wu" />
-    <meta property="og:description" content="CS &amp; EE student at UNSW. Experience in ML systems, C++/Python, and embedded energy systems." />
+    <meta property="og:url" content="https://www.junjiewu.com/" />
+    <meta property="og:title" content="Junjie Wu — Software Engineer & CS/EE Student" />
+    <meta
+      property="og:description"
+      content="Software engineer focused on high-performance C++ and systems programming. CS & Electrical Engineering at UNSW, based in Sydney."
+    />
     <meta property="og:site_name" content="Junjie Wu Portfolio" />
+    <meta property="og:image" content="https://www.junjiewu.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Junjie Wu — Software Engineer" />
+
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="Junjie Wu" />
-    <meta name="twitter:description" content="CS &amp; EE student at UNSW. Experience in ML systems, C++/Python, and embedded energy systems." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Junjie Wu — Software Engineer & CS/EE Student" />
+    <meta
+      name="twitter:description"
+      content="Software engineer focused on high-performance C++ and systems programming. CS & Electrical Engineering at UNSW, based in Sydney."
+    />
+    <meta name="twitter:image" content="https://www.junjiewu.com/og-image.png" />
+
+    <!-- Structured data: Person + WebSite (helps Google associate this site with the name "Junjie Wu") -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://www.junjiewu.com/#person",
+            "name": "Junjie Wu",
+            "url": "https://www.junjiewu.com/",
+            "image": "https://www.junjiewu.com/og-image.png",
+            "jobTitle": "Software Engineer",
+            "description": "Software engineer focused on low-level, high-performance C++ and systems programming. Computer Science & Electrical Engineering student at UNSW.",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Tencent",
+              "url": "https://www.tencent.com/"
+            },
+            "alumniOf": {
+              "@type": "CollegeOrUniversity",
+              "name": "University of New South Wales (UNSW)",
+              "url": "https://www.unsw.edu.au/"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Sydney",
+              "addressRegion": "NSW",
+              "addressCountry": "AU"
+            },
+            "knowsAbout": [
+              "C++",
+              "Systems Programming",
+              "High-Performance Computing",
+              "Machine Learning",
+              "FPGA Design",
+              "Embedded Systems"
+            ],
+            "sameAs": [
+              "https://github.com/jay-junjiewu",
+              "https://www.linkedin.com/in/junjiewujay/"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.junjiewu.com/#website",
+            "url": "https://www.junjiewu.com/",
+            "name": "Junjie Wu Portfolio",
+            "about": { "@id": "https://www.junjiewu.com/#person" },
+            "publisher": { "@id": "https://www.junjiewu.com/#person" }
+          }
+        ]
+      }
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -23,7 +102,32 @@
     />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <div id="root">
+      <!--
+        Static fallback content for search-engine crawlers and no-JS clients.
+        React (createRoot) clears these children on mount, so users with JS never see this;
+        crawlers and Google's initial fetch read the name, bio, and profile links here.
+      -->
+      <main style="max-width: 720px; margin: 0 auto; padding: 48px 24px; font-family: system-ui, sans-serif; line-height: 1.6;">
+        <h1>Junjie Wu</h1>
+        <p><strong>Software Engineer · Computer Science &amp; Electrical Engineering student at UNSW · Sydney, Australia</strong></p>
+        <p>
+          Junjie Wu is a software engineer focused on low-level, high-performance C++ and
+          systems programming. He is a final-year Computer Science and Electrical Engineering
+          student at UNSW, working across C++, firmware, hardware, FPGA and RTL design, and
+          real-time software where performance, memory, and timing matter. He is currently a
+          Software Engineering Intern at Tencent.
+        </p>
+        <p>
+          Explore the interactive portfolio for projects in machine learning, low-latency C++,
+          embedded systems, and FPGA design.
+        </p>
+        <nav>
+          <a href="https://github.com/jay-junjiewu">GitHub</a> ·
+          <a href="https://www.linkedin.com/in/junjiewujay/">LinkedIn</a>
+        </nav>
+      </main>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

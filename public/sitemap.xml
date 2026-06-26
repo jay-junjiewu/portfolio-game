@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.junjiewu.com/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url><loc>https://www.junjiewu.com/projects/undergraduate-thesis-transformer-based-speech-anonymization</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/crm-portal</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/agentic-ai-design-workflow</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/machine-learning-and-voltage-risk-modelling</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/virtual-memory-system-emulator-c</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/limit-order-book-matching-engine-in-c</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/personal-portfolio</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/vinoos-website-freelance</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/rankit-website-hackathon</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/audio-equaliser-in-c</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/fpga-based-5-stage-pipelined-processor</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/guitar-power-amplifier</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/sunswift-racing-mppt-project</loc><priority>0.7</priority></url>
+  <url><loc>https://www.junjiewu.com/projects/ambient-sound-monitor-system</loc><priority>0.7</priority></url>
+</urlset>
