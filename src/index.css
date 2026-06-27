@@ -2250,3 +2250,45 @@ body.no-scroll .chat-fab {
   max-width: 420px;
   word-break: break-word;
 }
+
+/* Expanded chat-transcript group: a stack of Q/A pairs. */
+.stats-transcript {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.5rem 0.2rem;
+}
+
+.stats-qa {
+  border-left: 2px solid rgba(216, 230, 255, 0.18);
+  padding-left: 0.7rem;
+}
+
+.stats-qa-time {
+  font-size: 0.68rem;
+  opacity: 0.5;
+  margin-bottom: 0.25rem;
+}
+
+.stats-qa-q,
+.stats-qa-a {
+  display: flex;
+  gap: 0.55rem;
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  white-space: normal;
+  word-break: break-word;
+  max-width: none;
+}
+
+.stats-qa-a {
+  margin-top: 0.2rem;
+  opacity: 0.85;
+}
+
+.stats-qa-q > span,
+.stats-qa-a > span {
+  flex: 0 0 1.1rem;
+  font-family: var(--font-display);
+  opacity: 0.6;
+}

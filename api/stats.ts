@@ -84,7 +84,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Chat usage — per-IP daily message counts from the rate-limiter table.
     const chatUsage = await sbSelect<{ ip: string; day: string; count: number }>(
       "chat_usage",
-      "select=ip,day,count&order=day.desc,count.desc&limit=200"
+      "select=ip,day,count&order=day.desc,count.desc&limit=5000"
     );
     const todayStr = new Date().toISOString().slice(0, 10); // UTC — matches the limiter
     let chatToday = 0;
@@ -94,17 +94,44 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (row.day === todayStr) chatToday += row.count ?? 0;
     }
 
-    // Full question/answer transcripts (most recent first). Isolated so a
-    // missing table (schema not yet applied) doesn't 500 the whole dashboard.
+    // Full question/answer transcripts, all-time, most recent first. Isolated so
+    // a missing table (schema not yet applied) doesn't 500 the whole dashboard.
     let chatMessages: ChatMessageRow[] = [];
     try {
       chatMessages = await sbSelect<ChatMessageRow>(
         "chat_messages",
-        "select=*&order=created_at.desc&limit=100",
+        "select=*&order=created_at.desc&limit=5000",
       );
     } catch {
       // chat_messages may not exist yet — show no transcripts.
     }
+
+    // Enrich each transcript with the sender's timezone + location, looked up
+    // from their visit row (by session id, else the most recent visit for that
+    // IP). `visits` is ordered newest-first, so the first match per key wins.
+    const visitBySession = new Map<string, Visit>();
+    const visitByIp = new Map<string, Visit>();
+    for (const v of visits) {
+      const sid = typeof v.session_id === "string" ? v.session_id : null;
+      if (sid && !visitBySession.has(sid)) visitBySession.set(sid, v);
+      const vip = typeof v.ip === "string" ? v.ip : null;
+      if (vip && !visitByIp.has(vip)) visitByIp.set(vip, v);
+    }
+    const field = (v: Visit | undefined, key: string): string | null => {
+      const val = v?.[key];
+      return typeof val === "string" && val.trim().length > 0 ? val : null;
+    };
+    const messages = chatMessages.map((m) => {
+      const ctx =
+        (m.session_id ? visitBySession.get(m.session_id) : undefined) ??
+        (m.ip ? visitByIp.get(m.ip) : undefined);
+      return {
+        ...m,
+        timezone: field(ctx, "timezone"),
+        country: field(ctx, "country"),
+        city: field(ctx, "city"),
+      };
+    });
 
     res.status(200).json({
       total: totalCount ?? visits.length,
@@ -117,7 +144,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         messagesToday: chatToday,
         messagesTotal: chatTotal,
         recent: chatUsage,
-        messages: chatMessages,
+        messages,
       },
     });
   } catch {

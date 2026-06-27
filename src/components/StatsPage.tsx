@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
 type CountRow = {
   country?: string;
@@ -45,6 +45,17 @@ type ChatMessage = {
   question: string | null;
   answer: string | null;
   model: string | null;
+  timezone?: string | null;
+  country?: string | null;
+  city?: string | null;
+};
+
+type ChatGroup = {
+  ip: string;
+  messages: ChatMessage[];
+  last: string;
+  timezone: string | null;
+  location: string;
 };
 
 type StatsResponse = {
@@ -123,6 +134,43 @@ const StatsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<number | null>(null);
+  const [openIps, setOpenIps] = useState<Set<string>>(() => new Set());
+
+  // Group chat transcripts by IP — newest message first within each group, and
+  // groups ordered by most recent activity (all-time).
+  const chatGroups = useMemo<ChatGroup[]>(() => {
+    const msgs = data?.chat?.messages ?? [];
+    const byIp = new Map<string, ChatMessage[]>();
+    for (const m of msgs) {
+      const ip = m.ip ?? "unknown";
+      const list = byIp.get(ip) ?? [];
+      list.push(m);
+      byIp.set(ip, list);
+    }
+    return [...byIp.entries()]
+      .map(([ip, list]) => {
+        const messages = [...list].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        );
+        const located = messages.find((x) => x.city || x.country);
+        return {
+          ip,
+          messages,
+          last: messages[0]?.created_at ?? "",
+          timezone: messages.find((x) => x.timezone)?.timezone ?? null,
+          location: located ? [located.city, located.country].filter(Boolean).join(", ") : "",
+        };
+      })
+      .sort((a, b) => new Date(b.last).getTime() - new Date(a.last).getTime());
+  }, [data]);
+
+  const toggleIp = (ip: string) =>
+    setOpenIps((prev) => {
+      const next = new Set(prev);
+      if (next.has(ip)) next.delete(ip);
+      else next.add(ip);
+      return next;
+    });
 
   // Restore a previously-entered key so the gate is skipped on revisit.
   useEffect(() => {
@@ -441,29 +489,63 @@ const StatsPage = () => {
           {data.chat?.messages && (
             <section className="stats-chatlog">
               <h2>Chat transcripts</h2>
+              <p className="stats-hint">
+                {data.chat.messages.length.toLocaleString()} messages all-time, grouped by IP —
+                click a row to expand.
+              </p>
               <div className="stats-table">
                 <table>
                   <thead>
                     <tr>
-                      <th>Time</th>
                       <th>IP</th>
-                      <th>Question</th>
-                      <th>Answer</th>
+                      <th>Timezone</th>
+                      <th>Location</th>
+                      <th>Messages</th>
+                      <th>Last activity</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {data.chat.messages.length > 0 ? (
-                      data.chat.messages.map((m, index) => (
-                        <tr key={`${m.created_at}-${index}`}>
-                          <td>{formatDateTime(m.created_at)}</td>
-                          <td>{display(m.ip)}</td>
-                          <td className="stats-msg">{display(m.question)}</td>
-                          <td className="stats-msg">{display(m.answer)}</td>
-                        </tr>
+                    {chatGroups.length > 0 ? (
+                      chatGroups.map((group) => (
+                        <Fragment key={group.ip}>
+                          <tr className="stats-row" onClick={() => toggleIp(group.ip)}>
+                            <td>
+                              {openIps.has(group.ip) ? "▾ " : "▸ "}
+                              {display(group.ip)}
+                            </td>
+                            <td>{display(group.timezone)}</td>
+                            <td>{display(group.location)}</td>
+                            <td>{group.messages.length.toLocaleString()}</td>
+                            <td>{formatDateTime(group.last)}</td>
+                          </tr>
+                          {openIps.has(group.ip) && (
+                            <tr className="stats-detail-row">
+                              <td colSpan={5}>
+                                <div className="stats-transcript">
+                                  {group.messages.map((m, i) => (
+                                    <div className="stats-qa" key={`${m.created_at}-${i}`}>
+                                      <div className="stats-qa-time">
+                                        {formatDateTime(m.created_at)}
+                                      </div>
+                                      <div className="stats-qa-q">
+                                        <span>Q</span>
+                                        {display(m.question)}
+                                      </div>
+                                      <div className="stats-qa-a">
+                                        <span>A</span>
+                                        {display(m.answer)}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </Fragment>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={4}>—</td>
+                        <td colSpan={5}>—</td>
                       </tr>
                     )}
                   </tbody>
