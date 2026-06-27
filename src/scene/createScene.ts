@@ -8,6 +8,7 @@ import {
   HemisphericLight,
   MeshBuilder,
   PointerEventTypes,
+  Scalar,
   Scene,
   ShadowGenerator,
   StandardMaterial,
@@ -15,10 +16,10 @@ import {
 } from "@babylonjs/core";
 import { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";
 import { CITY_LAYOUT, CITY_TILE_SIZE, type BuildingKey, type AnimationSequence } from "../data/cityLayout";
-import type { LoadedBuilding } from "./loadBuilding";
-import { createModelCache, loadBuilding } from "./loadBuilding";
+import type { LoadedBuilding, RevealEntry } from "./loadBuilding";
+import { createModelCache, loadBuilding, revealQueue } from "./loadBuilding";
 import { setupPicking } from "./picking";
-import { isMobileDevice } from "../utils/device";
+import { isMobileDevice, prefersReducedMotion } from "../utils/device";
 
 export type SceneCallbacks = {
   onBuildingSelect: (key: BuildingKey | null) => void;
@@ -360,6 +361,10 @@ export const createCityScene = async (
   const scene = new Scene(engine);
   scene.clearColor = new Color4(0.82, 0.92, 1, 1);
 
+  // Drop any reveal entries left over from a previous scene (e.g. a StrictMode
+  // remount) so this scene's observer never tweens disposed nodes.
+  revealQueue.length = 0;
+
   const { ground, groundMaterial } = createGround(scene);
 
   // Grid for testing
@@ -492,6 +497,67 @@ export const createCityScene = async (
     return length;
   };
 
+  // --- Intro "city builds itself" reveal -------------------------------------
+  // loadBuilding snaps each building to a hidden start state (scale 0, raised Y)
+  // and pushes it onto revealQueue. A single onBeforeRenderObservable below
+  // drains the queue: once a building's stagger delay elapses it grows in with
+  // an ease-out-back pop. We only ever iterate the in-flight + just-queued
+  // reveals, never the full set of loaded buildings. Under reduced motion the
+  // queue stays empty (loadBuilding never enqueues) so this observer is a no-op.
+  const REVEAL_DURATION = 520;
+  const revealsInFlight: Array<RevealEntry & { elapsed: number }> = [];
+  // Slight overshoot ease-out-back so buildings pop past final scale and settle.
+  const easeOutBack = (t: number) => {
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+    const p = t - 1;
+    return 1 + c3 * p * p * p + c1 * p * p;
+  };
+
+  let revealObserverActive = false;
+  const ensureRevealObserver = () => {
+    if (revealObserverActive) return;
+    revealObserverActive = true;
+    scene.onBeforeRenderObservable.add(() => {
+      const now = performance.now();
+      // Promote any queued reveals whose stagger delay has elapsed.
+      for (let i = revealQueue.length - 1; i >= 0; i -= 1) {
+        const pending = revealQueue[i];
+        if (now - pending.queuedAt >= pending.delay) {
+          revealQueue.splice(i, 1);
+          revealsInFlight.push({ ...pending, elapsed: 0 });
+        }
+      }
+      if (!revealsInFlight.length) return;
+
+      const dt = scene.getEngine().getDeltaTime();
+      for (let i = revealsInFlight.length - 1; i >= 0; i -= 1) {
+        const reveal = revealsInFlight[i];
+        if (reveal.root.isDisposed()) {
+          revealsInFlight.splice(i, 1);
+          continue;
+        }
+        reveal.elapsed += dt;
+        const t = Scalar.Clamp(reveal.elapsed / REVEAL_DURATION, 0, 1);
+        const eased = easeOutBack(t);
+        reveal.root.scaling.set(
+          reveal.finalScaling.x * eased,
+          reveal.finalScaling.y * eased,
+          reveal.finalScaling.z * eased
+        );
+        // Cars (scaleOnly) keep their looping-observer-owned Y untouched.
+        if (!reveal.scaleOnly) {
+          reveal.root.position.y = Scalar.Lerp(reveal.raisedY, reveal.finalY, eased);
+        }
+        if (t >= 1) {
+          reveal.root.scaling.copyFrom(reveal.finalScaling);
+          if (!reveal.scaleOnly) reveal.root.position.y = reveal.finalY;
+          revealsInFlight.splice(i, 1);
+        }
+      }
+    });
+  };
+
   const buildSegments = (
     basePosition: Vector3,
     sequence: AnimationSequence,
@@ -604,13 +670,35 @@ export const createCityScene = async (
     registerAnimated(building);
   };
 
+  // Stagger reveals so the city grows outward from the centre. Distance from
+  // origin drives the cascade; main buildings get a near-zero delay so the
+  // camera tour always has visible targets, decor cascades a touch slower.
+  const revealMotion = !prefersReducedMotion();
+  const revealDelayFor = (entry: (typeof CITY_LAYOUT)[number]) => {
+    if (!revealMotion) return 0;
+    const dist = Math.hypot(entry.position.x, entry.position.z);
+    if (entry.type === "main") {
+      // Tiny spread (~0-160ms) keyed to distance — centre pops first.
+      return Math.min(160, dist * 4);
+    }
+    // Decor: ~6ms per world unit out from centre, capped so the far edges of
+    // the city still arrive promptly after their batch loads.
+    return Math.min(900, dist * 6);
+  };
+
   const modelCache = createModelCache();
   const mainEntries = CITY_LAYOUT.filter((entry) => entry.type === "main");
   const otherEntries = CITY_LAYOUT.filter((entry) => entry.type !== "main");
   const mainBuildings = await Promise.all(
-    mainEntries.map((entry) => loadBuilding(scene, entry, shadowGenerator, modelCache))
+    mainEntries.map((entry) =>
+      loadBuilding(scene, entry, shadowGenerator, modelCache, revealDelayFor(entry))
+    )
   );
   mainBuildings.forEach(addLoadedBuilding);
+  // Always attach the drainer (idempotent, no-op when the queue stays empty),
+  // so a node hidden by queueReveal always has an observer to reveal it — even
+  // if reduced-motion is toggled off mid-load after revealMotion was captured.
+  ensureRevealObserver();
   callbacks.onAssetsLoaded?.();
 
   const loadRemaining = (async () => {
@@ -618,9 +706,15 @@ export const createCityScene = async (
     for (let i = 0; i < otherEntries.length; i += batchSize) {
       const batch = otherEntries.slice(i, i + batchSize);
       const batchBuildings = await Promise.all(
-        batch.map((entry) => loadBuilding(scene, entry, shadowGenerator, modelCache))
+        batch.map((entry) =>
+          loadBuilding(scene, entry, shadowGenerator, modelCache, revealDelayFor(entry))
+        )
       );
       batchBuildings.forEach(addLoadedBuilding);
+      // Always attach the drainer (idempotent, no-op when the queue stays empty),
+  // so a node hidden by queueReveal always has an observer to reveal it — even
+  // if reduced-motion is toggled off mid-load after revealMotion was captured.
+  ensureRevealObserver();
     }
   })();
   loadRemaining.then(() => callbacks.onAllAssetsLoaded?.()).catch(() => callbacks.onAllAssetsLoaded?.());

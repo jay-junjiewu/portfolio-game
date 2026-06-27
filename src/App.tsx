@@ -7,11 +7,15 @@ import TopBar from "./components/TopBar";
 import type { BuildingKey } from "./data/cityLayout";
 import type { SceneControls } from "./scene/createScene";
 import { prefersReducedMotion } from "./utils/device";
+import { Analytics } from "@vercel/analytics/react";
+import { trackVisit } from "./utils/track";
 
 // Babylon.js is heavy (~6 MB). Lazy-load the 3D components so the app shell and
 // loading screen paint immediately, then the engine streams in as a separate chunk.
 const BabylonCanvas = lazy(() => import("./components/BabylonCanvas"));
 const OrientationWidget = lazy(() => import("./components/OrientationWidget"));
+const ChatWidget = lazy(() => import("./components/ChatWidget"));
+const StatsPage = lazy(() => import("./components/StatsPage"));
 
 const readDayMode = () => {
   if (typeof window === "undefined") return true;
@@ -158,6 +162,11 @@ const App = () => {
     }
   }, [isDay]);
 
+  // Fire-and-forget visit analytics once per load (skip the private dashboard).
+  useEffect(() => {
+    if (window.location.pathname !== "/stats") trackVisit();
+  }, []);
+
   // Auto-dismiss the coachmark after a few seconds or on the first interaction.
   useEffect(() => {
     if (!showCoachmark) return;
@@ -181,6 +190,15 @@ const App = () => {
   const toggleDay = () => {
     setIsDay((prev) => !prev);
   };
+
+  // Private analytics dashboard lives at /stats — render it standalone (no city).
+  if (location.pathname === "/stats") {
+    return (
+      <Suspense fallback={null}>
+        <StatsPage />
+      </Suspense>
+    );
+  }
 
   return (
     <div className={`app-shell ${isDay ? "day" : "night"}`}>
@@ -262,6 +280,12 @@ const App = () => {
           </div>
         </div>
       )}
+      {!isLoading && (
+        <Suspense fallback={null}>
+          <ChatWidget />
+        </Suspense>
+      )}
+      <Analytics />
     </div>
   );
 };

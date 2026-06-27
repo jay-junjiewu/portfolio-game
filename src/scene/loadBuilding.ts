@@ -15,6 +15,7 @@ import "@babylonjs/loaders/OBJ/objFileLoader";
 import { CITY_TILE_SIZE, type CityEntity } from "../data/cityLayout";
 import { PANEL_TITLES } from "../data/portfolioData";
 import { ASSET_BASE_URL } from "../config";
+import { prefersReducedMotion } from "../utils/device";
 
 export type LoadedBuilding = {
   entry: CityEntity;
@@ -23,6 +24,33 @@ export type LoadedBuilding = {
   glowMesh?: AbstractMesh;
   labelMesh?: AbstractMesh;
 };
+
+/**
+ * A single building waiting to "grow in" during the intro reveal. The node is
+ * pre-set to a hidden start state (scale 0, raised Y) inside loadBuilding; the
+ * reveal observer in createScene advances these each frame and removes them
+ * once finished. Position-Y settling is skipped for animated decor (cars),
+ * whose looping observer owns root.position every frame.
+ */
+export type RevealEntry = {
+  root: TransformNode;
+  finalScaling: Vector3;
+  finalY: number;
+  raisedY: number;
+  /** Stagger delay (ms) measured from when the node was queued. */
+  delay: number;
+  /** When true, only scale is tweened; the raised Y is not applied/settled. */
+  scaleOnly: boolean;
+  /** performance.now() at queue time; reveal starts after queuedAt + delay. */
+  queuedAt: number;
+};
+
+/**
+ * Module-level queue of buildings awaiting their intro reveal. createScene
+ * drains this via a single onBeforeRenderObservable. Empty when reduced motion
+ * is requested (loadBuilding never enqueues in that case).
+ */
+export const revealQueue: RevealEntry[] = [];
 
 export type ModelCache = Map<string, Promise<Mesh[]>>;
 
@@ -218,6 +246,38 @@ const createFallbackMesh = (
   return [body, labelPlane];
 };
 
+/** Vertical lift (world units) a building drops from as it grows in. */
+const REVEAL_RAISE = 6;
+
+/**
+ * Capture the node's finalized scaling/position, snap it to a hidden start
+ * state (scale 0, raised Y) and enqueue it for the intro reveal. No-op under
+ * reduced motion — the node is left fully placed so it appears instantly.
+ * Called only once the root transform (and any child meshes) are finalized.
+ */
+const queueReveal = (root: TransformNode, entry: CityEntity, delay: number) => {
+  if (prefersReducedMotion()) return;
+  const finalScaling = root.scaling.clone();
+  const finalY = root.position.y;
+  // Cars (animated decor) have their root.position rewritten every frame by the
+  // looping decor observer, so only their scale can be tweened here.
+  const scaleOnly = !!entry.animation && entry.animation.type === "sequence";
+  const raisedY = scaleOnly ? finalY : finalY + REVEAL_RAISE;
+  root.scaling = Vector3.Zero();
+  if (!scaleOnly) {
+    root.position.y = raisedY;
+  }
+  revealQueue.push({
+    root,
+    finalScaling,
+    finalY,
+    raisedY,
+    delay,
+    scaleOnly,
+    queuedAt: performance.now(),
+  });
+};
+
 const loadModelTemplate = (
   scene: Scene,
   cache: ModelCache,
@@ -246,7 +306,8 @@ export const loadBuilding = async (
   scene: Scene,
   entry: CityEntity,
   shadowGenerator: ShadowGenerator,
-  modelCache: ModelCache
+  modelCache: ModelCache,
+  revealDelay = 0
 ): Promise<LoadedBuilding> => {
   const root = new TransformNode(`${entry.id}-root`, scene);
   root.rotationQuaternion = null;
@@ -307,6 +368,7 @@ export const loadBuilding = async (
     const bounds = Mesh.MinMax(meshNodes);
     const { min, max } = getBounds(bounds);
     if (!min || !max) {
+      queueReveal(root, entry, revealDelay);
       return { entry, root, meshes, glowMesh, labelMesh };
     }
     const height = max.y - min.y;
@@ -355,5 +417,6 @@ export const loadBuilding = async (
     labelMesh = bubble;
   }
 
+  queueReveal(root, entry, revealDelay);
   return { entry, root, meshes, glowMesh, labelMesh };
 };
