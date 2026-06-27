@@ -1,23 +1,24 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { sbSelect, sbCount, supabaseConfigured } from "../lib/supabaseRest.js";
 
+// Loosely typed — `select=*` returns every column, including the ~36 added
+// later. We only read a few here for aggregates; the rest pass through to the
+// dashboard untouched, so an index signature keeps this forgiving.
 type Visit = {
   created_at: string;
   ip: string | null;
   country: string | null;
-  region: string | null;
-  city: string | null;
-  latitude: string | null;
-  longitude: string | null;
-  user_agent: string | null;
-  browser: string | null;
-  os: string | null;
   device_type: string | null;
-  referrer: string | null;
-  screen: string | null;
-  language: string | null;
-  is_returning: boolean | null;
-  path: string | null;
+  [key: string]: unknown;
+};
+
+type ChatMessageRow = {
+  created_at: string;
+  ip: string | null;
+  session_id: string | null;
+  question: string | null;
+  answer: string | null;
+  model: string | null;
 };
 
 /**
@@ -93,6 +94,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (row.day === todayStr) chatToday += row.count ?? 0;
     }
 
+    // Full question/answer transcripts (most recent first). Isolated so a
+    // missing table (schema not yet applied) doesn't 500 the whole dashboard.
+    let chatMessages: ChatMessageRow[] = [];
+    try {
+      chatMessages = await sbSelect<ChatMessageRow>(
+        "chat_messages",
+        "select=*&order=created_at.desc&limit=100",
+      );
+    } catch {
+      // chat_messages may not exist yet — show no transcripts.
+    }
+
     res.status(200).json({
       total: totalCount ?? visits.length,
       today,
@@ -104,6 +117,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         messagesToday: chatToday,
         messagesTotal: chatTotal,
         recent: chatUsage,
+        messages: chatMessages,
       },
     });
   } catch {

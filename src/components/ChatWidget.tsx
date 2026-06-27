@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { recordChatUsed } from "../utils/engagement";
+import { getSessionId } from "../utils/track";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -110,6 +112,8 @@ const ChatWidget = () => {
     const trimmed = text.trim();
     if (!trimmed || busy) return;
 
+    recordChatUsed();
+
     const nextMessages: ChatMessage[] = [...messages, { role: "user", content: trimmed }];
     setMessages(nextMessages);
     setDraft("");
@@ -119,7 +123,7 @@ const ChatWidget = () => {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: nextMessages.slice(-10) }),
+        body: JSON.stringify({ messages: nextMessages.slice(-10), sessionId: getSessionId() }),
       });
 
       const data = await response.json().catch(() => ({}));

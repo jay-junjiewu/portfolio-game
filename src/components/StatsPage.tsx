@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 type CountRow = {
   country?: string;
@@ -6,29 +6,45 @@ type CountRow = {
   count: number;
 };
 
+// Only the fields read directly are typed; `select=*` returns every column, so
+// an index signature lets the expandable detail panel render all of them.
 type RecentVisit = {
   created_at: string;
-  ip: string;
-  country: string;
-  region: string;
-  city: string;
-  latitude: string | null;
-  longitude: string | null;
-  user_agent: string;
-  browser: string;
-  os: string;
-  device_type: string;
-  referrer: string;
-  screen: string;
-  language: string;
-  is_returning: boolean;
-  path: string;
+  ip: string | null;
+  country: string | null;
+  region: string | null;
+  city: string | null;
+  isp: string | null;
+  org: string | null;
+  browser: string | null;
+  os: string | null;
+  gpu: string | null;
+  device_type: string | null;
+  connection_type: string | null;
+  downlink: number | null;
+  dwell_ms: number | null;
+  sections_viewed: string | null;
+  chat_used: boolean | null;
+  utm_source: string | null;
+  referrer: string | null;
+  is_bot: boolean | null;
+  is_hosting: boolean | null;
+  [key: string]: unknown;
 };
 
 type ChatUsageRow = {
   ip: string;
   day: string;
   count: number;
+};
+
+type ChatMessage = {
+  created_at: string;
+  ip: string | null;
+  session_id: string | null;
+  question: string | null;
+  answer: string | null;
+  model: string | null;
 };
 
 type StatsResponse = {
@@ -42,19 +58,28 @@ type StatsResponse = {
     messagesToday: number;
     messagesTotal: number;
     recent: ChatUsageRow[];
+    messages?: ChatMessage[];
   };
 };
 
 const STORAGE_KEY = "stats:key";
+const VISIT_COLS = 11;
 
 /** Render a value, falling back to an em-dash for null/empty/whitespace. */
-function display(value: string | null | undefined): string {
+function display(value: unknown): string {
   if (value === null || value === undefined) return "—";
-  const trimmed = value.trim();
+  const trimmed = String(value).trim();
   return trimmed.length > 0 ? trimmed : "—";
 }
 
-/** Join country / region / city into "City, Region, Country", skipping blanks. */
+/** Generic value formatter for the detail grid (handles bool/number/null). */
+function fmt(value: unknown): string {
+  if (value === null || value === undefined) return "—";
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return display(value);
+}
+
+/** Join city / region / country into one label, skipping blanks. */
 function locationLabel(visit: RecentVisit): string {
   const parts = [visit.city, visit.region, visit.country]
     .map((part) => (part ?? "").trim())
@@ -62,17 +87,25 @@ function locationLabel(visit: RecentVisit): string {
   return parts.length > 0 ? parts.join(", ") : "—";
 }
 
-/** "lat, long" when both are present, else an em-dash. */
-function coordsLabel(visit: RecentVisit): string {
-  const lat = (visit.latitude ?? "").trim();
-  const lon = (visit.longitude ?? "").trim();
-  return lat && lon ? `${lat}, ${lon}` : "—";
-}
-
 function yesNo(value: boolean | null | undefined): string {
   if (value === true) return "Yes";
   if (value === false) return "No";
   return "—";
+}
+
+/** Milliseconds → "1m 23s" / "45s" / em-dash. */
+function dwellLabel(ms: unknown): string {
+  if (typeof ms !== "number" || !Number.isFinite(ms)) return "—";
+  const s = Math.round(ms / 1000);
+  if (s < 60) return `${s}s`;
+  return `${Math.floor(s / 60)}m ${s % 60}s`;
+}
+
+/** Network summary, e.g. "4g · 8.5Mbps". */
+function networkLabel(visit: RecentVisit): string {
+  const type = (visit.connection_type ?? "").trim();
+  const dl = typeof visit.downlink === "number" ? `${visit.downlink}Mbps` : "";
+  return [type, dl].filter(Boolean).join(" · ") || "—";
 }
 
 /** Format an ISO timestamp as a readable local datetime, tolerating bad input. */
@@ -89,6 +122,7 @@ const StatsPage = () => {
   const [data, setData] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<number | null>(null);
 
   // Restore a previously-entered key so the gate is skipped on revisit.
   useEffect(() => {
@@ -289,6 +323,7 @@ const StatsPage = () => {
 
           <section>
             <h2>Recent visits</h2>
+            <p className="stats-hint">Click a row to see every captured field.</p>
             <div className="stats-table">
               <table>
                 <thead>
@@ -296,38 +331,60 @@ const StatsPage = () => {
                     <th>Time</th>
                     <th>IP</th>
                     <th>Location</th>
-                    <th>Coords</th>
-                    <th>Device</th>
+                    <th>ISP / Org</th>
                     <th>Browser / OS</th>
-                    <th>Screen</th>
-                    <th>Language</th>
-                    <th>Returning</th>
-                    <th>Referrer</th>
-                    <th>Path</th>
+                    <th>GPU</th>
+                    <th>Network</th>
+                    <th>Dwell</th>
+                    <th>Sections</th>
+                    <th>Chat</th>
+                    <th>Source</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.recent.length > 0 ? (
                     data.recent.map((visit, index) => (
-                      <tr key={`${visit.created_at}-${index}`}>
-                        <td>{formatDateTime(visit.created_at)}</td>
-                        <td>{display(visit.ip)}</td>
-                        <td>{locationLabel(visit)}</td>
-                        <td>{coordsLabel(visit)}</td>
-                        <td>{display(visit.device_type)}</td>
-                        <td>
-                          {display(visit.browser)} / {display(visit.os)}
-                        </td>
-                        <td>{display(visit.screen)}</td>
-                        <td>{display(visit.language)}</td>
-                        <td>{yesNo(visit.is_returning)}</td>
-                        <td>{display(visit.referrer)}</td>
-                        <td>{display(visit.path)}</td>
-                      </tr>
+                      <Fragment key={`${visit.created_at}-${index}`}>
+                        <tr
+                          className={`stats-row${visit.is_bot ? " is-bot" : ""}`}
+                          onClick={() => setExpanded(expanded === index ? null : index)}
+                        >
+                          <td>
+                            {expanded === index ? "▾ " : "▸ "}
+                            {formatDateTime(visit.created_at)}
+                          </td>
+                          <td>{display(visit.ip)}</td>
+                          <td>{locationLabel(visit)}</td>
+                          <td>{display(visit.org ?? visit.isp)}</td>
+                          <td>
+                            {display(visit.browser)} / {display(visit.os)}
+                          </td>
+                          <td>{display(visit.gpu)}</td>
+                          <td>{networkLabel(visit)}</td>
+                          <td>{dwellLabel(visit.dwell_ms)}</td>
+                          <td>{display(visit.sections_viewed)}</td>
+                          <td>{yesNo(visit.chat_used)}</td>
+                          <td>{display(visit.utm_source ?? visit.referrer)}</td>
+                        </tr>
+                        {expanded === index && (
+                          <tr key={`${visit.created_at}-${index}-detail`} className="stats-detail-row">
+                            <td colSpan={VISIT_COLS}>
+                              <dl className="stats-detail">
+                                {Object.entries(visit).map(([field, value]) => (
+                                  <div key={field}>
+                                    <dt>{field}</dt>
+                                    <dd>{fmt(value)}</dd>
+                                  </div>
+                                ))}
+                              </dl>
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={11}>—</td>
+                      <td colSpan={VISIT_COLS}>—</td>
                     </tr>
                   )}
                 </tbody>
@@ -381,8 +438,43 @@ const StatsPage = () => {
             </section>
           )}
 
+          {data.chat?.messages && (
+            <section className="stats-chatlog">
+              <h2>Chat transcripts</h2>
+              <div className="stats-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>IP</th>
+                      <th>Question</th>
+                      <th>Answer</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.chat.messages.length > 0 ? (
+                      data.chat.messages.map((m, index) => (
+                        <tr key={`${m.created_at}-${index}`}>
+                          <td>{formatDateTime(m.created_at)}</td>
+                          <td>{display(m.ip)}</td>
+                          <td className="stats-msg">{display(m.question)}</td>
+                          <td className="stats-msg">{display(m.answer)}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4}>—</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          )}
+
           <p className="stats-note">
-            Full IP addresses are stored for the site owner's analytics.
+            Visitor IP, geolocation, device/network details and on-site activity
+            are recorded for the site owner's analytics.
           </p>
         </>
       )}

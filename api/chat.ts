@@ -13,7 +13,7 @@
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { sbRpc, supabaseConfigured } from "../lib/supabaseRest.js";
+import { sbRpc, sbInsert, supabaseConfigured } from "../lib/supabaseRest.js";
 import { PORTFOLIO_DATA } from "../src/data/portfolioData.js";
 
 type ChatRole = "user" | "assistant";
@@ -193,6 +193,35 @@ async function checkRateLimit(req: VercelRequest): Promise<boolean> {
   }
 }
 
+// --- Transcript logging (best-effort) ---------------------------------------
+
+/**
+ * Persist one question/answer pair to the chat_messages table. Swallows all
+ * errors — logging must never affect the user's reply. session_id (sent by the
+ * widget) links the message back to the visitor's row in `visits`.
+ */
+async function recordChatMessage(
+  req: VercelRequest,
+  body: unknown,
+  history: ChatMessage[],
+  reply: string,
+): Promise<void> {
+  if (!supabaseConfigured()) return;
+  try {
+    const lastUser = [...history].reverse().find((m) => m.role === "user");
+    const sessionId = (body as { sessionId?: unknown } | null | undefined)?.sessionId;
+    await sbInsert("chat_messages", {
+      ip: getClientIp(req),
+      session_id: typeof sessionId === "string" ? sessionId : null,
+      question: lastUser?.content ?? null,
+      answer: reply,
+      model: GEMINI_MODEL,
+    });
+  } catch (err) {
+    console.error("Chat transcript log failed:", err);
+  }
+}
+
 // --- Request validation ------------------------------------------------------
 
 function normalizeMessages(raw: unknown): ChatMessage[] | null {
@@ -255,6 +284,7 @@ export default async function handler(
 
   try {
     const reply = await callLLM(SYSTEM_PROMPT, messages);
+    await recordChatMessage(req, body, messages, reply);
     res.status(200).json({ reply });
   } catch (err) {
     console.error("Chat LLM error:", err);

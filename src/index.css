@@ -2190,3 +2190,63 @@ body.no-scroll .chat-fab {
   font-size: var(--fs-xs);
   opacity: 0.55;
 }
+
+.stats-hint {
+  margin: 0 0 var(--space-1);
+  font-size: var(--fs-xs);
+  opacity: 0.55;
+}
+
+/* Recent-visits rows are clickable to reveal the full per-visit detail panel. */
+.stats-row {
+  cursor: pointer;
+}
+
+.stats-row.is-bot {
+  background: rgba(255, 170, 90, 0.07);
+}
+
+.stats-detail-row td {
+  white-space: normal;
+  max-width: none;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Every captured field for one visit, as a responsive key/value grid. */
+.stats-detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.4rem 1.2rem;
+  margin: 0;
+  padding: 0.4rem 0.2rem;
+}
+
+.stats-detail > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stats-detail dt {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.5;
+}
+
+.stats-detail dd {
+  margin: 0;
+  font-size: var(--fs-xs);
+  word-break: break-word;
+}
+
+.stats-chatlog {
+  margin-top: var(--space-4);
+}
+
+/* Question/answer cells wrap instead of truncating. */
+.stats-msg {
+  white-space: normal;
+  max-width: 420px;
+  word-break: break-word;
+}

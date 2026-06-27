@@ -9,6 +9,7 @@ import type { SceneControls } from "./scene/createScene";
 import { prefersReducedMotion } from "./utils/device";
 import { Analytics } from "@vercel/analytics/react";
 import { trackVisit } from "./utils/track";
+import { recordSection } from "./utils/engagement";
 
 // Babylon.js is heavy (~6 MB). Lazy-load the 3D components so the app shell and
 // loading screen paint immediately, then the engine streams in as a separate chunk.
@@ -166,6 +167,18 @@ const App = () => {
   useEffect(() => {
     if (window.location.pathname !== "/stats") trackVisit();
   }, []);
+
+  // Record which portfolio sections / projects the visitor opens (feeds the
+  // engagement beacon sent on exit).
+  useEffect(() => {
+    if (activeSection) recordSection(activeSection);
+  }, [activeSection]);
+
+  useEffect(() => {
+    if (isProjectRoute) {
+      recordSection(`project:${location.pathname.slice("/projects/".length)}`);
+    }
+  }, [isProjectRoute, location.pathname]);
 
   // Auto-dismiss the coachmark after a few seconds or on the first interaction.
   useEffect(() => {

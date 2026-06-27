@@ -42,6 +42,21 @@ export async function sbInsert(table: string, row: unknown): Promise<void> {
   if (!res.ok) throw new Error(`Supabase insert ${table} failed: ${res.status} ${await res.text()}`);
 }
 
+/**
+ * Patch rows matching a PostgREST filter (the part after `?`, e.g.
+ * `session_id=eq.abc`). No-op when Supabase isn't configured.
+ */
+export async function sbUpdate(table: string, query: string, patch: unknown): Promise<void> {
+  const c = creds();
+  if (!c) return;
+  const res = await fetch(`${c.url}/rest/v1/${table}?${query}`, {
+    method: "PATCH",
+    headers: authHeaders(c.key, { Prefer: "return=minimal" }),
+    body: JSON.stringify(patch),
+  });
+  if (!res.ok) throw new Error(`Supabase update ${table} failed: ${res.status} ${await res.text()}`);
+}
+
 /** Run a PostgREST query (the part after `?`) and return the rows. */
 export async function sbSelect<T>(table: string, query: string): Promise<T[]> {
   const c = creds();
