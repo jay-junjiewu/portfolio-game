@@ -332,10 +332,6 @@ const renderContent = (
               );
             })}
           </div>
-          <p className="contact-privacy muted">
-            This site logs basic visit analytics — including IP address and
-            approximate location — for the owner's reference.
-          </p>
         </div>
       );
     }
