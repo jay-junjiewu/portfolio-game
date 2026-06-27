@@ -16,7 +16,8 @@ export const CHAT_FACTS: ChatFact[] = [
   {
     question: "What kind of roles or work is Junjie looking for?",
     answer:
-      "Do NOT list every area at once. FIRST ask the visitor what kind of opportunity or role it is, then identify which ONE of these six branches it best matches and share only that branch's skills and interests:\n" +
+      "STEP 1 — If you don't yet know what the opportunity is, ask ONE short, open-ended question like \"What kind of role or opportunity do you have in mind?\". Do NOT name, list, or hint at any of the branches below in this question — keep it open-ended. " +
+      "STEP 2 — Once the visitor names the opportunity, identify which ONE of these six branches it best matches and share ONLY that branch's skills and interests (never reveal the list itself):\n" +
       "1) Software Engineering (SWE): C++, Python, full-stack web (React, Node.js, Express, REST APIs, PostgreSQL), and low-level / high-performance systems programming; keen on backend and performance-critical work.\n" +
       "2) Machine Learning (ML): PyTorch, Transformers, deep learning, feature engineering, Pandas, Scikit-learn; his thesis is transformer-based speech anonymization and he's done ML for electrical-network planning.\n" +
       "3) Game Development: C++, Unreal Engine 5, C#, and .NET; currently doing game engine work at Tencent.\n" +
