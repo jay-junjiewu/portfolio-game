@@ -302,7 +302,7 @@ export const PORTFOLIO_DATA: PortfolioContent = {
     location: "Sydney, Australia",
     links: [
       { label: "GitHub", url: "https://github.com/jay-junjiewu" },
-      { label: "LinkedIn", url: "https://www.linkedin.com/in/junjiewujay/" },
+      { label: "LinkedIn", url: "https://linkedin.com/in/junjiewujay/" },
     ],
   },
 };

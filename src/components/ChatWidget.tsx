@@ -108,6 +108,44 @@ const ChatWidget = () => {
     }
   }, [messages, busy]);
 
+  // Mobile keyboard handling. When the on-screen keyboard opens, the browser
+  // would otherwise scroll the whole page up to reveal the focused input (which
+  // sits behind the keyboard). Instead, track the VisualViewport and lift the
+  // fixed panel above the keyboard so the input stays visible and the page
+  // never scrolls.
+  useEffect(() => {
+    if (!open) return;
+    const vv = window.visualViewport;
+    const panel = panelRef.current;
+    if (!vv || !panel) return;
+
+    const apply = () => {
+      const overlap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+      if (overlap > 80) {
+        // Keyboard is up: pin the panel above it and fit the visible area.
+        panel.style.bottom = `${overlap}px`;
+        panel.style.height = `${vv.height}px`;
+        panel.style.maxHeight = `${vv.height}px`;
+      } else {
+        // Keyboard down: revert to the CSS-driven sheet sizing.
+        panel.style.bottom = "";
+        panel.style.height = "";
+        panel.style.maxHeight = "";
+      }
+    };
+
+    apply();
+    vv.addEventListener("resize", apply);
+    vv.addEventListener("scroll", apply);
+    return () => {
+      vv.removeEventListener("resize", apply);
+      vv.removeEventListener("scroll", apply);
+      panel.style.bottom = "";
+      panel.style.height = "";
+      panel.style.maxHeight = "";
+    };
+  }, [open]);
+
   const sendMessage = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed || busy) return;
