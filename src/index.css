@@ -410,7 +410,8 @@ button:active {
   padding: 0.3rem 0.7rem;
   border-radius: 999px;
   border: 1px solid #c9d5e7;
-  background: white;
+  /* Day mode matches the header tint; night mode is overridden below. */
+  background: #fcf7ee;
   cursor: pointer;
 }
 
