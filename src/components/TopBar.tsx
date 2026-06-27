@@ -27,39 +27,45 @@ const TopBar = ({
           <div className="brand">
             <h1 className="brand-title">Junjie Wu</h1>
           </div>
-          <button
-            type="button"
-            className="hamburger"
-            aria-label="Toggle navigation"
-            onClick={() => setMenuOpen((v) => !v)}
-          >
-            <span />
-            <span />
-            <span />
-          </button>
+          <div className="top-bar-actions">
+            <button type="button" className="toggle toggle--bar" onClick={onToggleDay}>
+              <span className={`toggle-dot ${isDay ? "day" : "night"}`} />
+              <span className="toggle-label">{isDay ? "Day" : "Night"}</span>
+            </button>
+            <button
+              type="button"
+              className="hamburger"
+              aria-label="Toggle navigation"
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+          </div>
         </div>
         <nav className={`nav-links ${menuOpen ? "open" : ""}`}>
-          <button type="button" className="toggle" onClick={onToggleDay}>
+          <button type="button" className="toggle toggle--menu" onClick={onToggleDay}>
             <span className={`toggle-dot ${isDay ? "day" : "night"}`} />
             <span className="toggle-label">{isDay ? "Day" : "Night"}</span>
           </button>
           <button type="button" className="nav-link" onClick={() => handleNav("about")}>
-            About
+            <span className="nav-link__label">About</span>
           </button>
           <button type="button" className="nav-link" onClick={() => handleNav("projects")}>
-            Projects
+            <span className="nav-link__label">Projects</span>
           </button>
           <button type="button" className="nav-link" onClick={() => handleNav("experience")}>
-            Experience
+            <span className="nav-link__label">Experience</span>
           </button>
           <button type="button" className="nav-link" onClick={() => handleNav("skills")}>
-            Skills
+            <span className="nav-link__label">Skills</span>
           </button>
           <button type="button" className="nav-link" onClick={() => handleNav("contact")}>
-            Contact
+            <span className="nav-link__label">Contact</span>
           </button>
           <button type="button" className="nav-link" onClick={onToggleControls}>
-            Help
+            <span className="nav-link__label">Help</span>
           </button>
         </nav>
       </div>
