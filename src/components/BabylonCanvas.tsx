@@ -1,4 +1,4 @@
-import { Engine } from "@babylonjs/core";
+import { Engine } from "@babylonjs/core/Engines/engine";
 import { useEffect, useRef } from "react";
 import type { BuildingKey } from "../data/cityLayout";
 import { createCityScene, type SceneControls } from "../scene/createScene";
@@ -40,10 +40,13 @@ const BabylonCanvas = ({
     if (!canvas) return;
 
     onLoadingChangeRef.current?.(true);
+    // No screenshots / canvas.toDataURL are taken, so preserveDrawingBuffer is
+    // omitted — letting the browser swap (not copy) the WebGL backbuffer each
+    // frame, which lifts the render-loop frame rate.
     const engine = new Engine(
       canvas,
       true,
-      { preserveDrawingBuffer: true, stencil: true },
+      { stencil: true },
       isMobileDevice()
     );
     let disposed = false;

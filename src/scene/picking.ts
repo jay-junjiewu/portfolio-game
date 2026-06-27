@@ -1,10 +1,13 @@
-import {
-  AbstractMesh,
-  Color3,
-  PointerEventTypes,
-  Scene,
-} from "@babylonjs/core";
-import type { PointerInfo } from "@babylonjs/core";
+import { AbstractMesh } from "@babylonjs/core/Meshes/abstractMesh";
+import { Color3 } from "@babylonjs/core/Maths/math.color";
+import { PointerEventTypes } from "@babylonjs/core/Events/pointerEvents";
+import { Scene } from "@babylonjs/core/scene";
+import type { PointerInfo } from "@babylonjs/core/Events/pointerEvents";
+// Side-effect imports the tree-shaken build needs: scene.pick() relies on the
+// ray-picking augmentation, and mesh.renderOutline relies on the outline
+// renderer's scene component. The barrel import used to pull these in for free.
+import "@babylonjs/core/Culling/ray";
+import "@babylonjs/core/Rendering/outlineRenderer";
 import type { BuildingKey } from "../data/cityLayout";
 import type { LoadedBuilding } from "./loadBuilding";
 

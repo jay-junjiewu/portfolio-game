@@ -1,20 +1,20 @@
-import {
-  ArcRotateCamera,
-  Color3,
-  Color4,
-  DirectionalLight,
-  Engine,
-  DynamicTexture,
-  HemisphericLight,
-  MeshBuilder,
-  PointerEventTypes,
-  Scalar,
-  Scene,
-  ShadowGenerator,
-  StandardMaterial,
-  Vector3,
-} from "@babylonjs/core";
+import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera";
+import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
+import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
+import type { Engine } from "@babylonjs/core/Engines/engine";
+import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
+import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
+import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
+import { PointerEventTypes } from "@babylonjs/core/Events/pointerEvents";
+import { Scalar } from "@babylonjs/core/Maths/math.scalar";
+import { Scene } from "@babylonjs/core/scene";
+import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
+import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";
+// ShadowGenerator's render hook lives in a separate scene component that the
+// barrel import used to register implicitly; pull it in so shadows still draw.
+import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent";
 import { CITY_LAYOUT, CITY_TILE_SIZE, type BuildingKey, type AnimationSequence } from "../data/cityLayout";
 import type { LoadedBuilding, RevealEntry } from "./loadBuilding";
 import { createModelCache, loadBuilding, revealQueue } from "./loadBuilding";

@@ -1,4 +1,5 @@
-import { ArcRotateCamera, Vector3 } from "@babylonjs/core";
+import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera";
+import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import type { SceneControls } from "../scene/createScene";
 
