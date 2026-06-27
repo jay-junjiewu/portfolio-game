@@ -1,12 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient } from "@supabase/supabase-js";
-import { WebSocket } from "ws";
-
-// supabase-js builds a realtime client that throws on Node < 22 without a
-// native WebSocket; we only use REST, so pass `ws` so createClient never throws.
-// Cast: ws's WebSocket constructor differs slightly from supabase's loose
-// WebSocketLikeConstructor type, but is compatible at runtime.
-const SUPABASE_OPTS = { realtime: { transport: WebSocket as unknown as never } };
+import { sbSelect, sbCount, supabaseConfigured } from "../lib/supabaseRest";
 
 type Visit = {
   created_at: string;
@@ -47,31 +40,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const url = process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) {
+  if (!supabaseConfigured()) {
     res.status(500).json({ error: "Supabase not configured" });
     return;
   }
 
   try {
-    const supabase = createClient(url, serviceKey, SUPABASE_OPTS);
+    // True all-time total via a count query (no rows transferred); the windowed
+    // rows below drive the recent list and the aggregates.
+    const totalCount = await sbCount("visits");
 
-    // True all-time total via a head/count query (no rows transferred); the
-    // windowed rows below drive the recent list and the aggregates.
-    const { count: totalCount } = await supabase
-      .from("visits")
-      .select("*", { count: "exact", head: true });
-
-    const { data, error } = await supabase
-      .from("visits")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(5000);
-
-    if (error) throw error;
-
-    const visits = (data ?? []) as Visit[];
+    const visits = await sbSelect<Visit>(
+      "visits",
+      "select=*&order=created_at.desc&limit=5000"
+    );
     const startOfToday = new Date();
     startOfToday.setHours(0, 0, 0, 0);
     const todayMs = startOfToday.getTime();
@@ -99,14 +81,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .sort((a, b) => b.count - a.count);
 
     // Chat usage — per-IP daily message counts from the rate-limiter table.
-    const { data: chatRows } = await supabase
-      .from("chat_usage")
-      .select("ip, day, count")
-      .order("day", { ascending: false })
-      .order("count", { ascending: false })
-      .limit(200);
-
-    const chatUsage = (chatRows ?? []) as { ip: string; day: string; count: number }[];
+    const chatUsage = await sbSelect<{ ip: string; day: string; count: number }>(
+      "chat_usage",
+      "select=ip,day,count&order=day.desc,count.desc&limit=200"
+    );
     const todayStr = new Date().toISOString().slice(0, 10); // UTC — matches the limiter
     let chatToday = 0;
     let chatTotal = 0;

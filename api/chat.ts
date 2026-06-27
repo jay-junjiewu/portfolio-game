@@ -13,16 +13,8 @@
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { createClient } from "@supabase/supabase-js";
-import { WebSocket } from "ws";
+import { sbRpc, supabaseConfigured } from "../lib/supabaseRest";
 import { PORTFOLIO_DATA } from "../src/data/portfolioData";
-
-// supabase-js eagerly builds a realtime client, which throws on Node < 22
-// without a native WebSocket. We only use REST (.from/.rpc), so hand it `ws`
-// to keep createClient from throwing on every Node version.
-// Cast: ws's WebSocket constructor differs slightly from supabase's loose
-// WebSocketLikeConstructor type, but is compatible at runtime.
-const SUPABASE_OPTS = { realtime: { transport: WebSocket as unknown as never } };
 
 type ChatRole = "user" | "assistant";
 type ChatMessage = { role: ChatRole; content: string };
@@ -183,29 +175,17 @@ function getClientIp(req: VercelRequest): string {
  * should be blocked. Fails open (returns true) on any DB error or missing env.
  */
 async function checkRateLimit(req: VercelRequest): Promise<boolean> {
-  const url = process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) return true; // No DB configured — skip limiting.
+  if (!supabaseConfigured()) return true; // No DB configured — skip limiting.
 
   const cap = Number(process.env.CHAT_DAILY_LIMIT) || DEFAULT_DAILY_LIMIT;
   const ip = getClientIp(req);
 
   try {
-    const supabase = createClient(url, serviceKey, SUPABASE_OPTS);
-
     // Atomic increment-and-read. Avoids the read-then-write race where N
     // concurrent requests from one IP all read the same count and advance it
     // by 1 instead of N, blowing past the cap. The RPC keys on the DB's
     // current_date (UTC on Supabase) and ships in supabase/schema.sql.
-    const { data: newCount, error } = await supabase.rpc("increment_chat_usage", {
-      p_ip: ip,
-    });
-
-    if (error) {
-      console.error("chat_usage increment error:", error.message);
-      return true; // fail open
-    }
-
+    const newCount = await sbRpc<number>("increment_chat_usage", { p_ip: ip });
     return (newCount ?? 0) <= cap;
   } catch (err) {
     console.error("Rate limit check failed:", err);

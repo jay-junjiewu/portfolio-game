@@ -1,12 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient } from "@supabase/supabase-js";
-import { WebSocket } from "ws";
-
-// supabase-js builds a realtime client that throws on Node < 22 without a
-// native WebSocket; we only use REST, so pass `ws` so createClient never throws.
-// Cast: ws's WebSocket constructor differs slightly from supabase's loose
-// WebSocketLikeConstructor type, but is compatible at runtime.
-const SUPABASE_OPTS = { realtime: { transport: WebSocket as unknown as never } };
+import { sbInsert } from "../lib/supabaseRest";
 
 /**
  * Visitor analytics logger. POST one visit row to Supabase on every page load.
@@ -24,13 +17,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  const url = process.env.SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) {
-    res.status(204).end();
-    return;
-  }
-
   try {
     const body = (req.body ?? {}) as {
       screen?: string;
@@ -43,8 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const userAgent = header(req, "user-agent") ?? "";
     const ua = parseUserAgent(userAgent);
 
-    const supabase = createClient(url, serviceKey, SUPABASE_OPTS);
-    await supabase.from("visits").insert({
+    await sbInsert("visits", {
       ip: clientIp(req),
       country: header(req, "x-vercel-ip-country") ?? null,
       region: header(req, "x-vercel-ip-country-region") ?? null,
