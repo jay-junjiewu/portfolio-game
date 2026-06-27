@@ -266,6 +266,12 @@ const ChatWidget = () => {
               <SendIcon />
             </button>
           </form>
+
+          <p className="chat-disclaimer">
+            This is an AI assistant and may make mistakes. For anything important,
+            contact Junjie at{" "}
+            <a href="mailto:jaywu0046@gmail.com">jaywu0046@gmail.com</a>.
+          </p>
         </div>
       )}
     </>
