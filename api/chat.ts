@@ -268,22 +268,25 @@ const SPAM_REPLY =
   "Ask me something about Junjie's work, projects, or experience — I'm happy to help!";
 
 function isLowQualityMessage(messages: ChatMessage[]): boolean {
-  const users = messages.filter((m) => m.role === "user");
-  const last = users[users.length - 1];
-  if (!last) return true; // nothing to answer
+  const last = messages[messages.length - 1];
+  if (!last || last.role !== "user") return true; // nothing to answer
 
   const text = last.content.trim();
   if (!text) return true; // empty / whitespace only
 
-  // Exact duplicate of the previous user message (rapid resend / spam).
-  const prev = users[users.length - 2];
-  if (prev && prev.content.trim() === text) return true;
-
   // No letters or digits at all (pure punctuation / emoji floods).
   if (!/[a-z0-9]/i.test(text)) return true;
 
-  // A single character (optionally repeated): "a", "aaaaaa", "!!!", "....".
-  if (/^(.)\1*$/.test(text)) return true;
+  // A single character repeated 4+ times: "aaaa", "111111". Short legitimate
+  // answers ("y", "n", "ok", "yes", "no") are intentionally left alone — the
+  // bot asks yes/no questions and visitors reply with exactly these.
+  if (/^(.)\1{3,}$/.test(text)) return true;
+
+  // Exact duplicate sent back-to-back with no reply in between (rapid resend).
+  // Checks the immediately preceding turn in full history, so two genuine "yes"
+  // answers to DIFFERENT questions (separated by the bot's reply) don't trip it.
+  const prev = messages[messages.length - 2];
+  if (prev && prev.role === "user" && prev.content.trim() === text) return true;
 
   return false;
 }
