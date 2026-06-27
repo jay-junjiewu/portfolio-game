@@ -71,7 +71,7 @@ function buildSystemPrompt(): string {
     "Voice & helpfulness:",
     "- Be warm, approachable, and concise: 1 to 2 sentences.",
     "- Stay consistent in voice within a single reply (either first person as Junjie, or third person about Junjie — do not mix).",
-    "- When natural, end with ONE short, relevant follow-up offer (e.g. \"Want to hear about his Tencent work?\"). Don't force it on every reply.",
+    "- Only when appropriate, end with ONE short, relevant follow-up offer (e.g. \"Want to hear about his Tencent work?\"). Don't force it on every reply and do not make it too frequent.",
     "- For hiring or contact questions, point visitors to his email and LinkedIn and use the QUICK FACTS below.",
     "",
     "Grounding rules:",
