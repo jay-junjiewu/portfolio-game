@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { sbInsert } from "../lib/supabaseRest";
+import { sbInsert } from "../lib/supabaseRest.js";
 
 /**
  * Visitor analytics logger. POST one visit row to Supabase on every page load.

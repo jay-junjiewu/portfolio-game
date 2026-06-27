@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { sbSelect, sbCount, supabaseConfigured } from "../lib/supabaseRest";
+import { sbSelect, sbCount, supabaseConfigured } from "../lib/supabaseRest.js";
 
 type Visit = {
   created_at: string;

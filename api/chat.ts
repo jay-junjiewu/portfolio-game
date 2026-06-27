@@ -13,8 +13,8 @@
 
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { sbRpc, supabaseConfigured } from "../lib/supabaseRest";
-import { PORTFOLIO_DATA } from "../src/data/portfolioData";
+import { sbRpc, supabaseConfigured } from "../lib/supabaseRest.js";
+import { PORTFOLIO_DATA } from "../src/data/portfolioData.js";
 
 type ChatRole = "user" | "assistant";
 type ChatMessage = { role: ChatRole; content: string };
