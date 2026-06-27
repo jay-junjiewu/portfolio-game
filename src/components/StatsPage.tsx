@@ -90,6 +90,12 @@ function fmt(value: unknown): string {
   return display(value);
 }
 
+/** Detail-grid label; flags IP-derived coordinates as approximate. */
+function fieldLabel(field: string): string {
+  if (field === "latitude" || field === "longitude") return `${field} (approx · IP)`;
+  return field;
+}
+
 /** Join city / region / country into one label, skipping blanks. */
 function locationLabel(visit: RecentVisit): string {
   const parts = [visit.city, visit.region, visit.country]
@@ -420,7 +426,7 @@ const StatsPage = () => {
                               <dl className="stats-detail">
                                 {Object.entries(visit).map(([field, value]) => (
                                   <div key={field}>
-                                    <dt>{field}</dt>
+                                    <dt>{fieldLabel(field)}</dt>
                                     <dd>{fmt(value)}</dd>
                                   </div>
                                 ))}
@@ -556,7 +562,9 @@ const StatsPage = () => {
 
           <p className="stats-note">
             Visitor IP, geolocation, device/network details and on-site activity
-            are recorded for the site owner's analytics.
+            are recorded for the site owner's analytics. Location and coordinates
+            are approximate — derived from IP (accurate to city level), not the
+            visitor's exact position.
           </p>
         </>
       )}
