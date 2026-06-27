@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import Picture from "../Picture";
 
 const AudioEqualiserDetails = () => {
   const carouselImages = [
@@ -41,7 +42,7 @@ const AudioEqualiserDetails = () => {
         The equaliser uses digital IIR filters that are logarithmically spaced to align with the sensitivity of human hearing, ensuring a natural and intuitive audio adjustment experience. These filters were first designed and tested using MATLAB to allow for precise tuning of filter coefficients before implementing them in C++.
       </p>
       <div className="hover-container">
-        <img src="/assets/audio-equaliser/filters.png" alt="Filter response curves" />
+        <Picture src="/assets/audio-equaliser/filters.png" alt="Filter response curves" />
       </div>
 
       <h3>MATLAB real-time prototype</h3>
@@ -59,7 +60,7 @@ const AudioEqualiserDetails = () => {
         >
           {slides.map((image) => (
             <div key={image.src} className="carousel-slide">
-              <img src={image.src} alt={image.alt} />
+              <Picture src={image.src} alt={image.alt} />
             </div>
           ))}
         </div>

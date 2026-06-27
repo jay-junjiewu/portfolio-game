@@ -4,7 +4,11 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- Theme color follows the day/night palette (matches the top-bar tint). -->
+    <meta name="theme-color" content="#fcf7ee" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101826" media="(prefers-color-scheme: dark)" />
 
     <title>Junjie Wu - Software Engineer & CS/EE Student at UNSW</title>
     <meta
@@ -91,6 +95,10 @@
               "FPGA Design",
               "Embedded Systems"
             ],
+            "hasOccupation": {
+              "@type": "Occupation",
+              "name": "Software Engineer"
+            },
             "sameAs": [
               "https://github.com/jay-junjiewu",
               "https://www.linkedin.com/in/junjiewujay/"
@@ -103,6 +111,14 @@
             "name": "Junjie Wu Portfolio",
             "about": { "@id": "https://www.junjiewu.com/#person" },
             "publisher": { "@id": "https://www.junjiewu.com/#person" }
+          },
+          {
+            "@type": "ProfilePage",
+            "@id": "https://www.junjiewu.com/#profilepage",
+            "url": "https://www.junjiewu.com/",
+            "name": "Junjie Wu — Software Engineer",
+            "isPartOf": { "@id": "https://www.junjiewu.com/#website" },
+            "mainEntity": { "@id": "https://www.junjiewu.com/#person" }
           }
         ]
       }

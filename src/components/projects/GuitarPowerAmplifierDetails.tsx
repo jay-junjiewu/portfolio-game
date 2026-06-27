@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import Picture from "../Picture";
 
 const GuitarPowerAmplifierDetails = () => {
   const carouselImages = [
@@ -48,7 +49,7 @@ const GuitarPowerAmplifierDetails = () => {
       </p>
 
       <div className="hover-container">
-        <img src="/assets/guitar-power-amplifier/3D1.png" className="image-pe1-1" alt="3D rendering" />
+        <Picture src="/assets/guitar-power-amplifier/3D1.png" className="image-pe1-1" alt="3D rendering" />
       </div>
 
       <p>
@@ -71,7 +72,7 @@ const GuitarPowerAmplifierDetails = () => {
         >
           {slides.map((image, index) => (
             <div key={`${image.src}-${index}`} className="carousel-slide">
-              <img src={image.src} alt={image.alt} />
+              <Picture src={image.src} alt={image.alt} />
             </div>
           ))}
         </div>

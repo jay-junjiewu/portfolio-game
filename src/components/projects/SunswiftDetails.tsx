@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import Picture from "../Picture";
 
 const SunswiftDetails = () => {
   const carouselImages = [
@@ -49,7 +50,7 @@ const SunswiftDetails = () => {
       </p>
 
       <div className="hover-container">
-        <img src="/assets/sunswift/sr7-1.jpg" className="image-ps2-1" />
+        <Picture src="/assets/sunswift/sr7-1.jpg" className="image-ps2-1" />
       </div>
 
       <h3>My Role</h3>
@@ -67,7 +68,7 @@ const SunswiftDetails = () => {
       </p>
 
       <div className="hover-container">
-        <img src="/assets/sunswift/team.jpg" className="image-pe1-1" />
+        <Picture src="/assets/sunswift/team.jpg" className="image-pe1-1" />
       </div>
 
       <h3>MPPT PCB</h3>
@@ -85,7 +86,7 @@ const SunswiftDetails = () => {
       </p>
 
       <div className="hover-container">
-        <img src="/assets/sunswift/3d.png" className="image-pe1-1" />
+        <Picture src="/assets/sunswift/3d.png" className="image-pe1-1" />
       </div>
 
       <p>
@@ -109,7 +110,7 @@ const SunswiftDetails = () => {
         >
           {slides.map((image) => (
             <div key={image.src} className="carousel-slide">
-              <img src={image.src} />
+              <Picture src={image.src} />
             </div>
           ))}
         </div>

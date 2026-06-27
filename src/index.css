@@ -20,6 +20,14 @@
   --accent-shadow: rgba(244, 162, 97, 0.3);
   --accent-border: rgba(255, 220, 180, 0.7);
 
+  /* Fluid type ramp — scales smoothly between ~360px and ~1280px viewports. */
+  --fs-xs: clamp(0.7rem, 0.66rem + 0.18vw, 0.78rem);
+  --fs-sm: clamp(0.82rem, 0.78rem + 0.22vw, 0.92rem);
+  --fs-base: clamp(0.92rem, 0.88rem + 0.3vw, 1.05rem);
+  --fs-md: clamp(1.05rem, 0.98rem + 0.45vw, 1.25rem);
+  --fs-lg: clamp(1.25rem, 1.1rem + 0.8vw, 1.6rem);
+  --fs-xl: clamp(1.5rem, 1.25rem + 1.3vw, 2.1rem);
+
   font-family: var(--font-body);
   color: #0b1524;
   background-color: #080d12;
@@ -34,10 +42,17 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100vh; /* fallback for browsers without dvh */
+  min-height: 100dvh;
   background: #0b1524;
   color: #0b1524;
   font-family: var(--font-body);
+  font-size: var(--fs-base);
+}
+
+body.no-scroll {
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 h1, h2, h3, h4 {
@@ -46,8 +61,18 @@ h1, h2, h3, h4 {
   line-height: 1.2;
 }
 
+h1 { font-size: var(--fs-xl); }
+h2 { font-size: var(--fs-lg); }
+h3 { font-size: var(--fs-md); }
+h4 { font-size: var(--fs-base); }
+
 button {
   font-family: inherit;
+}
+
+/* <Picture> wrapper is layout-neutral so existing `.container img` rules apply. */
+picture {
+  display: contents;
 }
 
 button:active {
@@ -55,13 +80,30 @@ button:active {
   transition: transform 80ms var(--ease);
 }
 
+/* Respect users who ask for less motion: neutralize CSS animation/transition
+   travel everywhere (the auto camera tour + car loops are gated in JS — see
+   prefersReducedMotion() in utils/device.ts). Panels still open, just without
+   the slide. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .app-shell {
   position: relative;
   min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   overflow: hidden;
   font-family: inherit;
@@ -99,12 +141,15 @@ button:active {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--space-2) var(--space-3);
+  padding: max(var(--space-2), env(safe-area-inset-top)) max(var(--space-3), env(safe-area-inset-right))
+    var(--space-2) max(var(--space-3), env(safe-area-inset-left));
   background: linear-gradient(180deg, rgba(252, 247, 238, 0.78), rgba(252, 247, 238, 0.62));
   backdrop-filter: blur(14px) saturate(170%);
   -webkit-backdrop-filter: blur(14px) saturate(170%);
   box-shadow: var(--shadow-1);
   z-index: 4;
+  transition: background var(--t-med) var(--ease), box-shadow var(--t-med) var(--ease),
+    color var(--t-med) var(--ease);
 }
 
 .top-bar.night {
@@ -131,7 +176,7 @@ button:active {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: var(--fs-md);
   letter-spacing: -0.01em;
 }
 
@@ -166,7 +211,7 @@ button:active {
   color: #1c3f7c;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: var(--fs-sm);
   cursor: pointer;
   padding: 0.35rem 0.55rem;
   transition: color var(--t-fast) var(--ease);
@@ -204,7 +249,7 @@ button:active {
 
 .tour-skip-btn {
   position: fixed;
-  bottom: 2rem;
+  bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1.25rem));
   left: 50%;
   transform: translateX(-50%);
   z-index: 4;
@@ -324,7 +369,7 @@ button:active {
   position: relative;
   width: 100%;
   height: 1.4em;
-  font-size: 0.95rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.01em;
   opacity: 0.85;
   text-align: center;
@@ -385,7 +430,7 @@ button:active {
 }
 
 .toggle-label {
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   color: #1c3f7c;
   font-weight: 700;
 }
@@ -422,8 +467,8 @@ button:active {
 
 .controls-panel {
   position: fixed;
-  bottom: var(--space-2);
-  left: var(--space-3);
+  bottom: max(var(--space-2), env(safe-area-inset-bottom));
+  left: max(var(--space-3), env(safe-area-inset-left));
   width: min(360px, calc(100% - 2rem));
   background: rgba(255, 250, 244, 0.78);
   backdrop-filter: blur(14px) saturate(160%);
@@ -431,11 +476,12 @@ button:active {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-2);
   padding: var(--space-2);
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   line-height: 1.45;
   transform: translateY(140%) scale(0.98);
   opacity: 0;
-  transition: transform var(--t-med) var(--ease), opacity var(--t-med) var(--ease);
+  transition: transform var(--t-med) var(--ease), opacity var(--t-med) var(--ease),
+    background var(--t-med) var(--ease), color var(--t-med) var(--ease);
   z-index: 3;
 }
 
@@ -646,7 +692,8 @@ button:active {
   z-index: 2;
   opacity: 0;
   transform: translateX(120%) scale(0.98);
-  transition: transform var(--t-med) var(--ease), opacity var(--t-med) var(--ease);
+  transition: transform var(--t-med) var(--ease), opacity var(--t-med) var(--ease),
+    background var(--t-med) var(--ease), color var(--t-med) var(--ease);
 }
 
 .portfolio-panel.open {
@@ -654,10 +701,17 @@ button:active {
   transform: translateX(0) scale(1);
 }
 
+/* The panel is focused programmatically when it opens (tabindex=-1) — don't
+   show a focus ring around the whole panel for that. */
+.portfolio-panel:focus {
+  outline: none;
+}
+
 .portfolio-panel.compact {
   bottom: auto;
   height: auto;
   max-height: calc(100vh - 8rem);
+  max-height: calc(100dvh - 8rem);
   overflow: hidden;
 }
 
@@ -725,10 +779,25 @@ button:active {
 
 .project-card-link {
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.project-card-link.project-card-wide {
+  display: grid;
 }
 
 .project-card-link:focus-visible {
   outline: 2px solid rgba(23, 82, 255, 0.4);
+  outline-offset: 2px;
+}
+
+/* Shared keyboard-focus ring for the interactive elements that lacked one. */
+:where(.tab, .chip-link, .contact-card, .carousel-button, .carousel-dot, .toggle,
+  .ghost-button, .experience-link-card, .pdf-link, .text-link,
+  .tour-skip-btn):focus-visible {
+  outline: 2px solid var(--accent-strong);
   outline-offset: 2px;
 }
 
@@ -810,7 +879,7 @@ button:active {
 
 .carousel-track {
   display: flex;
-  transition: transform 0.35s ease;
+  transition: transform var(--t-med) var(--ease);
 }
 
 .carousel-slide {
@@ -834,8 +903,8 @@ button:active {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
   border: 1px solid rgba(16, 37, 72, 0.1);
   background: rgba(255, 255, 255, 0.95);
@@ -882,6 +951,7 @@ button:active {
 }
 
 .carousel-dot {
+  position: relative;
   width: 8px;
   height: 8px;
   border-radius: 999px;
@@ -889,6 +959,13 @@ button:active {
   background: rgba(8, 18, 48, 0.2);
   cursor: pointer;
   padding: 0;
+}
+
+/* Expand the touch target to ~44px without growing the visible dot. */
+.carousel-dot::before {
+  content: "";
+  position: absolute;
+  inset: -18px;
 }
 
 .carousel-dot.active {
@@ -934,7 +1011,7 @@ button:active {
 
 .project-detail .project-links .chip {
   padding: 0.35rem 0.95rem;
-  font-size: 1rem;
+  font-size: var(--fs-base);
   background: rgba(8, 18, 48, 0.1);
   box-shadow: inset 0 0 0 1px rgba(8, 18, 48, 0.08);
 }
@@ -958,7 +1035,8 @@ button:active {
   background: rgba(8, 18, 48, 0.06);
   color: #1c3f7c;
   font-weight: 600;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease);
 }
 
 .pdf-link:hover {
@@ -1067,7 +1145,8 @@ button:active {
   background: rgba(8, 18, 48, 0.06);
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease);
 }
 
 .contact-card:hover {
@@ -1113,7 +1192,7 @@ button:active {
 }
 
 .contact-label {
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: #5c6b82;
@@ -1157,7 +1236,8 @@ button:active {
   background: rgba(8, 18, 48, 0.05);
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease);
 }
 
 .experience-link-card:hover {
@@ -1190,7 +1270,7 @@ button:active {
 }
 
 .experience-link-source {
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #5c6b82;
@@ -1207,7 +1287,7 @@ button:active {
   color: #1c3f7c;
   font-weight: 600;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color var(--t-fast) var(--ease);
 }
 
 .experience-company-link:hover {
@@ -1233,7 +1313,7 @@ button:active {
   background: rgba(2, 5, 15, 0.5);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  transition: opacity var(--t-med) var(--ease);
   z-index: 1;
 }
 
@@ -1314,7 +1394,8 @@ button:active {
   font-size: 0.55rem;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease),
+    background var(--t-fast) var(--ease);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -1430,29 +1511,40 @@ button:active {
     gap: 0.5rem;
     display: none;
   }
-  .brand-title {
-    font-size: 0.95rem;
-  }
   .toggle {
     padding: 0.25rem 0.6rem;
   }
-  .portfolio-panel {
+  .portfolio-panel,
+  .portfolio-panel.compact {
     top: auto;
     bottom: 0;
     left: 0;
     right: 0;
     border-radius: 24px 24px 0 0;
-    height: 80vh;
+    /* Leave room for the fixed top bar so the sheet never rides under it. */
+    height: min(82dvh, calc(100dvh - 4.5rem));
+    max-height: calc(100dvh - 4.5rem);
     transform: translateY(110%);
     width: 100%;
-  }
-  .portfolio-panel.compact {
-    bottom: 0;
-    height: 80vh;
-    max-height: 80vh;
+    padding-top: var(--space-2);
+    padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
   }
   .portfolio-panel.open {
     transform: translateY(0);
+  }
+  /* Grab-handle affordance so the bottom sheet reads as draggable/dismissable. */
+  .portfolio-panel::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: 0 auto 0.75rem;
+    border-radius: 999px;
+    background: rgba(20, 30, 50, 0.25);
+    flex-shrink: 0;
+  }
+  .app-shell.night .portfolio-panel::before {
+    background: rgba(216, 230, 255, 0.3);
   }
   .orientation-widget {
     right: 0.6rem;
@@ -1484,6 +1576,17 @@ button:active {
   }
 }
 
+/* Tablet: the desktop 70vw side panel is overwhelming and the 320px image
+   column is too dominant between 641–900px. Narrow the panel and stack cards. */
+@media (min-width: 641px) and (max-width: 900px) {
+  .portfolio-panel {
+    width: min(440px, calc(100% - 3rem));
+  }
+  .project-card-wide {
+    grid-template-columns: 1fr;
+  }
+}
+
 .about-header {
   display: flex;
   align-items: center;
@@ -1509,10 +1612,80 @@ button:active {
 
 .about-name {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: var(--fs-lg);
 }
 
 .about-role {
-  font-size: 0.9rem;
+  font-size: var(--fs-sm);
   line-height: 1.45;
+}
+
+/* First-load hint that the 3D city is draggable/tappable. Shown once. */
+.canvas-coachmark {
+  position: fixed;
+  left: 50%;
+  bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1.25rem));
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: calc(100% - 2rem);
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(16, 24, 38, 0.74);
+  color: #f4f8ff;
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: var(--shadow-2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+  animation: coachFadeUp 420ms var(--ease) both;
+}
+
+.canvas-coachmark svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.canvas-coachmark.exiting {
+  opacity: 0;
+  transition: opacity var(--t-med) var(--ease);
+}
+
+@keyframes coachFadeUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Visually-hidden skip link that appears on keyboard focus. */
+.skip-link {
+  position: fixed;
+  left: 50%;
+  top: 0.5rem;
+  transform: translate(-50%, -150%);
+  z-index: 6;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #0b1524;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform var(--t-fast) var(--ease);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
 }

@@ -1,7 +1,8 @@
 import type { BuildingKey } from "../data/cityLayout";
 import { CITY_LAYOUT } from "../data/cityLayout";
 import { PANEL_TITLES, PORTFOLIO_DATA, projectSlug, type ProjectCategory } from "../data/portfolioData";
-import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactElement } from "react";
+import { useEffect, useRef, useState, type MouseEvent, type ReactElement } from "react";
+import Picture from "./Picture";
 
 type PortfolioPanelProps = {
   activeKey: BuildingKey | null;
@@ -117,7 +118,7 @@ const renderContent = (
       return (
         <div className="panel-section about-section">
           <div className="about-header">
-            <img
+            <Picture
               className="about-photo"
               src="/headshot.jpg"
               alt="Junjie Wu"
@@ -162,32 +163,33 @@ const renderContent = (
             .filter((project) => project.category === projectsCategory)
             .map((project) => {
               const slug = projectSlug(project.title);
-              const handleCardClick = (event: MouseEvent<HTMLDivElement>) => {
-                const target = event.target as HTMLElement;
-                if (target.closest("a")) {
+              const handleCardClick = (event: MouseEvent<HTMLAnchorElement>) => {
+                // Honor modified clicks (new tab / new window / middle-click) by
+                // letting the real href take over; SPA-navigate on a plain click.
+                if (
+                  event.defaultPrevented ||
+                  event.button !== 0 ||
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                ) {
                   return;
                 }
+                event.preventDefault();
                 onProjectOpen(slug);
-              };
-              const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onProjectOpen(slug);
-                }
               };
               const hasImage = Boolean(project.image);
               return (
-                <div
+                <a
                   key={project.title}
+                  href={`/projects/${slug}`}
                   className={`project-card project-card-link ${hasImage ? "project-card-wide" : "project-card-text"}`}
-                  role="link"
-                  tabIndex={0}
                   onClick={handleCardClick}
-                  onKeyDown={handleCardKeyDown}
                 >
                   {project.image && (
                     <div className="project-thumb">
-                      <img src={project.image} alt={project.title} />
+                      <Picture src={project.image} alt={project.title} />
                     </div>
                   )}
                   <div className="project-meta">
@@ -206,7 +208,7 @@ const renderContent = (
                       ))}
                     </div>
                   </div>
-                </div>
+                </a>
               );
             })}
         </div>
@@ -260,7 +262,7 @@ const renderContent = (
                     >
                       {link.image ? (
                         <span className="experience-link-thumb">
-                          <img src={link.image} alt="" loading="lazy" />
+                          <Picture src={link.image} alt="" loading="lazy" />
                         </span>
                       ) : null}
                       <span className="experience-link-copy">
@@ -343,6 +345,8 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelPro
   const isOpen = Boolean(activeKey);
   const isCompact = activeKey === "about" || activeKey === "skills" || activeKey === "contact";
   const openAtRef = useRef<number | null>(null);
+  const asideRef = useRef<HTMLElement | null>(null);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
   const building = CITY_LAYOUT.find(
     (entry) => entry.type === "main" && entry.key === activeKey
   );
@@ -354,6 +358,18 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelPro
       openAtRef.current = null;
     }
   }, [activeKey]);
+
+  // Move keyboard focus into the panel when it opens; return it to whatever was
+  // focused (the nav button or the canvas) when it closes.
+  useEffect(() => {
+    if (isOpen) {
+      lastFocusedRef.current = document.activeElement as HTMLElement | null;
+      asideRef.current?.focus();
+    } else if (lastFocusedRef.current) {
+      lastFocusedRef.current.focus?.();
+      lastFocusedRef.current = null;
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -373,7 +389,12 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelPro
 
   return (
     <>
-      <aside className={`portfolio-panel ${isOpen ? "open" : ""} ${isCompact ? "compact" : ""}`}>
+      <aside
+        ref={asideRef}
+        tabIndex={-1}
+        aria-label={activeKey ? PANEL_TITLES[activeKey] : undefined}
+        className={`portfolio-panel ${isOpen ? "open" : ""} ${isCompact ? "compact" : ""}`}
+      >
         {activeKey ? (
           <>
             <div className="panel-header">
@@ -384,7 +405,7 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelPro
                 Close
               </button>
             </div>
-            <div className="panel-body" key={activeKey ?? "closed"}>
+            <div className="panel-body" id="panel-body" key={activeKey ?? "closed"}>
               {renderContent(activeKey, projectTab, setProjectTab, onProjectOpen)}
             </div>
           </>

@@ -6,6 +6,7 @@ import ProjectPanel from "./components/ProjectPanel";
 import TopBar from "./components/TopBar";
 import type { BuildingKey } from "./data/cityLayout";
 import type { SceneControls } from "./scene/createScene";
+import { prefersReducedMotion } from "./utils/device";
 
 // Babylon.js is heavy (~6 MB). Lazy-load the 3D components so the app shell and
 // loading screen paint immediately, then the engine streams in as a separate chunk.
@@ -24,6 +25,25 @@ const readDayMode = () => {
   return true;
 };
 
+const COACHMARK_KEY = "ui:seenCoachmark";
+
+const hasSeenCoachmark = () => {
+  if (typeof window === "undefined") return true;
+  try {
+    return window.localStorage.getItem(COACHMARK_KEY) === "1";
+  } catch {
+    return true;
+  }
+};
+
+const markCoachmarkSeen = () => {
+  try {
+    window.localStorage.setItem(COACHMARK_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+};
+
 
 const App = () => {
   const [isDay, setIsDay] = useState(readDayMode);
@@ -33,11 +53,16 @@ const App = () => {
   const [isLoadingMounted, setIsLoadingMounted] = useState(true);
   const [sceneControls, setSceneControls] = useState<SceneControls | null>(null);
   const [isTourActive, setIsTourActive] = useState(false);
+  const [showCoachmark, setShowCoachmark] = useState(false);
+  const [coachmarkExiting, setCoachmarkExiting] = useState(false);
   const controlsRef = useRef<SceneControls | null>(null);
   const cancelTourRef = useRef<(() => void) | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const isProjectRoute = location.pathname.startsWith("/projects/");
+  // The /projects index URL lands directly on the Projects section.
+  const isProjectsIndex = location.pathname === "/projects";
+  const activeSection: BuildingKey | null = isProjectsIndex ? "projects" : activeBuilding;
 
   useEffect(() => {
     if (isLoading) {
@@ -50,6 +75,11 @@ const App = () => {
 
   const handleTourEnd = useCallback(() => {
     setIsTourActive(false);
+    // Once the intro tour finishes (or is skipped), nudge first-time visitors
+    // that the city is interactive.
+    if (!hasSeenCoachmark()) {
+      setShowCoachmark(true);
+    }
   }, []);
 
   const handleSceneReady = useCallback((controls: SceneControls) => {
@@ -60,10 +90,25 @@ const App = () => {
   const handleAllAssetsLoaded = useCallback(() => {
     const controls = controlsRef.current;
     if (!controls) return;
+    // Reduced-motion users skip the auto camera fly-through entirely.
+    if (prefersReducedMotion()) {
+      controls.resetCamera();
+      handleTourEnd();
+      return;
+    }
     const cancel = controls.startCameraTour(handleTourEnd);
     cancelTourRef.current = cancel;
     setIsTourActive(true);
   }, [handleTourEnd]);
+
+  const dismissCoachmark = useCallback(() => {
+    setCoachmarkExiting(true);
+    markCoachmarkSeen();
+    window.setTimeout(() => {
+      setShowCoachmark(false);
+      setCoachmarkExiting(false);
+    }, 280);
+  }, []);
 
   const handleBuildingSelect = useCallback(
     (key: BuildingKey | null) => {
@@ -113,12 +158,35 @@ const App = () => {
     }
   }, [isDay]);
 
+  // Auto-dismiss the coachmark after a few seconds or on the first interaction.
+  useEffect(() => {
+    if (!showCoachmark) return;
+    const timer = window.setTimeout(dismissCoachmark, 6000);
+    const onInteract = () => dismissCoachmark();
+    window.addEventListener("pointerdown", onInteract, { once: true });
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("pointerdown", onInteract);
+    };
+  }, [showCoachmark, dismissCoachmark]);
+
+  // Lock background scroll while a panel/sheet is open (prevents iOS rubber-band
+  // behind the bottom sheet).
+  useEffect(() => {
+    const panelOpen = activeSection !== null || isProjectRoute;
+    document.body.classList.toggle("no-scroll", panelOpen);
+    return () => document.body.classList.remove("no-scroll");
+  }, [activeSection, isProjectRoute]);
+
   const toggleDay = () => {
     setIsDay((prev) => !prev);
   };
 
   return (
     <div className={`app-shell ${isDay ? "day" : "night"}`}>
+      <a className="skip-link" href="#panel-body">
+        Skip to content
+      </a>
       <Suspense fallback={null}>
         <BabylonCanvas
           isDay={isDay}
@@ -144,8 +212,11 @@ const App = () => {
         <ProjectPanel onClose={handleProjectClose} />
       ) : (
         <PortfolioPanel
-          activeKey={activeBuilding}
-          onClose={() => setActiveBuilding(null)}
+          activeKey={activeSection}
+          onClose={() => {
+            setActiveBuilding(null);
+            if (isProjectsIndex) navigate("/");
+          }}
           onProjectOpen={handleProjectOpen}
         />
       )}
@@ -161,6 +232,25 @@ const App = () => {
         >
           Skip intro
         </button>
+      )}
+      {showCoachmark && !isTourActive && activeSection === null && !isProjectRoute && (
+        <div
+          className={`canvas-coachmark${coachmarkExiting ? " exiting" : ""}`}
+          role="status"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3" />
+          </svg>
+          <span>Drag to look around · tap a building to explore</span>
+        </div>
       )}
       {isLoadingMounted && (
         <div className={`loading-overlay${isLoading ? "" : " exiting"}`}>

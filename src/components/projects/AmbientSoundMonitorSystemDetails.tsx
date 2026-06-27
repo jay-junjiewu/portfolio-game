@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import Picture from "../Picture";
 
 const AmbientSoundMonitorSystemDetails = () => {
   const carouselImages = [
@@ -77,7 +78,7 @@ const AmbientSoundMonitorSystemDetails = () => {
       <h3>Operating principle</h3>
       <p>The system architecture and operation are illustrated below.</p>
       <div className="hover-container">
-        <img
+        <Picture
           src="/assets/ambient-sound-monitor-system/operating_flowchart.png"
           className="image-pe1-1"
           alt="Operating flowchart"
@@ -87,7 +88,7 @@ const AmbientSoundMonitorSystemDetails = () => {
       <h3>Hardware</h3>
       <p>Here is the custom PCB designed and assembled for this project.</p>
       <div className="hover-container">
-        <img
+        <Picture
           src="/assets/ambient-sound-monitor-system/real-pcb.jpg"
           className="image-ps2-1"
           alt="Assembled PCB"
@@ -110,7 +111,7 @@ const AmbientSoundMonitorSystemDetails = () => {
         >
           {slides.map((image) => (
             <div key={image.src} className="carousel-slide">
-              <img src={image.src} alt={image.alt} />
+              <Picture src={image.src} alt={image.alt} />
             </div>
           ))}
         </div>

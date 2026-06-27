@@ -1,3 +1,5 @@
+import Picture from "../Picture";
+
 const VinoosDetails = () => {
   return (
     <section className="project-detail">
@@ -18,7 +20,7 @@ const VinoosDetails = () => {
       </div>
 
       <div className="hover-container">
-        <img src="/assets/vinoos/website_thumbnail.png" alt="Vinoos website screenshot" />
+        <Picture src="/assets/vinoos/website_thumbnail.png" alt="Vinoos website screenshot" />
       </div>
 
       <h3>Overview</h3>

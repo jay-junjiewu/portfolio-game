@@ -1,3 +1,5 @@
+import Picture from "../Picture";
+
 const RankItDetails = () => {
   return (
     <section className="project-detail">
@@ -19,7 +21,7 @@ const RankItDetails = () => {
       </div>
 
       <div className="hover-container">
-        <img src="/assets/rankit/website_thumbnail.png" alt="RankIt website screenshot" />
+        <Picture src="/assets/rankit/website_thumbnail.png" alt="RankIt website screenshot" />
       </div>
 
       <h3>My role — backend</h3>
