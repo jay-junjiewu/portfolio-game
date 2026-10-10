@@ -58,7 +58,7 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
     target,
     scene
   );
-  camera.lowerRadiusLimit = 18;
+  camera.lowerRadiusLimit = isMobile ? 48 : 18;
   camera.upperRadiusLimit = Math.max(420, initialRadius + 40);
   camera.lowerBetaLimit = .3;
   camera.upperBetaLimit = 1.35;
