@@ -56,6 +56,22 @@ export const setupPicking = (
   let hovered: LoadedBuilding | null = null;
   let lastSelectionAt = 0;
   let lastTouchAt = 0;
+  let pendingTouchClick: { x: number; y: number; expires: number } | null = null;
+  const suppressCompatibilityClick = (event: MouseEvent) => {
+    const pending = pendingTouchClick;
+    if (!pending || event.detail === 0) return;
+    if (Date.now() > pending.expires) {
+      pendingTouchClick = null;
+      return;
+    }
+    if (Math.hypot(event.clientX - pending.x, event.clientY - pending.y) > 24) return;
+    pendingTouchClick = null;
+    // The touch opens a panel on pointerup. Its following compatibility click
+    // belongs to the canvas gesture, not the project card now underneath it.
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  };
+  window.addEventListener("click", suppressCompatibilityClick, true);
   const ghostClickWindowMs = 10;
   const isCoarsePointer =
     typeof window !== "undefined" &&
@@ -70,9 +86,9 @@ export const setupPicking = (
       return { x: scene.pointerX, y: scene.pointerY };
     }
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    // scene.pick applies the engine's hardware scale itself. Pass CSS pixels,
+    // otherwise high-DPI phones apply devicePixelRatio twice.
+    return { x: clientX - rect.left, y: clientY - rect.top };
   };
 
   const pickAtPointer = (pointerInfo?: PointerInfo, event?: PointerEvent) => {
@@ -142,6 +158,7 @@ export const setupPicking = (
         if (isTouch) {
           handleHoverChange(building);
           lastTouchAt = Date.now();
+          pendingTouchClick = { x: event.clientX, y: event.clientY, expires: lastTouchAt + 700 };
         }
         selectBuilding(building);
         break;
@@ -228,6 +245,7 @@ export const setupPicking = (
       ? findBuildingFromMesh(pickInfo.pickedMesh, buildingMap)
       : null;
     handleHoverChange(building);
+    pendingTouchClick = { x: touch.clientX, y: touch.clientY, expires: Date.now() + 700 };
     selectBuilding(building);
     lastTouchAt = Date.now();
     resetFallbackTouch();
@@ -245,6 +263,7 @@ export const setupPicking = (
   }
 
   return () => {
+    window.removeEventListener("click", suppressCompatibilityClick, true);
     applyOutline(hovered, false);
     scene.onPointerObservable.remove(observer);
     if (inputElement && !supportsPointerEvents) {

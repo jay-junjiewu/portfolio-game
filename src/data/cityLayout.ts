@@ -76,7 +76,7 @@ export const TILE_SIZE = 4;
 const UNIFORM_SCALE = TILE_SIZE * 0.9;
 
 // Main portfolio buildings
-const MAIN_BUILDINGS: BuildingPlacement[] = [
+export const MAIN_BUILDINGS: BuildingPlacement[] = [
   {
     id: "about",
     type: "main",

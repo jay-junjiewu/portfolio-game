@@ -2,22 +2,27 @@ import { ArcRotateCamera } from "@babylonjs/core/Cameras/arcRotateCamera";
 import { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 import { DirectionalLight } from "@babylonjs/core/Lights/directionalLight";
 import type { Engine } from "@babylonjs/core/Engines/engine";
-import { DynamicTexture } from "@babylonjs/core/Materials/Textures/dynamicTexture";
 import { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
-import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { PointerEventTypes } from "@babylonjs/core/Events/pointerEvents";
 import { Scalar } from "@babylonjs/core/Maths/math.scalar";
 import { Scene } from "@babylonjs/core/scene";
 import { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
+import { Mesh } from "@babylonjs/core/Meshes/mesh";
+import { GlowLayer } from "@babylonjs/core/Layers/glowLayer";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";
 // ShadowGenerator's render hook lives in a separate scene component that the
 // barrel import used to register implicitly; pull it in so shadows still draw.
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent";
-import { CITY_LAYOUT, CITY_TILE_SIZE, type BuildingKey, type AnimationSequence } from "../data/cityLayout";
+import { CITY_TILE_SIZE, type BuildingKey, type AnimationSequence } from "../data/cityLayout";
+import { ISLAND_LAYOUT as CITY_LAYOUT } from "../data/islandLayout";
+import { createIslandEnvironment } from "./islandEnvironment";
+import { createDistrictDetails } from "./districtDetails";
+import { configureCityRoads, mapCityRoadHeading, mapCityRoadPoint } from "./cityTerrain";
+import { createAtmosphere } from "./atmosphere";
 import type { LoadedBuilding, RevealEntry } from "./loadBuilding";
-import { createModelCache, loadBuilding, revealQueue } from "./loadBuilding";
+import { createModelCache, loadBuilding, revealQueue, setupBuildingLabels } from "./loadBuilding";
 import { setupPicking } from "./picking";
 import { isMobileDevice, prefersReducedMotion } from "../utils/device";
 
@@ -30,6 +35,9 @@ export type SceneCallbacks = {
 export type SceneControls = {
   scene: Scene;
   resetCamera: () => void;
+  focusOnPoint: (x: number, z: number, radius?: number) => void;
+  zoomCamera: (delta: number) => void;
+  setPhotoMode: (enabled: boolean) => void;
   setDayMode: (isDay: boolean) => void;
   setCameraOrbit: (alpha: number, beta: number) => void;
   focusOnBuilding: (key: BuildingKey | null) => void;
@@ -38,19 +46,25 @@ export type SceneControls = {
 };
 
 const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
-  const target = new Vector3(0, 4, 0);
+  const target = new Vector3(2, -5, 2);
   const isMobile = isMobileDevice();
-  const initialRadius = isMobile ? 52 : 42;
+  const aspect = canvas.clientWidth / Math.max(1, canvas.clientHeight);
+  const initialRadius = Math.max(185, 155 / Math.max(.35, aspect));
   const camera = new ArcRotateCamera(
     "city-camera",
     3* Math.PI / 4,
-    1,
+    0.86,
     initialRadius,
     target,
     scene
   );
-  camera.lowerRadiusLimit = 12;
-  camera.upperRadiusLimit = 60;
+  camera.lowerRadiusLimit = 18;
+  camera.upperRadiusLimit = Math.max(420, initialRadius + 40);
+  camera.lowerBetaLimit = .3;
+  camera.upperBetaLimit = 1.35;
+  camera.panningDistanceLimit = 95;
+  camera.minZ = .5;
+  camera.maxZ = 800;
   camera.wheelDeltaPercentage = 0.01;
   camera.panningSensibility = 30;
   camera.useAutoRotationBehavior = false;
@@ -66,8 +80,8 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
     useNaturalPinchZoom?: boolean;
   };
   pointerInput.buttons = [0];
-  pointerInput.angularSensibilityX = 10000;
-  pointerInput.angularSensibilityY = 10000;
+  pointerInput.angularSensibilityX = 1600;
+  pointerInput.angularSensibilityY = 1800;
   pointerInput.panningSensibility = isMobile ? 240 : 450;
   pointerInput.pinchZoom = true;
   pointerInput.multiTouchPanning = false;
@@ -242,108 +256,60 @@ const setupTwoFingerRotation = (scene: Scene, camera: ArcRotateCamera) => {
   };
 };
 
-const createGround = (scene: Scene) => {
-  const ground = MeshBuilder.CreateGround(
-    "ground",
-    { width: 220, height: 220, subdivisions: 2 },
-    scene
-  );
-  const groundMaterial = new StandardMaterial("ground-mat", scene);
-  groundMaterial.diffuseColor = Color3.FromHexString("#c9efd8");
-  groundMaterial.specularColor = Color3.Black();
-
-  const gridTexture = new DynamicTexture("grid-tex", { width: 512, height: 512 }, scene, false);
-  const ctx = gridTexture.getContext();
-  if (ctx) {
-    ctx.clearRect(0, 0, 512, 512);
-    ctx.strokeStyle = "rgba(6, 28, 64, 0.22)";
-    ctx.lineWidth = 2;
-    const step = 64;
-    for (let i = 0; i <= 512; i += step) {
-      ctx.beginPath();
-      ctx.moveTo(i, 0);
-      ctx.lineTo(i, 512);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(0, i);
-      ctx.lineTo(512, i);
-      ctx.stroke();
-    }
-    gridTexture.update(false);
-    gridTexture.hasAlpha = true;
-    gridTexture.uScale = 10;
-    gridTexture.vScale = 10;
-    groundMaterial.diffuseTexture = gridTexture;
-
-  }
-
-  ground.material = groundMaterial;
-  ground.receiveShadows = true;
-  return { ground, groundMaterial };
-};
-
-const addGridLines = (scene: Scene) => {
-  const size = CITY_TILE_SIZE;
-  const blocks = 17;
-  const start = -Math.floor((blocks - 1) / 2) * size;
-  const end = Math.floor((blocks + 1) / 2) * size;
-  const color = Color3.FromHexString("#597392");
-
-  for (let x = start; x <= end; x += size) {
-    MeshBuilder.CreateLines(
-      `grid-x-${x}`,
-      {
-        points: [new Vector3(x, 0.01, start), new Vector3(x, 0.01, end)],
-      },
-      scene
-    ).color = color;
-  }
-
-  for (let z = start; z <= end; z += size) {
-    MeshBuilder.CreateLines(
-      `grid-z-${z}`,
-      {
-        points: [new Vector3(start, 0.01, z), new Vector3(end, 0.01, z)],
-      },
-      scene
-    ).color = color;
-  }
+// Warm sky fill and sandy bounce keep shaded facades and foliage readable.
+// Use the same daylight values at startup and after returning from night.
+const DAY_LIGHTING = {
+  skyColor: "#B8DDEB",
+  sunIntensity: .88,
+  fillIntensity: .94,
+  skyFill: "#FFF8EE",
+  groundBounce: "#C4C3AB",
+  exposure: 1,
+  contrast: 1,
+  shadowLift: .34,
 };
 
 const setupLights = (scene: Scene) => {
   const hemi = new HemisphericLight("hemi-light", new Vector3(0, 1, 0), scene);
-  hemi.intensity = 0.8;
-  hemi.groundColor = Color3.FromHexString("#7cabd9");
+  hemi.intensity = DAY_LIGHTING.fillIntensity;
+  hemi.diffuse = Color3.FromHexString(DAY_LIGHTING.skyFill);
+  hemi.groundColor = Color3.FromHexString(DAY_LIGHTING.groundBounce);
 
   const directional = new DirectionalLight(
     "sun",
-    new Vector3(-0.5, -1, -0.4),
+    new Vector3(-.38, -1, .26),
     scene
   );
-  directional.position = new Vector3(20, 30, 20);
-  directional.intensity = 1.1;
+  // A higher afternoon sun keeps tree and tower shadows close to their bases.
+  directional.position = new Vector3(38, 100, -26);
+  directional.diffuse = Color3.FromHexString("#FFF1D6");
+  directional.autoCalcShadowZBounds = true;
+  // Balance the steeper angle so sunlit sand keeps the same brightness.
+  directional.intensity = DAY_LIGHTING.sunIntensity;
 
-  const shadowGenerator = new ShadowGenerator(1024, directional);
-  shadowGenerator.useBlurExponentialShadowMap = true;
-  shadowGenerator.blurKernel = 16;
+  const shadowGenerator = new ShadowGenerator(isMobileDevice() ? 1024 : 2048, directional);
+  shadowGenerator.usePercentageCloserFiltering = true;
+  shadowGenerator.filteringQuality = ShadowGenerator.QUALITY_MEDIUM;
+  shadowGenerator.bias = .0003;
+  shadowGenerator.normalBias = .035;
+  shadowGenerator.setDarkness(DAY_LIGHTING.shadowLift);
 
   return { hemi, directional, shadowGenerator };
 };
 
 const animateCameraFocus = (camera: ArcRotateCamera, target: Vector3) => {
-  const lerpFactor = 0.2;
+  let frame: number | null = null;
   const update = () => {
-    camera.target = Vector3.Lerp(camera.target, target, lerpFactor);
-    if (Vector3.Distance(camera.target, target) > 0.1) {
-      requestAnimationFrame(update);
-    }
+    camera.target.copyFrom(prefersReducedMotion() ? target : Vector3.Lerp(camera.target, target, .16));
+    if (Vector3.Distance(camera.target, target) > .05) frame = requestAnimationFrame(update);
   };
   update();
+  return () => { if (frame !== null) cancelAnimationFrame(frame); };
 };
 
 const clampBeta = (beta: number) => {
-  const min = 0.2;
-  const max = Math.PI - 0.2;
+  const min = .3;
+  const max = 1.35;
   return Math.min(max, Math.max(min, beta));
 };
 
@@ -359,21 +325,40 @@ export const createCityScene = async (
   callbacks: SceneCallbacks
 ): Promise<SceneControls> => {
   const scene = new Scene(engine);
-  scene.clearColor = new Color4(0.82, 0.92, 1, 1);
+  scene.clearColor = Color4.FromHexString(`${DAY_LIGHTING.skyColor}FF`);
 
   // Drop any reveal entries left over from a previous scene (e.g. a StrictMode
   // remount) so this scene's observer never tweens disposed nodes.
   revealQueue.length = 0;
 
-  const { ground, groundMaterial } = createGround(scene);
-
-  // Grid for testing
-  // addGridLines(scene);
   const camera = setupCamera(scene, canvas);
+  configureCityRoads(CITY_LAYOUT.filter(entry => entry.type === "road"), CITY_TILE_SIZE);
   const disposeTouchRotation = setupTwoFingerRotation(scene, camera);
   const { hemi, directional, shadowGenerator } = setupLights(scene);
+  const environment = createIslandEnvironment(scene, shadowGenerator);
+  const districts = createDistrictDetails(scene, shadowGenerator);
+  const atmosphere = createAtmosphere(scene, camera);
+  const nightGlow = new GlowLayer("city-lantern-glow", scene, {
+    mainTextureRatio: isMobileDevice() ? .25 : .35,
+    blurKernelSize: 24,
+  });
+  nightGlow.intensity = .24;
+  nightGlow.isEnabled = false;
+  scene.meshes.forEach(mesh => {
+    if (mesh instanceof Mesh && /lantern-glass|warm-lanterns|streetlight-bulbs/.test(mesh.material?.name ?? "")) {
+      nightGlow.addIncludedOnlyMesh(mesh);
+    }
+  });
+  scene.imageProcessingConfiguration.contrast = DAY_LIGHTING.contrast;
+  scene.imageProcessingConfiguration.exposure = DAY_LIGHTING.exposure;
+  scene.imageProcessingConfiguration.toneMappingEnabled = true;
+  scene.imageProcessingConfiguration.toneMappingType = 1;
+  scene.fogMode = Scene.FOGMODE_EXP2;
+  scene.fogColor = Color3.FromHexString(DAY_LIGHTING.skyColor);
+  scene.fogDensity = .00055;
 
   const loadedBuildings: LoadedBuilding[] = [];
+  const batchedCityMeshes: Mesh[] = [];
 
   type AnimationSegment =
     | { type: "move"; start: Vector3; end: Vector3; duration: number }
@@ -397,13 +382,21 @@ export const createCityScene = async (
     startTime: number;
   }> = [];
 
+  const placeTraffic = (root: LoadedBuilding["root"], position: Vector3) => {
+    const mapped = mapCityRoadPoint(position.x, position.z);
+    root.position.x = mapped.x;
+    root.position.z = mapped.z;
+    root.position.y = position.y;
+  };
+
   let animationObserverActive = false;
   const ensureAnimationObserver = () => {
     if (animationObserverActive) return;
     animationObserverActive = true;
     scene.onBeforeRenderObservable.add(() => {
+      if (prefersReducedMotion()) return;
       const now = performance.now() / 1000;
-      animatedDecor.forEach(({ root, segments, totalDuration, loop, basePosition, rotationOffset, startTime }) => {
+      animatedDecor.forEach(({ root, segments, totalDuration, loop, rotationOffset, startTime }) => {
         if (!segments.length || totalDuration <= 0) return;
         const elapsed = now - startTime;
         if (!loop && elapsed >= totalDuration) {
@@ -414,9 +407,7 @@ export const createCityScene = async (
               : last.type === "turn"
               ? last.end
               : last.end;
-          root.position.x = finalPosition.x;
-          root.position.z = finalPosition.z;
-          root.position.y = basePosition.y;
+          placeTraffic(root, finalPosition);
           return;
         }
         const cycleTime = loop ? elapsed % totalDuration : Math.min(elapsed, totalDuration);
@@ -425,31 +416,25 @@ export const createCityScene = async (
           if (remaining <= segment.duration) {
             const progress = segment.duration > 0 ? remaining / segment.duration : 1;
             if (segment.type === "pause") {
-              root.position.x = segment.position.x;
-              root.position.z = segment.position.z;
-              root.position.y = basePosition.y;
+              placeTraffic(root, segment.position);
               return;
             }
             if (segment.type === "turn") {
               const position = quadraticPoint(segment.start, segment.control, segment.end, progress);
               const tangent = quadraticTangent(segment.start, segment.control, segment.end, progress);
-              root.position.x = position.x;
-              root.position.z = position.z;
-              root.position.y = basePosition.y;
+              placeTraffic(root, position);
               if (tangent.lengthSquared() > 0.0001) {
                 const heading = Math.atan2(tangent.x, tangent.z);
-                root.rotation.y = heading + rotationOffset;
+                root.rotation.y = mapCityRoadHeading(position.x, position.z, heading) + rotationOffset;
               }
               return;
             }
             const position = Vector3.Lerp(segment.start, segment.end, progress);
             const direction = segment.end.subtract(segment.start);
-            root.position.x = position.x;
-            root.position.z = position.z;
-            root.position.y = basePosition.y;
+            placeTraffic(root, position);
             if (direction.lengthSquared() > 0.0001) {
               const heading = Math.atan2(direction.x, direction.z);
-              root.rotation.y = heading + rotationOffset;
+              root.rotation.y = mapCityRoadHeading(position.x, position.z, heading) + rotationOffset;
             }
             return;
           }
@@ -462,9 +447,7 @@ export const createCityScene = async (
             : fallback.type === "turn"
             ? fallback.end
             : fallback.end;
-        root.position.x = fallbackPosition.x;
-        root.position.z = fallbackPosition.z;
-        root.position.y = basePosition.y;
+        placeTraffic(root, fallbackPosition);
       });
     });
   };
@@ -618,22 +601,29 @@ export const createCityScene = async (
 
   const halfTile = CITY_TILE_SIZE / 2;
   let isDayMode = true;
+  const applyMaterialLighting = (mat: StandardMaterial | null, isDay: boolean) => {
+    if (!mat || !mat.emissiveColor) return;
+    const colorValue = isDay ? 0 : .065;
+    mat.emissiveColor = new Color3(colorValue, colorValue, colorValue * 1.4);
+    if (mat.metadata?.cityWindowLighting && mat.emissiveTexture) {
+      mat.emissiveTexture.level = isDay ? 0 : .85;
+    }
+    mat.specularColor = Color3.FromHexString("#293b3a").scale(.2);
+  };
   const applyDayModeToBuilding = (building: LoadedBuilding, isDay: boolean) => {
+    building.setLabelDayMode?.(isDay);
     if (building.glowMesh) {
       building.glowMesh.isVisible = !isDay;
     }
     building.meshes.forEach((mesh) => {
-      const mat = mesh.material as StandardMaterial | null;
-      if (!mat || !mat.emissiveColor) return;
-      const colorValue = isDay ? 0.02 : 0.22;
-      mat.emissiveColor = new Color3(colorValue, colorValue, colorValue);
+      applyMaterialLighting(mesh.material as StandardMaterial | null, isDay);
     });
   };
 
   const registerAnimated = (building: LoadedBuilding) => {
     const sequence = building.entry.animation;
     if (!sequence || sequence.type !== "sequence" || sequence.steps.length === 0) return;
-    const basePosition = building.root.position.clone();
+    const basePosition = new Vector3(building.entry.position.x + halfTile, building.root.position.y, building.entry.position.z + halfTile);
     const segments = buildSegments(basePosition, sequence, halfTile);
     const totalDuration = segments.reduce((sum, seg) => sum + seg.duration, 0);
     if (totalDuration <= 0) return;
@@ -651,6 +641,8 @@ export const createCityScene = async (
       return Math.atan2(tangent.x, tangent.z);
     })();
     const rotationOffset = baseRotation - initialHeading;
+    placeTraffic(building.root, basePosition);
+    building.root.rotation.y = mapCityRoadHeading(basePosition.x, basePosition.z, initialHeading) + rotationOffset;
     animatedDecor.push({
       root: building.root,
       sequence,
@@ -666,6 +658,9 @@ export const createCityScene = async (
 
   const addLoadedBuilding = (building: LoadedBuilding) => {
     loadedBuildings.push(building);
+    if (building.entry.type === "main") {
+      building.meshes.forEach(mesh => { if (mesh instanceof Mesh) nightGlow.addIncludedOnlyMesh(mesh); });
+    }
     applyDayModeToBuilding(building, isDayMode);
     registerAnimated(building);
   };
@@ -695,6 +690,7 @@ export const createCityScene = async (
     )
   );
   mainBuildings.forEach(addLoadedBuilding);
+  const disposeBuildingLabels = setupBuildingLabels(scene, camera, canvas, mainBuildings);
   // Always attach the drainer (idempotent, no-op when the queue stays empty),
   // so a node hidden by queueReveal always has an observer to reveal it — even
   // if reduced-motion is toggled off mid-load after revealMotion was captured.
@@ -711,18 +707,57 @@ export const createCityScene = async (
         )
       );
       batchBuildings.forEach(addLoadedBuilding);
-      // Always attach the drainer (idempotent, no-op when the queue stays empty),
-  // so a node hidden by queueReveal always has an observer to reveal it — even
-  // if reduced-motion is toggled off mid-load after revealMotion was captured.
-  ensureRevealObserver();
+      ensureRevealObserver();
     }
   })();
-  loadRemaining.then(() => callbacks.onAllAssetsLoaded?.()).catch(() => callbacks.onAllAssetsLoaded?.());
+  loadRemaining.then(() => {
+    // Consolidate stationary scenery after its entrance animation. Keep the
+    // five interactive buildings and every moving vehicle independent.
+    const batchObserver = scene.onBeforeRenderObservable.add(() => {
+      if (revealQueue.length || revealsInFlight.length) return;
+      scene.onBeforeRenderObservable.remove(batchObserver);
+      const groups = new Map<string, { meshes: Mesh[]; castsShadow: boolean }>();
+      const stationary = loadedBuildings.filter(b => b.entry.type !== "main" && !b.entry.animation);
+      stationary.forEach(building => {
+        building.meshes.forEach(mesh => {
+          if (!(mesh instanceof Mesh) || !mesh.getTotalVertices()) return;
+          mesh.computeWorldMatrix(true);
+          const castsShadow = building.entry.type !== "road";
+          const key = `${mesh.material?.uniqueId}:${castsShadow}:${mesh.getVerticesDataKinds().sort().join(",")}`;
+          const group = groups.get(key) ?? { meshes: [], castsShadow };
+          group.meshes.push(mesh);
+          groups.set(key, group);
+        });
+      });
+      groups.forEach(({ meshes, castsShadow }) => {
+        const merged = meshes.length === 1 ? meshes[0] : Mesh.MergeMeshes(meshes, true, true);
+        if (!merged) return;
+        merged.name = `city-scenery-${batchedCityMeshes.length}`;
+        merged.isPickable = false;
+        merged.receiveShadows = true;
+        merged.freezeWorldMatrix();
+        if (castsShadow) shadowGenerator.addShadowCaster(merged);
+        batchedCityMeshes.push(merged);
+      });
+      stationary.forEach(building => {
+        building.meshes = building.meshes.filter(mesh => !mesh.isDisposed());
+      });
+    });
+    callbacks.onAllAssetsLoaded?.();
+  }).catch(() => callbacks.onAllAssetsLoaded?.());
 
+  let orbitAnimationFrame: number | null = null;
+  let cancelFocusAnimation: (() => void) | null = null;
+  const focusCamera = (target: Vector3) => {
+    if (orbitAnimationFrame !== null) window.cancelAnimationFrame(orbitAnimationFrame);
+    orbitAnimationFrame = null;
+    cancelFocusAnimation?.();
+    cancelFocusAnimation = animateCameraFocus(camera, target);
+  };
   const disposePicking = setupPicking(scene, loadedBuildings, {
     onSelect: callbacks.onBuildingSelect,
     onFocusRequest: (building) =>
-      animateCameraFocus(camera, new Vector3(building.root.position.x, 4, building.root.position.z)),
+      focusCamera(new Vector3(building.root.position.x, 4, building.root.position.z)),
   });
 
   const defaultCameraState = {
@@ -731,31 +766,37 @@ export const createCityScene = async (
     radius: camera.radius,
     target: camera.target.clone(),
   };
-  let orbitAnimationFrame: number | null = null;
 
   const setDayMode = (isDay: boolean) => {
     isDayMode = isDay;
     scene.clearColor = isDay
-      ? new Color4(0.84, 0.93, 0.86, 1)
-      : new Color4(0.04, 0.05, 0.08, 1);
-    scene.ambientColor = isDay
-      ? Color3.FromHexString("#dbe8d9")
-      : Color3.FromHexString("#1c2942");
-    hemi.intensity = isDay ? 0.8 : 0.55;
-    directional.intensity = isDay ? 1.2 : 0.7;
-    groundMaterial.diffuseColor = isDay
-      ? Color3.FromHexString("#bfe3c1")
-      : Color3.FromHexString("#1f2835");
-    groundMaterial.specularColor = isDay
-      ? Color3.Black()
-      : Color3.FromHexString("#111111");
+      ? Color4.FromHexString(`${DAY_LIGHTING.skyColor}FF`)
+      : Color4.FromHexString("#314b69ff");
+    scene.fogColor = isDay ? Color3.FromHexString(DAY_LIGHTING.skyColor) : Color3.FromHexString("#314b69");
+    scene.fogDensity = isDay ? .00055 : .0021;
+    scene.ambientColor = Color3.FromHexString(isDay ? "#222b24" : "#283952");
+    scene.imageProcessingConfiguration.exposure = isDay ? DAY_LIGHTING.exposure : 1.05;
+    scene.imageProcessingConfiguration.contrast = isDay ? DAY_LIGHTING.contrast : 1.02;
+    shadowGenerator.setDarkness(isDay ? DAY_LIGHTING.shadowLift : .18);
+    hemi.intensity = isDay ? DAY_LIGHTING.fillIntensity : .72;
+    directional.direction.copyFromFloats(isDay ? -.38 : -.65, -1, isDay ? .26 : .45);
+    directional.position.copyFromFloats(isDay ? 38 : 40, isDay ? 100 : 65, isDay ? -26 : -35);
+    directional.intensity = isDay ? DAY_LIGHTING.sunIntensity : .38;
+    directional.diffuse = Color3.FromHexString(isDay ? "#FFF1D6" : "#bbd5ff");
+    hemi.diffuse = Color3.FromHexString(isDay ? DAY_LIGHTING.skyFill : "#deeff0");
+    hemi.groundColor = Color3.FromHexString(isDay ? DAY_LIGHTING.groundBounce : "#6e839b");
+    environment.setDayMode(isDay);
+    districts.setDayMode(isDay);
+    atmosphere.setDayMode(isDay);
+    nightGlow.isEnabled = !isDay;
 
     loadedBuildings.forEach((building) => applyDayModeToBuilding(building, isDay));
+    batchedCityMeshes.forEach(mesh => applyMaterialLighting(mesh.material as StandardMaterial | null, isDay));
   };
 
   const focusOnBuilding = (key: BuildingKey | null) => {
     if (!key) {
-      animateCameraFocus(camera, new Vector3(0, 4, 0));
+      focusCamera(new Vector3(2, 0, 2));
       return;
     }
     const building = loadedBuildings.find(
@@ -763,18 +804,34 @@ export const createCityScene = async (
     );
     if (!building) return;
     const target = new Vector3(building.root.position.x, 4, building.root.position.z);
-    animateCameraFocus(camera, target);
-    camera.radius = Math.max(camera.lowerRadiusLimit ?? 12, camera.radius * 0.8);
+    focusCamera(target);
+    camera.radius = isMobileDevice() ? 64 : 48;
   };
 
+  let cancelActiveTour: (() => void) | null = null;
   const resetCamera = () => {
+    cancelActiveTour?.();
+    cancelFocusAnimation?.();
+    if (orbitAnimationFrame !== null) window.cancelAnimationFrame(orbitAnimationFrame);
+    camera.inertialAlphaOffset = 0;
+    camera.inertialBetaOffset = 0;
+    camera.inertialRadiusOffset = 0;
+    camera.inertialPanningX = 0;
+    camera.inertialPanningY = 0;
     camera.alpha = defaultCameraState.alpha;
     camera.beta = defaultCameraState.beta;
     camera.radius = defaultCameraState.radius;
-    camera.target = defaultCameraState.target.clone();
+    camera.target.copyFrom(defaultCameraState.target);
   };
 
   const startCameraTour = (onComplete?: () => void): (() => void) => {
+    cancelActiveTour?.();
+    cancelFocusAnimation?.();
+    if (prefersReducedMotion()) {
+      resetCamera();
+      queueMicrotask(() => onComplete?.());
+      return () => {};
+    }
     if (orbitAnimationFrame !== null) {
       window.cancelAnimationFrame(orbitAnimationFrame);
       orbitAnimationFrame = null;
@@ -793,29 +850,30 @@ export const createCityScene = async (
       radius: number;
       tx: number;
       tz: number;
+      ty?: number;
       moveDuration: number;
       pauseDuration: number;
     };
 
     const isMobile = isMobileDevice();
-    const closeRadius = isMobile ? 36 : 28;
-    const homeRadius = isMobile ? 52 : 42;
+    const closeRadius = isMobile ? 62 : 40;
+    const homeRadius = defaultCameraState.radius;
 
     const waypoints: TourWaypoint[] = [
       // 0: high overview — snap here instantly, then pause
-      { alpha: (3 * Math.PI) / 4, beta: 0.48, radius: 58, tx: 0, tz: 0, moveDuration: 0, pauseDuration: 600 },
+      { alpha: (3 * Math.PI) / 4, beta: .86, radius: homeRadius, tx: 2, tz: 2, ty: defaultCameraState.target.y, moveDuration: 0, pauseDuration: 600 },
       // 1: Projects (city centre)
-      { alpha: Math.PI / 2, beta: 0.82, radius: closeRadius, tx: 0, tz: 0, moveDuration: 1600, pauseDuration: 650 },
+      { alpha: Math.PI / 2, beta: 0.82, radius: closeRadius, tx: 2, tz: 2, moveDuration: 1600, pauseDuration: 650 },
       // 2: About (NE  12, 12)
-      { alpha: (3 * Math.PI) / 4, beta: 0.78, radius: closeRadius + 2, tx: 12, tz: 12, moveDuration: 1600, pauseDuration: 650 },
+      { alpha: (3 * Math.PI) / 4, beta: 0.78, radius: closeRadius + 2, tx: 14, tz: 14, moveDuration: 1600, pauseDuration: 650 },
       // 3: Experience (NW  -16, 12)
-      { alpha: Math.PI, beta: 0.78, radius: closeRadius + 4, tx: -16, tz: 12, moveDuration: 1800, pauseDuration: 650 },
+      { alpha: Math.PI, beta: 0.78, radius: closeRadius + 4, tx: -14, tz: 14, moveDuration: 1800, pauseDuration: 650 },
       // 4: Contact (SW  -12, -12)
-      { alpha: Math.PI / 4, beta: 0.78, radius: closeRadius + 2, tx: -12, tz: -12, moveDuration: 1800, pauseDuration: 650 },
+      { alpha: Math.PI / 4, beta: 0.78, radius: closeRadius + 2, tx: -10, tz: -10, moveDuration: 1800, pauseDuration: 650 },
       // 5: Skills (SE  12, -12)
-      { alpha: -(Math.PI / 4), beta: 0.78, radius: closeRadius + 2, tx: 12, tz: -12, moveDuration: 1600, pauseDuration: 650 },
+      { alpha: -(Math.PI / 4), beta: 0.78, radius: closeRadius + 2, tx: 14, tz: -10, moveDuration: 1600, pauseDuration: 650 },
       // 6: return home
-      { alpha: (3 * Math.PI) / 4, beta: 1, radius: homeRadius, tx: 0, tz: 0, moveDuration: 2000, pauseDuration: 0 },
+      { alpha: (3 * Math.PI) / 4, beta: .86, radius: homeRadius, tx: 2, tz: 2, ty: defaultCameraState.target.y, moveDuration: 2000, pauseDuration: 0 },
     ];
 
     // Snap to initial overview position
@@ -823,7 +881,7 @@ export const createCityScene = async (
     camera.alpha = first.alpha;
     camera.beta = first.beta;
     camera.radius = first.radius;
-    camera.target.set(first.tx, 4, first.tz);
+    camera.target.set(first.tx, first.ty ?? 4, first.tz);
 
     let cancelled = false;
     let tourRafId: number | null = null;
@@ -835,6 +893,7 @@ export const createCityScene = async (
     let fromRadius = first.radius;
     let fromTx = first.tx;
     let fromTz = first.tz;
+    let fromTy = first.ty ?? 4;
 
     const finish = () => {
       camera.inertialAlphaOffset = 0;
@@ -861,6 +920,7 @@ export const createCityScene = async (
           fromRadius = camera.radius;
           fromTx = camera.target.x;
           fromTz = camera.target.z;
+          fromTy = camera.target.y;
           segmentStart = timestamp;
           phase = "move";
         }
@@ -875,12 +935,13 @@ export const createCityScene = async (
         camera.radius = fromRadius + (nextWp.radius - fromRadius) * e;
         camera.target.x = fromTx + (nextWp.tx - fromTx) * e;
         camera.target.z = fromTz + (nextWp.tz - fromTz) * e;
+        camera.target.y = fromTy + ((nextWp.ty ?? 4) - fromTy) * e;
 
         if (t >= 1) {
           camera.alpha = nextWp.alpha;
           camera.beta = nextWp.beta;
           camera.radius = nextWp.radius;
-          camera.target.set(nextWp.tx, 4, nextWp.tz);
+          camera.target.set(nextWp.tx, nextWp.ty ?? 4, nextWp.tz);
           segmentStart = timestamp;
           phase = "pause";
         }
@@ -890,17 +951,46 @@ export const createCityScene = async (
 
     tourRafId = window.requestAnimationFrame(step);
 
-    return () => {
+    cancelActiveTour = () => {
       if (cancelled) return;
       cancelled = true;
       if (tourRafId !== null) window.cancelAnimationFrame(tourRafId);
       finish();
     };
+    return cancelActiveTour;
   };
 
   return {
     scene,
     resetCamera,
+    setPhotoMode: (enabled) => {
+      loadedBuildings.forEach(building => {
+        if (building.labelMesh) building.labelMesh.isVisible = !enabled;
+      });
+    },
+    focusOnPoint: (x, z, radius = 32) => {
+      cancelActiveTour?.();
+      cancelFocusAnimation?.();
+      if (orbitAnimationFrame !== null) window.cancelAnimationFrame(orbitAnimationFrame);
+      const from = camera.target.clone();
+      const to = new Vector3(x, 1, z);
+      const startRadius = camera.radius;
+      const start = performance.now();
+      const tick = (now: number) => {
+        const progress = prefersReducedMotion() ? 1 : Math.min(1, (now - start) / 1000);
+        const eased = progress * progress * (3 - 2 * progress);
+        camera.target.copyFrom(Vector3.Lerp(from, to, eased));
+        camera.radius = Scalar.Lerp(startRadius, radius, eased);
+        if (progress < 1) orbitAnimationFrame = requestAnimationFrame(tick);
+      };
+      orbitAnimationFrame = requestAnimationFrame(tick);
+    },
+    zoomCamera: (delta) => {
+      if (orbitAnimationFrame !== null) window.cancelAnimationFrame(orbitAnimationFrame);
+      orbitAnimationFrame = null;
+      cancelFocusAnimation?.();
+      camera.radius = Scalar.Clamp(camera.radius + delta, camera.lowerRadiusLimit ?? 18, camera.upperRadiusLimit ?? 170);
+    },
     setDayMode,
     setCameraOrbit: (alpha: number, beta: number) => {
       if (orbitAnimationFrame !== null) {
@@ -932,7 +1022,14 @@ export const createCityScene = async (
       if (orbitAnimationFrame !== null) {
         window.cancelAnimationFrame(orbitAnimationFrame);
       }
+      cancelActiveTour?.();
+      cancelFocusAnimation?.();
+      environment.dispose();
+      districts.dispose();
+      atmosphere.dispose();
+      nightGlow.dispose();
       disposePicking();
+      disposeBuildingLabels();
       disposeTouchRotation();
       scene.dispose();
     },

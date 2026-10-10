@@ -1,5 +1,5 @@
 import type { BuildingKey } from "../data/cityLayout";
-import { CITY_LAYOUT } from "../data/cityLayout";
+import { MAIN_BUILDINGS } from "../data/cityLayout";
 import { PANEL_TITLES, PORTFOLIO_DATA, projectSlug, type ProjectCategory } from "../data/portfolioData";
 import { useEffect, useRef, useState, type MouseEvent, type ReactElement } from "react";
 import Picture from "./Picture";
@@ -347,7 +347,7 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelPro
   const openAtRef = useRef<number | null>(null);
   const asideRef = useRef<HTMLElement | null>(null);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
-  const building = CITY_LAYOUT.find(
+  const building = MAIN_BUILDINGS.find(
     (entry) => entry.type === "main" && entry.key === activeKey
   );
 

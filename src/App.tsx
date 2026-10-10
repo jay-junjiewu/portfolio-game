@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ControlsPanel from "./components/ControlsPanel";
+import ExplorerHUD from "./components/ExplorerHUD";
 import PortfolioPanel from "./components/PortfolioPanel";
 import ProjectPanel from "./components/ProjectPanel";
 import TopBar from "./components/TopBar";
@@ -10,45 +11,33 @@ import { prefersReducedMotion } from "./utils/device";
 import { Analytics } from "@vercel/analytics/react";
 import { trackVisit } from "./utils/track";
 import { recordSection } from "./utils/engagement";
+import "./explorer.css";
 
-// Babylon.js is heavy (~6 MB). Lazy-load the 3D components so the app shell and
-// loading screen paint immediately, then the engine streams in as a separate chunk.
+// Keep the interface available while the 3D engine streams in.
 const BabylonCanvas = lazy(() => import("./components/BabylonCanvas"));
-const OrientationWidget = lazy(() => import("./components/OrientationWidget"));
 const ChatWidget = lazy(() => import("./components/ChatWidget"));
 const StatsPage = lazy(() => import("./components/StatsPage"));
 
+const PASSPORT_KEY = "ui:islandPassport:v1";
+const sectionKeys: BuildingKey[] = ["about", "projects", "skills", "experience", "contact"];
+
 const readDayMode = () => {
-  if (typeof window === "undefined") return true;
   try {
-    const stored = window.localStorage.getItem("ui:dayMode");
-    if (stored === "night") return false;
-    if (stored === "day") return true;
-  } catch {
-    return true;
-  }
-  return true;
-};
-
-const COACHMARK_KEY = "ui:seenCoachmark";
-
-const hasSeenCoachmark = () => {
-  if (typeof window === "undefined") return true;
-  try {
-    return window.localStorage.getItem(COACHMARK_KEY) === "1";
+    return window.localStorage.getItem("ui:dayMode") !== "night";
   } catch {
     return true;
   }
 };
 
-const markCoachmarkSeen = () => {
+const readPassport = (): BuildingKey[] => {
   try {
-    window.localStorage.setItem(COACHMARK_KEY, "1");
+    const saved: unknown = JSON.parse(window.localStorage.getItem(PASSPORT_KEY) ?? "[]");
+    if (!Array.isArray(saved)) return [];
+    return sectionKeys.filter((key) => saved.includes(key));
   } catch {
-    /* ignore */
+    return [];
   }
 };
-
 
 const App = () => {
   const [isDay, setIsDay] = useState(readDayMode);
@@ -58,246 +47,156 @@ const App = () => {
   const [isLoadingMounted, setIsLoadingMounted] = useState(true);
   const [sceneControls, setSceneControls] = useState<SceneControls | null>(null);
   const [isTourActive, setIsTourActive] = useState(false);
-  const [showCoachmark, setShowCoachmark] = useState(false);
-  const [coachmarkExiting, setCoachmarkExiting] = useState(false);
+  const [photoMode, setPhotoMode] = useState(false);
+  const [visited, setVisited] = useState(readPassport);
   const controlsRef = useRef<SceneControls | null>(null);
   const cancelTourRef = useRef<(() => void) | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const isProjectRoute = location.pathname.startsWith("/projects/");
-  // The /projects index URL lands directly on the Projects section.
   const isProjectsIndex = location.pathname === "/projects";
   const activeSection: BuildingKey | null = isProjectsIndex ? "projects" : activeBuilding;
+  const isPanelOpen = activeSection !== null || isProjectRoute || showControls;
+
+  useEffect(() => {
+    sceneControls?.setPhotoMode(photoMode);
+  }, [photoMode, sceneControls]);
 
   useEffect(() => {
     if (isLoading) {
       setIsLoadingMounted(true);
       return;
     }
-    const t = window.setTimeout(() => setIsLoadingMounted(false), 380);
-    return () => window.clearTimeout(t);
+    const timer = window.setTimeout(() => setIsLoadingMounted(false), 380);
+    return () => window.clearTimeout(timer);
   }, [isLoading]);
 
   const handleTourEnd = useCallback(() => {
+    cancelTourRef.current = null;
     setIsTourActive(false);
-    // Once the intro tour finishes (or is skipped), nudge first-time visitors
-    // that the city is interactive.
-    if (!hasSeenCoachmark()) {
-      setShowCoachmark(true);
-    }
   }, []);
+
+  const stopTour = useCallback(() => {
+    cancelTourRef.current?.();
+    cancelTourRef.current = null;
+    setIsTourActive(false);
+  }, []);
+
+  const startTour = useCallback(() => {
+    if (!controlsRef.current || prefersReducedMotion()) return;
+    cancelTourRef.current?.();
+    setIsTourActive(true);
+    cancelTourRef.current = controlsRef.current.startCameraTour(handleTourEnd);
+  }, [handleTourEnd]);
 
   const handleSceneReady = useCallback((controls: SceneControls) => {
     controlsRef.current = controls;
     setSceneControls(controls);
   }, []);
 
-  const handleAllAssetsLoaded = useCallback(() => {
-    const controls = controlsRef.current;
-    if (!controls) return;
-    // Reduced-motion users skip the auto camera fly-through entirely.
-    if (prefersReducedMotion()) {
-      controls.resetCamera();
-      handleTourEnd();
-      return;
+  useEffect(() => () => cancelTourRef.current?.(), []);
+
+  const handleBuildingSelect = useCallback((key: BuildingKey | null) => {
+    stopTour();
+    setActiveBuilding(key);
+    if (key) {
+      setPhotoMode(false);
+      setShowControls(false);
+      navigate("/");
     }
-    const cancel = controls.startCameraTour(handleTourEnd);
-    cancelTourRef.current = cancel;
-    setIsTourActive(true);
-  }, [handleTourEnd]);
+  }, [navigate, stopTour]);
 
-  const dismissCoachmark = useCallback(() => {
-    setCoachmarkExiting(true);
-    markCoachmarkSeen();
-    window.setTimeout(() => {
-      setShowCoachmark(false);
-      setCoachmarkExiting(false);
-    }, 280);
-  }, []);
+  const openSection = useCallback((key: BuildingKey) => {
+    handleBuildingSelect(key);
+    controlsRef.current?.focusOnBuilding(key);
+  }, [handleBuildingSelect]);
 
-  const handleBuildingSelect = useCallback(
-    (key: BuildingKey | null) => {
-      setActiveBuilding(key);
-      if (key) {
-        navigate("/");
-      }
-    },
-    [navigate]
-  );
-
-  const handleProjectOpen = useCallback(
-    (slug: string) => {
-      setActiveBuilding(null);
-      navigate(`/projects/${slug}`);
-    },
-    [navigate]
-  );
+  const handleProjectOpen = useCallback((slug: string) => {
+    stopTour();
+    setActiveBuilding(null);
+    navigate(`/projects/${slug}`);
+  }, [navigate, stopTour]);
 
   const handleProjectClose = useCallback(() => {
     setActiveBuilding("projects");
     navigate("/");
   }, [navigate]);
 
+  const closeSection = useCallback(() => {
+    setActiveBuilding(null);
+    if (isProjectsIndex) navigate("/");
+  }, [isProjectsIndex, navigate]);
+
+  const openHelp = () => {
+    stopTour();
+    setShowControls((open) => !open);
+  };
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        if (showControls) {
-          setShowControls(false);
-        } else if (isProjectRoute) {
-          handleProjectClose();
-        } else {
-          setActiveBuilding(null);
-        }
-      }
+      if (event.key !== "Escape") return;
+      if (photoMode) setPhotoMode(false);
+      else if (showControls) setShowControls(false);
+      else if (isProjectRoute) handleProjectClose();
+      else if (isTourActive) stopTour();
+      else closeSection();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleProjectClose, isProjectRoute, showControls]);
+  }, [closeSection, handleProjectClose, isProjectRoute, showControls, photoMode, isTourActive, stopTour]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
     try {
       window.localStorage.setItem("ui:dayMode", isDay ? "day" : "night");
-    } catch {
-      return;
-    }
+    } catch { /* The island also works without local storage. */ }
   }, [isDay]);
 
-  // Fire-and-forget visit analytics once per load (skip the private dashboard).
   useEffect(() => {
     if (window.location.pathname !== "/stats") trackVisit();
   }, []);
 
-  // Record which portfolio sections / projects the visitor opens (feeds the
-  // engagement beacon sent on exit).
+  // A stamp represents opening the real content, including direct project URLs.
   useEffect(() => {
-    if (activeSection) recordSection(activeSection);
-  }, [activeSection]);
-
-  useEffect(() => {
-    if (isProjectRoute) {
-      recordSection(`project:${location.pathname.slice("/projects/".length)}`);
-    }
-  }, [isProjectRoute, location.pathname]);
-
-  // Auto-dismiss the coachmark after a few seconds or on the first interaction.
-  useEffect(() => {
-    if (!showCoachmark) return;
-    const timer = window.setTimeout(dismissCoachmark, 6000);
-    const onInteract = () => dismissCoachmark();
-    window.addEventListener("pointerdown", onInteract, { once: true });
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("pointerdown", onInteract);
-    };
-  }, [showCoachmark, dismissCoachmark]);
-
-  // Lock background scroll while a panel/sheet is open (prevents iOS rubber-band
-  // behind the bottom sheet).
-  useEffect(() => {
-    const panelOpen = activeSection !== null || isProjectRoute;
-    document.body.classList.toggle("no-scroll", panelOpen);
-    return () => document.body.classList.remove("no-scroll");
+    const section = isProjectRoute ? "projects" : activeSection;
+    if (!section) return;
+    recordSection(section);
+    setVisited((previous) => previous.includes(section) ? previous : [...previous, section]);
   }, [activeSection, isProjectRoute]);
 
-  const toggleDay = () => {
-    setIsDay((prev) => !prev);
-  };
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(PASSPORT_KEY, JSON.stringify(visited));
+    } catch { /* In private browsing the passport lasts for this visit. */ }
+  }, [visited]);
 
-  // Private analytics dashboard lives at /stats — render it standalone (no city).
+  useEffect(() => {
+    if (isProjectRoute) recordSection(`project:${location.pathname.slice("/projects/".length)}`);
+  }, [isProjectRoute, location.pathname]);
+
+  useEffect(() => {
+    document.body.classList.toggle("no-scroll", isPanelOpen);
+    return () => document.body.classList.remove("no-scroll");
+  }, [isPanelOpen]);
+
   if (location.pathname === "/stats") {
-    return (
-      <Suspense fallback={null}>
-        <StatsPage />
-      </Suspense>
-    );
+    return <Suspense fallback={null}><StatsPage /></Suspense>;
   }
 
   return (
-    <div className={`app-shell ${isDay ? "day" : "night"}`}>
-      <a className="skip-link" href="#panel-body">
-        Skip to content
-      </a>
+    <div className={`app-shell ${isDay ? "day" : "night"}${isLoadingMounted ? " is-loading" : ""}${photoMode ? " is-photo-mode" : ""}`}>
+      {!photoMode && <button type="button" className="skip-link" onClick={() => openSection("about")}>Skip to portfolio content</button>}
       <Suspense fallback={null}>
-        <BabylonCanvas
-          isDay={isDay}
-          onBuildingSelect={handleBuildingSelect}
-          onSceneReady={handleSceneReady}
-          onLoadingChange={setIsLoading}
-          onAllAssetsLoaded={handleAllAssetsLoaded}
-        />
+        <BabylonCanvas isDay={isDay} onBuildingSelect={handleBuildingSelect} onSceneReady={handleSceneReady} onLoadingChange={setIsLoading} />
       </Suspense>
-      <TopBar
-        isDay={isDay}
-        onToggleDay={toggleDay}
-        onToggleControls={() => setShowControls((v) => !v)}
-        onOpenSection={(key) => {
-          setActiveBuilding(key);
-          navigate("/");
-        }}
-      />
-      <Suspense fallback={null}>
-        <OrientationWidget controls={sceneControls} />
-      </Suspense>
-      {isProjectRoute ? (
-        <ProjectPanel onClose={handleProjectClose} />
-      ) : (
-        <PortfolioPanel
-          activeKey={activeSection}
-          onClose={() => {
-            setActiveBuilding(null);
-            if (isProjectsIndex) navigate("/");
-          }}
-          onProjectOpen={handleProjectOpen}
-        />
-      )}
+      {!photoMode && <TopBar isDay={isDay} activeSection={isProjectRoute ? "projects" : activeSection} onToggleDay={() => setIsDay((day) => !day)} onToggleControls={openHelp} onOpenSection={openSection} />}
+      {!isLoading && !isPanelOpen && <ExplorerHUD controls={sceneControls} visited={visited} isTourActive={isTourActive} photoMode={photoMode} onOpenSection={openSection} onStartTour={startTour} onStopTour={stopTour} onPhotoMode={setPhotoMode} onHelp={openHelp} />}
+      {isProjectRoute ? <ProjectPanel onClose={handleProjectClose} /> : <PortfolioPanel activeKey={activeSection} onClose={closeSection} onProjectOpen={handleProjectOpen} />}
       <ControlsPanel open={showControls} onClose={() => setShowControls(false)} />
-      {isTourActive && (
-        <button
-          type="button"
-          className="tour-skip-btn"
-          onClick={() => {
-            cancelTourRef.current?.();
-            handleTourEnd();
-          }}
-        >
-          Skip intro
-        </button>
-      )}
-      {showCoachmark && !isTourActive && activeSection === null && !isProjectRoute && (
-        <div
-          className={`canvas-coachmark${coachmarkExiting ? " exiting" : ""}`}
-          role="status"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3" />
-          </svg>
-          <span>Drag around & tap to explore</span>
-        </div>
-      )}
-      {isLoadingMounted && (
-        <div className={`loading-overlay${isLoading ? "" : " exiting"}`}>
-          <div className="spinner" />
-          <div className="loading-hints" aria-live="polite">
-            <span>Building the city…</span>
-            <span>Adding finishing touches…</span>
-            <span>Almost there…</span>
-          </div>
-        </div>
-      )}
-      {!isLoading && (
-        <Suspense fallback={null}>
-          <ChatWidget />
-        </Suspense>
-      )}
+      {isLoadingMounted && <div className={`loading-overlay island-loading${isLoading ? "" : " exiting"}`} role="status" aria-live="polite">
+        <h2>Building the island</h2>
+        <span className="island-loading-track" aria-hidden="true" />
+      </div>}
+      {!isLoading && <div hidden={photoMode || showControls}><Suspense fallback={null}><ChatWidget /></Suspense></div>}
       <Analytics />
     </div>
   );

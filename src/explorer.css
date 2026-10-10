@@ -1,0 +1,266 @@
+.app-shell {
+  --island-ink: #3c352c;
+  --island-muted: #746858;
+  --island-sage: #6c5942;
+  --island-paper: rgba(246, 240, 226, 0.94);
+  --island-panel: rgba(245, 241, 225, 0.98);
+  --island-border: rgba(111, 94, 71, 0.28);
+  --island-line: rgba(111, 94, 71, 0.18);
+  --island-tint: rgba(212, 194, 164, 0.16);
+  --island-hover: rgba(168, 140, 104, 0.2);
+  --island-accent-border: rgba(133, 108, 74, 0.44);
+  --island-selected: #e5d7c0;
+  --island-scrollbar: #a28d71;
+  --island-on-accent: #fff8eb;
+  --island-shadow: 0 5px 22px rgba(56, 45, 30, 0.14);
+  --island-font: "Inter", ui-rounded, system-ui, -apple-system, sans-serif;
+  --island-bottom-inset: max(24px, calc(env(safe-area-inset-bottom) + 12px));
+}
+
+.app-shell.night {
+  --island-ink: #eaf2ff;
+  --island-muted: #b9cbe0;
+  --island-sage: #aed0ff;
+  --island-paper: rgba(24, 45, 68, 0.86);
+  --island-panel: rgba(18, 33, 51, 0.97);
+  --island-border: rgba(171, 204, 243, 0.24);
+  --island-line: rgba(171, 204, 243, 0.16);
+  --island-tint: rgba(163, 198, 242, 0.09);
+  --island-hover: rgba(163, 198, 242, 0.18);
+  --island-accent-border: rgba(163, 198, 242, 0.4);
+  --island-selected: #365679;
+  --island-scrollbar: #7394b9;
+  --island-on-accent: #192d45;
+  --island-shadow: 0 5px 22px rgba(3, 15, 26, 0.2);
+}
+
+/* Keep dark lettering until the sand loader has fully faded away. */
+.app-shell.day .island-brand { color: var(--island-ink); text-shadow: none; }
+.app-shell.day:not(.is-loading) .island-brand { color: #fff8eb; text-shadow: 0 1px 4px rgba(20, 45, 49, 0.3); }
+.app-shell.day .city-canvas { background: #b8ddeb; }
+
+/* Edge shading keeps the HUD legible without enclosing the city in cards. */
+.app-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(12, 38, 45, 0.43), transparent 26%, transparent 76%, rgba(12, 38, 45, 0.3));
+}
+.app-shell.day::after { background: none; }
+.app-shell.is-photo-mode::after { opacity: 0; }
+.app-shell .island-header { position: fixed; z-index: 10; top: max(23px, env(safe-area-inset-top)); left: 32px; right: 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 22px; color: var(--island-ink); }
+.app-shell .island-brand { display: flex; align-items: center; gap: 12px; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; flex-shrink: 0; transition: color 180ms ease, text-shadow 180ms ease; }
+.app-shell .brand-lockup { display: flex; flex-direction: column; gap: 4px; }
+.app-shell .brand-lockup strong { font-size: 27px; line-height: 1.15; font-weight: 600; letter-spacing: -0.6px; }
+.app-shell .brand-lockup > span { color: inherit; font-size: 11px; letter-spacing: 1.25px; line-height: 1.4; }
+.app-shell .island-nav { display: flex; align-items: center; gap: 4px; padding: 4px; background: var(--island-paper); border: 1px solid var(--island-border); backdrop-filter: blur(16px); border-radius: 9px; }
+.app-shell .island-nav > button { border: 0; border-radius: 6px; padding: 9px 14px; background: none; color: var(--island-ink); font-size: 12px; cursor: pointer; transition: background 180ms ease, color 180ms ease; }
+.app-shell .island-nav > button:hover,
+.app-shell .island-nav > button[aria-current] { background: var(--island-hover); color: #fff; }
+.app-shell.day .island-nav > button:hover,
+.app-shell.day .island-nav > button[aria-current] { color: var(--island-ink); }
+.app-shell .island-header-actions { display: flex; align-items: center; gap: 8px; }
+.app-shell .daylight-switch { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--island-border); background: var(--island-paper); border-radius: 8px; color: var(--island-ink); font-size: 11px; white-space: nowrap; cursor: pointer; backdrop-filter: blur(14px); }
+.app-shell .island-menu-button,
+.app-shell .island-nav .island-help-mobile { display: none; }
+.app-shell .daylight-switch svg,
+.app-shell .island-menu-button svg,
+.app-shell .island-dock svg,
+.app-shell .island-view-controls svg,
+.app-shell .passport-symbol svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+.app-shell .island-eyebrow { font-size: 9px; font-weight: 500; letter-spacing: 1.1px; line-height: 1.7; color: var(--island-muted); }
+.app-shell .island-passport,
+.app-shell .island-dock,
+.app-shell .island-view-controls,
+.app-shell .photo-exit { color: var(--island-ink); background: var(--island-paper); border: 1px solid var(--island-border); box-shadow: var(--island-shadow); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+.app-shell .island-view-controls { position: fixed; right: 29px; top: 186px; z-index: 3; display: flex; flex-direction: column; align-items: center; border-radius: 9px; padding: 4px; }
+.app-shell .island-view-controls > button { display: grid; place-items: center; width: 32px; height: 34px; background: none; border: 0; border-radius: 5px; color: inherit; font-size: 21px; font-weight: 300; cursor: pointer; }
+.app-shell .island-view-controls > span { height: 1px; width: 21px; margin: 4px 0; background: var(--island-line); }
+.app-shell .island-view-controls > button:hover { background: var(--island-line); }
+
+.app-shell .island-passport { position: fixed; left: 30px; bottom: var(--island-bottom-inset); z-index: 4; width: 221px; border-radius: 9px; padding: 11px 13px 9px; transition: background 200ms ease; }
+.app-shell .island-passport.is-open { background: var(--island-panel); }
+.app-shell .passport-heading { display: flex; gap: 9px; align-items: center; width: 100%; color: inherit; background: none; border: 0; padding: 0; text-align: left; cursor: pointer; }
+.app-shell .passport-symbol { display: grid; place-items: center; width: 24px; height: 28px; color: var(--island-sage); }
+.app-shell .passport-symbol svg { width: 21px; height: 21px; }
+.app-shell .passport-heading strong { font-size: 12px; font-weight: 550; display: block; }
+.app-shell .passport-heading small { display: block; font-size: 9px; margin-top: 2px; color: var(--island-muted); }
+.app-shell .passport-chevron { margin-left: auto; font-size: 16px; color: var(--island-muted); }
+.app-shell .passport-progress { display: flex; gap: 4px; margin: 10px 0 0; }
+.app-shell .passport-progress > span { height: 2px; flex: 1; border-radius: 2px; background: var(--island-line); }
+.app-shell .passport-progress > .is-visited { background: var(--island-sage); }
+.app-shell .passport-districts { margin-top: 9px; animation: hud-reveal 180ms ease both; }
+.app-shell .passport-districts > button { display: flex; align-items: center; width: 100%; gap: 9px; padding: 10px 1px; background: none; border: 0; border-bottom: 1px solid var(--island-line); color: inherit; text-align: left; cursor: pointer; }
+.app-shell .passport-districts > button:last-child { border-bottom: 0; }
+.app-shell .passport-districts > button:hover { background: var(--island-tint); border-radius: 5px; }
+.app-shell .passport-stamp { display: grid; place-items: center; border: 1px solid var(--island-line); color: var(--island-muted); width: 23px; height: 23px; border-radius: 6px; font-size: 9px; }
+.app-shell .passport-stamp.is-visited { background: var(--island-hover); color: var(--island-sage); border-color: var(--island-accent-border); font-size: 13px; }
+.app-shell .passport-districts strong { display: block; font-size: 11px; font-weight: 500; }
+.app-shell .passport-districts small { display: block; color: var(--island-muted); font-size: 10px; margin-top: 2px; }
+.app-shell .passport-arrow { margin-left: auto; font-size: 12px; color: var(--island-muted); }
+.app-shell .passport-footnote { margin: 9px 0 0; font-size: 8px; text-align: center; color: var(--island-muted); }
+
+.app-shell .island-dock { position: fixed; left: 50%; bottom: var(--island-bottom-inset); transform: translateX(-50%); z-index: 4; display: flex; align-items: center; gap: 4px; padding: 5px; border-radius: 10px; white-space: nowrap; }
+.app-shell .island-dock > button { display: flex; align-items: center; justify-content: center; gap: 8px; height: 38px; padding: 0 13px; color: var(--island-ink); border: 0; background: transparent; border-radius: 6px; font-size: 11px; cursor: pointer; transition: background 180ms ease; }
+.app-shell .island-dock > button.is-active { background: var(--island-hover); color: var(--island-sage); }
+.app-shell .island-dock > button:hover:not(.is-active):not(:disabled) { background: var(--island-tint); }
+.app-shell .island-dock > button:disabled { opacity: 0.45; cursor: not-allowed; }
+.app-shell .island-dock > .dock-help { padding: 0 9px; }
+.app-shell .island-dock svg { width: 17px; height: 17px; }
+.app-shell .dock-divider { height: 20px; width: 1px; margin: 0 2px; background: var(--island-line); }
+.app-shell .island-tour-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.app-shell .photo-exit { position: fixed; right: 28px; bottom: max(25px, calc(env(safe-area-inset-bottom) + 12px)); z-index: 10; display: flex; align-items: center; gap: 11px; padding: 12px 16px; border-radius: 8px; font-size: 11px; cursor: pointer; }
+.app-shell .photo-exit kbd { padding: 2px 4px; border: 1px solid var(--island-line); border-radius: 3px; font-size: 8px; color: var(--island-muted); }
+
+.app-shell .island-help-backdrop { position: fixed; inset: 0; z-index: 30; background: rgba(11, 31, 40, 0.28); backdrop-filter: blur(5px); display: grid; place-items: center; padding: 20px; }
+.app-shell .island-help { width: min(480px, 100%); max-height: calc(100dvh - 40px); overflow: auto; border-radius: 13px; background: var(--island-panel); color: var(--island-ink); border: 1px solid var(--island-border); padding: 27px; box-shadow: 0 20px 70px rgba(7, 25, 35, 0.22); }
+.app-shell .island-help-heading { display: flex; align-items: center; justify-content: space-between; }
+.app-shell .island-icon-button { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--island-line); background: none; border-radius: 7px; color: inherit; font-size: 23px; cursor: pointer; }
+.app-shell .island-help h2 { font: 550 24px/1.25 var(--island-font); margin: 16px 0 12px; letter-spacing: -0.6px; }
+.app-shell .island-help p { font-size: 12px; line-height: 1.75; color: var(--island-muted); }
+.app-shell .island-control-list { margin: 20px 0; }
+.app-shell .island-control-list > div { padding: 11px 0; border-top: 1px solid var(--island-line); }
+.app-shell .island-control-list dt { font-size: 12px; font-weight: 550; }
+.app-shell .island-control-list dd { margin: 4px 0 0; color: var(--island-muted); font-size: 11px; }
+.app-shell .island-help .island-help-note { font-size: 11px; }
+.app-shell .island-help:focus { outline: none; }
+
+.app-shell .loading-overlay.island-loading { gap: 0; background: #315a60; color: #e2f0df; font-weight: 400; }
+.app-shell.night .loading-overlay.island-loading { background: #1d333e; color: #e1e7d3; }
+.app-shell.day .loading-overlay.island-loading { background: #f5f1e1; color: var(--island-ink); }
+.app-shell .island-loading h2 { font: 500 25px/1.3 var(--island-font); letter-spacing: -0.6px; margin: 13px 0 26px; }
+.app-shell .island-loading-track { width: 130px; height: 2px; background: rgba(205, 227, 206, 0.2); overflow: hidden; border-radius: 2px; }
+.app-shell .island-loading-track::after { content: ""; display: block; width: 42px; height: 100%; background: #c4df9e; animation: island-loading 1.7s ease-in-out infinite; }
+.app-shell.day .island-loading-track { background: var(--island-line); }
+.app-shell.day .island-loading-track::after { background: var(--island-sage); }
+@keyframes island-loading { from { transform: translateX(-42px); } to { transform: translateX(132px); } }
+@keyframes hud-reveal { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+.app-shell .chat-fab { width: 41px; height: 41px; right: 31px; bottom: var(--island-bottom-inset); background: var(--island-paper); color: var(--island-ink); border-color: var(--island-border); border-radius: 10px; box-shadow: var(--island-shadow); backdrop-filter: blur(14px); }
+.app-shell .chat-fab svg { width: 20px; height: 20px; }
+body .app-shell:is(.day, .night) .portfolio-panel { top: 92px; bottom: 28px; width: min(790px, calc(100vw - 60px)); right: 30px; background: var(--island-panel); color: var(--island-ink); border: 1px solid var(--island-border); border-radius: 13px; box-shadow: 0 20px 65px rgba(7, 27, 36, 0.22); }
+body .app-shell:is(.day, .night) .portfolio-panel.compact { max-height: calc(100dvh - 120px); }
+body .app-shell:is(.day, .night) .portfolio-panel .panel-header h2 { font: 550 26px/1.25 var(--island-font); letter-spacing: -0.5px; }
+body .app-shell:is(.day, .night) .portfolio-panel :is(.muted, .contact-label, .experience-link-source) { color: var(--island-muted); }
+body .app-shell:is(.day, .night) .portfolio-panel :is(.text-link, .experience-company-link, .project-card-heading a) { color: var(--island-sage); }
+body .app-shell:is(.day, .night) .portfolio-panel .experience-link-title { color: var(--island-ink); }
+body .app-shell:is(.day, .night) .portfolio-panel :is(.project-card, .experience-card, .experience-link-card, .contact-card) { background: var(--island-tint); border-color: var(--island-line); box-shadow: none; }
+body .app-shell:is(.day, .night) .portfolio-panel :is(.chip, .tab, .pdf-link, .contact-icon, .ghost-button) { background: var(--island-tint); color: var(--island-ink); border-color: var(--island-line); box-shadow: none; }
+body .app-shell:is(.day, .night) .portfolio-panel .project-tabs .tab.active { background: var(--island-selected); color: var(--island-ink); box-shadow: none; }
+body .app-shell:is(.day, .night) .portfolio-panel .ghost-button:hover { background: var(--island-hover); color: var(--island-ink); box-shadow: none; }
+body .app-shell:is(.day, .night) .portfolio-panel .panel-body { scrollbar-color: var(--island-scrollbar) var(--island-tint); }
+body .app-shell:is(.day, .night) .portfolio-panel .panel-body::-webkit-scrollbar-thumb { background: var(--island-scrollbar); }
+body .app-shell:is(.day, .night) .portfolio-panel::before { background: var(--island-accent-border); }
+.app-shell .panel-overlay { background: rgba(4, 18, 29, 0.37); }
+body .app-shell:is(.day, .night) .chat-panel { background: var(--island-panel); color: var(--island-ink); border-color: var(--island-border); border-radius: 13px; }
+body .app-shell:is(.day, .night) .chat-panel .chat-input { background: var(--island-tint); border-color: var(--island-line); color: inherit; }
+body .app-shell:is(.day, .night) .chat-panel .chat-input::placeholder { color: var(--island-muted); }
+body .app-shell:is(.day, .night) .chat-panel .chat-msg--bot { background: var(--island-tint); }
+.app-shell .skip-link { background: #345b55; color: #edf6e4; border: 0; z-index: 50; cursor: pointer; }
+.app-shell.day .skip-link { background: var(--island-paper); color: var(--island-ink); box-shadow: var(--island-shadow); }
+.app-shell button:focus-visible { outline: 2px solid var(--island-sage); outline-offset: 4px; }
+.app-shell .island-render-fallback { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(400px, calc(100vw - 40px)); z-index: 2; padding: 25px; border: 1px solid var(--island-border); border-radius: 12px; background: var(--island-paper); color: var(--island-ink); box-shadow: var(--island-shadow); text-align: center; }
+.app-shell .island-render-fallback strong { font: 550 22px/1.3 var(--island-font); }
+.app-shell .island-render-fallback p { font-size: 13px; line-height: 1.7; color: var(--island-muted); }
+
+@media (max-width: 1050px) {
+  .app-shell .island-header { gap: 13px; }
+  .app-shell .island-nav > button { padding: 9px 11px; }
+  .app-shell .dock-photo-label { display: none; }
+}
+
+/* At compact widths, keep the two corner controls together just above the dock. */
+@media (max-width: 880px) {
+  .app-shell .daylight-switch > span { display: none; }
+  .app-shell .island-passport,
+  .app-shell .chat-fab { bottom: calc(var(--island-bottom-inset) + 59px); }
+}
+
+@media (max-width: 760px) {
+  .app-shell { --island-bottom-inset: max(17px, calc(env(safe-area-inset-bottom) + 8px)); }
+  .app-shell .island-header { top: max(20px, env(safe-area-inset-top)); left: 22px; right: 18px; height: 48px; gap: 8px; }
+  .app-shell .island-brand { gap: 10px; }
+  .app-shell .brand-lockup strong { font-size: 22px; }
+  .app-shell .brand-lockup > span { font-size: 9px; letter-spacing: 1px; }
+  .app-shell .daylight-switch { padding: 9px; }
+  .app-shell .daylight-switch > span { display: none; }
+  .app-shell .island-menu-button { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--island-border); border-radius: 8px; background: var(--island-paper); backdrop-filter: blur(14px); color: var(--island-ink); cursor: pointer; }
+  .app-shell .island-nav { display: none; position: absolute; top: 61px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px; border-radius: 10px; background: var(--island-panel); backdrop-filter: blur(22px); border: 1px solid var(--island-border); box-shadow: var(--island-shadow); }
+  .app-shell .island-nav.is-open { display: flex; }
+  .app-shell .island-nav > button { text-align: left; padding: 13px 14px; font-size: 12px; }
+  .app-shell .island-nav .island-help-mobile { display: block; border-top: 1px solid var(--island-line); border-radius: 0; }
+  .app-shell .island-view-controls { right: 17px; top: 183px; padding: 3px; border-radius: 8px; }
+  .app-shell .island-view-controls > button { width: 28px; height: 33px; }
+  .app-shell .island-passport { left: 16px; width: 183px; padding: 10px 11px 8px; border-radius: 8px; }
+  .app-shell .island-passport.is-open { width: 233px; z-index: 6; }
+  .app-shell .passport-heading { gap: 7px; }
+  .app-shell .passport-heading strong { font-size: 11px; }
+  .app-shell .passport-heading small { font-size: 8px; }
+  .app-shell .passport-symbol { width: 21px; height: 27px; }
+  .app-shell .passport-symbol svg { width: 19px; }
+  .app-shell .passport-progress { margin-top: 9px; }
+  .app-shell .passport-districts > button { padding: 9px 1px; }
+  .app-shell .island-dock { padding: 4px; gap: 2px; border-radius: 9px; }
+  .app-shell .island-dock > button { height: 39px; padding: 0 10px; gap: 7px; font-size: 11px; }
+  .app-shell .island-dock > .dock-help { padding: 0 9px; }
+  .app-shell .island-dock svg { width: 16px; height: 16px; }
+  .app-shell .chat-fab { right: 17px; width: 35px; height: 35px; border-radius: 8px; }
+  .app-shell .island-help { padding: 21px; }
+  .app-shell .island-help h2 { font-size: 22px; }
+  body .app-shell:is(.day, .night) .portfolio-panel,
+  body .app-shell:is(.day, .night) .portfolio-panel.compact { left: 0; right: 0; top: auto; bottom: 0; width: 100%; height: min(84dvh, calc(100dvh - 82px)); max-height: calc(100dvh - 82px); border-radius: 16px 16px 0 0; padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+  .app-shell .photo-exit { right: 16px; font-size: 10px; }
+}
+
+@media (max-width: 370px) {
+  .app-shell .island-passport { width: 165px; }
+  .app-shell .island-dock > button { padding: 0 8px; }
+}
+
+@media (max-height: 650px) {
+  .app-shell .passport-districts small { display: none; }
+  .app-shell .passport-districts > button { padding: 7px 1px; }
+  .app-shell .passport-footnote { display: none; }
+}
+
+/* Keep content readable in both world lighting modes. These scoped rules also
+   outrank the original day/night panel rules loaded by index.css. */
+body .app-shell:is(.day, .night) :is(.portfolio-panel, .chat-panel) {
+  --accent: var(--island-sage);
+  --accent-soft: var(--island-hover);
+  --accent-strong: var(--island-sage);
+  --accent-border: var(--island-accent-border);
+  --accent-shadow: var(--island-tint);
+}
+body .app-shell:is(.day, .night) .portfolio-panel :is(h2, h3, h4, .experience-link-title) { color: var(--island-ink); }
+body .app-shell:is(.day, .night) .portfolio-panel :is(.text-link, .experience-company-link):hover { color: var(--island-ink); }
+body .app-shell:is(.day, .night) .portfolio-panel :is(.contact-card, .experience-link-card, .pdf-link):hover { border-color: var(--island-accent-border); box-shadow: 0 5px 18px rgba(8, 25, 31, 0.15); }
+body .app-shell:is(.day, .night) .portfolio-panel .contact-card.static:hover { border-color: var(--island-line); box-shadow: none; }
+body .app-shell:is(.day, .night) .portfolio-panel .contact-icon.location { color: var(--island-sage); background: var(--island-tint); }
+body .app-shell:is(.day, .night) .portfolio-panel .project-detail .project-links .chip { color: var(--island-ink); background: var(--island-tint); box-shadow: inset 0 0 0 1px var(--island-line); }
+body .app-shell:is(.day, .night) .portfolio-panel .project-detail .project-links .chip:hover { background: var(--island-hover); box-shadow: inset 0 0 0 1px var(--island-accent-border); }
+body .app-shell:is(.day, .night) .portfolio-panel :is(.carousel-button, .carousel-button:disabled:hover) { background: var(--island-panel); color: var(--island-ink); border-color: var(--island-line); box-shadow: none; }
+body .app-shell:is(.day, .night) .portfolio-panel .carousel-button:hover:not(:disabled) { background: var(--island-selected); border-color: var(--island-accent-border); }
+body .app-shell:is(.day, .night) .portfolio-panel .carousel-dot { background: var(--island-scrollbar); }
+body .app-shell:is(.day, .night) .portfolio-panel .carousel-dot.active { background: var(--island-sage); box-shadow: 0 0 0 4px var(--island-hover); }
+body .app-shell:is(.day, .night) .portfolio-panel .panel-body::-webkit-scrollbar-track { background: var(--island-tint); }
+body .app-shell:is(.day, .night) .chat-panel :is(.chat-panel__header, .chat-input-row) { border-color: var(--island-line); }
+body .app-shell:is(.day, .night) .chat-panel :is(.chat-msg--bot, .chat-typing) { background: var(--island-tint); color: var(--island-ink); }
+body .app-shell:is(.day, .night) .chat-panel :is(.chat-msg--user, .chat-send) { background: var(--island-sage); color: var(--island-on-accent); }
+body .app-shell:is(.day, .night) .chat-panel .chat-suggestion { background: var(--island-tint); color: var(--island-ink); border-color: var(--island-line); }
+body .app-shell:is(.day, .night) .chat-panel :is(.chat-suggestion, .chat-panel__close):hover { background: var(--island-hover); border-color: var(--island-accent-border); }
+body .app-shell:is(.day, .night) .chat-panel .chat-disclaimer { color: var(--island-muted); opacity: 1; }
+
+/* Neutral daylight states also cover inherited content and chat controls. */
+.app-shell.day .island-help-backdrop { background: rgba(48, 41, 32, 0.23); }
+.app-shell.day .panel-overlay { background: rgba(48, 41, 32, 0.27); }
+body .app-shell.day :is(.portfolio-panel, .chat-panel, .island-help) { box-shadow: 0 20px 65px rgba(56, 45, 30, 0.18); }
+body .app-shell.day .portfolio-panel .project-card-link:focus-visible { outline-color: var(--island-sage); }
+body .app-shell.day .portfolio-panel .panel-placeholder { color: var(--island-muted); }
+body .app-shell.day .chat-panel :is(.chat-msg--user, .chat-send) { background: var(--island-selected); color: var(--island-ink); }
+body .app-shell.day :is(.chat-messages, .island-help) { scrollbar-color: var(--island-scrollbar) var(--island-tint); }
+body .app-shell.day :is(.chat-messages, .island-help)::-webkit-scrollbar-thumb { background: var(--island-scrollbar); }
+body .app-shell.day :is(.chat-messages, .island-help)::-webkit-scrollbar-track { background: var(--island-tint); }

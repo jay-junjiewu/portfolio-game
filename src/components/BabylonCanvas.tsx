@@ -1,5 +1,5 @@
 import { Engine } from "@babylonjs/core/Engines/engine";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { BuildingKey } from "../data/cityLayout";
 import { createCityScene, type SceneControls } from "../scene/createScene";
 import { isMobileDevice } from "../utils/device";
@@ -19,6 +19,7 @@ const BabylonCanvas = ({
   onLoadingChange,
   onAllAssetsLoaded,
 }: BabylonCanvasProps) => {
+  const [sceneError, setSceneError] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const controlsRef = useRef<SceneControls | null>(null);
   const onBuildingSelectRef = useRef(onBuildingSelect);
@@ -43,12 +44,15 @@ const BabylonCanvas = ({
     // No screenshots / canvas.toDataURL are taken, so preserveDrawingBuffer is
     // omitted — letting the browser swap (not copy) the WebGL backbuffer each
     // frame, which lifts the render-loop frame rate.
-    const engine = new Engine(
-      canvas,
-      true,
-      { stencil: true },
-      isMobileDevice()
-    );
+    let engine: Engine;
+    try {
+      engine = new Engine(canvas, true, { stencil: true }, isMobileDevice());
+    } catch {
+      setSceneError(true);
+      onLoadingChangeRef.current?.(false);
+      return;
+    }
+    engine.setHardwareScalingLevel(1 / Math.min(window.devicePixelRatio || 1, isMobileDevice() ? 1.5 : 2));
     let disposed = false;
 
     (async () => {
@@ -72,7 +76,12 @@ const BabylonCanvas = ({
         controls.scene.render();
       });
       canvas.focus();
-    })();
+    })().catch((error: unknown) => {
+      if (disposed) return;
+      console.error("The island could not be rendered.", error);
+      setSceneError(true);
+      onLoadingChangeRef.current?.(false);
+    });
 
     const handleResize = () => {
       engine.resize();
@@ -91,12 +100,12 @@ const BabylonCanvas = ({
   useEffect(() => {
     if (!controlsRef.current) return;
     controlsRef.current.setDayMode(isDay);
-    onLoadingChangeRef.current?.(true);
-    const t = window.setTimeout(() => onLoadingChangeRef.current?.(false), 350);
-    return () => window.clearTimeout(t);
   }, [isDay]);
 
-  return <canvas ref={canvasRef} className="city-canvas" tabIndex={0} />;
+  return <>
+    <canvas ref={canvasRef} className="city-canvas" tabIndex={0} aria-label="Interactive portfolio island. Drag to orbit, scroll to zoom, or use the navigation to explore each district." />
+    {sceneError && <div className="island-render-fallback" role="status"><strong>Your portfolio visit can still continue.</strong><p>The 3D view could not start on this device. Use the navigation to explore my work, experience, and story.</p></div>}
+  </>;
 };
 
 export default BabylonCanvas;
