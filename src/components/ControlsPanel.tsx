@@ -29,7 +29,7 @@ const ControlsPanel = ({ open, onClose }: ControlsPanelProps) => {
           <div><dt>Move across the island</dt><dd>W / A / S / D · Space + drag</dd></div>
           <div><dt>Get a closer look</dt><dd>Scroll · pinch · + / − buttons</dd></div>
           <div><dt>Explore a landmark</dt><dd>Click a marker or use the navigation</dd></div>
-          <div><dt>On your phone</dt><dd>One finger to pan; two to rotate and zoom</dd></div>
+          <div><dt>On your phone</dt><dd>One finger to rotate; pinch with two to zoom</dd></div>
           <div><dt>Close a panel or photo mode</dt><dd>Esc</dd></div>
         </dl>
         <p className="island-help-note">Take the guided tour, discover a quiet corner, or enter photo mode for an uninterrupted view. Your passport is saved on this device.</p>

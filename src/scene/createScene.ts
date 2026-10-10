@@ -86,7 +86,7 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
   pointerInput.pinchZoom = true;
   pointerInput.multiTouchPanning = false;
   pointerInput.multiTouchPanAndZoom = false;
-  pointerInput.pinchDeltaPercentage = 0.01;
+  pointerInput.pinchDeltaPercentage = 0.002;
   pointerInput.useNaturalPinchZoom = false;
   camera.attachControl(false, false, -1);
   const keyboardInput = camera.inputs.attached.keyboard as unknown as {
@@ -111,30 +111,11 @@ const setupCamera = (scene: Scene, canvas: HTMLCanvasElement) => {
   let spacePanningActive = false;
   const rotationKeys = new Set(["KeyQ", "KeyE", "ArrowLeft", "ArrowRight"]);
   const activeRotationKeys = new Set<string>();
-  const touchPointers = new Set<number>();
-  const updatePanningButton = () => {
-    cameraPanning._panningMouseButton =
-      touchPointers.size > 0 || spacePanningActive ? 0 : -1;
-  };
   const setSpacePanning = (active: boolean) => {
     if (spacePanningActive === active) return;
     spacePanningActive = active;
-    updatePanningButton();
+    cameraPanning._panningMouseButton = active ? 0 : -1;
   };
-
-  scene.onPrePointerObservable.add((pointerInfo) => {
-    const event = pointerInfo.event as PointerEvent;
-    if (event.pointerType !== "touch" && event.pointerType !== "pen") {
-      return;
-    }
-    if (pointerInfo.type === PointerEventTypes.POINTERDOWN) {
-      touchPointers.add(event.pointerId);
-      updatePanningButton();
-    } else if (pointerInfo.type === PointerEventTypes.POINTERUP) {
-      touchPointers.delete(event.pointerId);
-      updatePanningButton();
-    }
-  });
 
   scene.onKeyboardObservable.add((info) => {
     const event = info.event;
