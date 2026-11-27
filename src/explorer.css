@@ -51,18 +51,19 @@
 .app-shell.day::after { background: none; }
 .app-shell.is-photo-mode::after { opacity: 0; }
 .app-shell .island-header { position: fixed; z-index: 10; top: max(23px, env(safe-area-inset-top)); left: 32px; right: 32px; height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 22px; color: var(--island-ink); }
-.app-shell .island-brand { display: flex; align-items: center; gap: 12px; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; flex-shrink: 0; transition: color 180ms ease, text-shadow 180ms ease; }
+.app-shell .island-brand { text-decoration: none; display: flex; align-items: center; gap: 12px; padding: 0; background: none; border: 0; color: inherit; text-align: left; cursor: pointer; flex-shrink: 0; transition: color 180ms ease, text-shadow 180ms ease; }
 .app-shell .brand-lockup { display: flex; flex-direction: column; gap: 4px; }
+.app-shell .brand-lockup .brand-name { margin: 0; font-family: inherit; color: inherit; font-size: 27px; line-height: 1.15; font-weight: 600; letter-spacing: -0.6px; }
 .app-shell .brand-lockup strong { font-size: 27px; line-height: 1.15; font-weight: 600; letter-spacing: -0.6px; }
 .app-shell .brand-lockup > span { color: inherit; font-size: 11px; letter-spacing: 1.25px; line-height: 1.4; }
 .app-shell .island-nav { display: flex; align-items: center; gap: 4px; padding: 4px; background: var(--island-paper); border: 1px solid var(--island-border); backdrop-filter: blur(16px); border-radius: 9px; }
-.app-shell .island-nav > button { border: 0; border-radius: 6px; padding: 9px 14px; background: none; color: var(--island-ink); font-size: 12px; cursor: pointer; transition: background 180ms ease, color 180ms ease; }
-.app-shell .island-nav > button:hover,
-.app-shell .island-nav > button[aria-current] { background: var(--island-hover); color: #fff; }
-.app-shell.day .island-nav > button:hover,
-.app-shell.day .island-nav > button[aria-current] { color: var(--island-ink); }
+.app-shell .island-nav > :is(button, a) { text-decoration: none; border: 0; border-radius: 6px; padding: 9px 14px; background: none; color: var(--island-ink); font-size: 12px; cursor: pointer; transition: background 180ms ease, color 180ms ease; }
+.app-shell .island-nav > :is(button, a):hover,
+.app-shell .island-nav > :is(button, a)[aria-current] { background: var(--island-hover); color: #fff; }
+.app-shell.day .island-nav > :is(button, a):hover,
+.app-shell.day .island-nav > :is(button, a)[aria-current] { color: var(--island-ink); }
 .app-shell .island-header-actions { display: flex; align-items: center; gap: 8px; }
-.app-shell .daylight-switch { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--island-border); background: var(--island-paper); border-radius: 8px; color: var(--island-ink); font-size: 11px; white-space: nowrap; cursor: pointer; backdrop-filter: blur(14px); }
+.app-shell .daylight-switch { text-decoration: none; display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--island-border); background: var(--island-paper); border-radius: 8px; color: var(--island-ink); font-size: 11px; white-space: nowrap; cursor: pointer; backdrop-filter: blur(14px); }
 .app-shell .island-menu-button,
 .app-shell .island-nav .island-help-mobile { display: none; }
 .app-shell .daylight-switch svg,
@@ -131,7 +132,7 @@
 .app-shell .loading-overlay.island-loading { gap: 0; background: #315a60; color: #e2f0df; font-weight: 400; }
 .app-shell.night .loading-overlay.island-loading { background: #1d333e; color: #e1e7d3; }
 .app-shell.day .loading-overlay.island-loading { background: #f5f1e1; color: var(--island-ink); }
-.app-shell .island-loading h2 { font: 500 25px/1.3 var(--island-font); letter-spacing: -0.6px; margin: 13px 0 26px; }
+.app-shell .island-loading .island-loading-title { font: 500 25px/1.3 var(--island-font); letter-spacing: -0.6px; margin: 13px 0 26px; }
 .app-shell .island-loading-track { width: 130px; height: 2px; background: rgba(205, 227, 206, 0.2); overflow: hidden; border-radius: 2px; }
 .app-shell .island-loading-track::after { content: ""; display: block; width: 42px; height: 100%; background: #c4df9e; animation: island-loading 1.7s ease-in-out infinite; }
 .app-shell.day .island-loading-track { background: var(--island-line); }
@@ -141,7 +142,7 @@
 
 .app-shell .chat-fab { width: 41px; height: 41px; right: 31px; bottom: var(--island-bottom-inset); background: var(--island-paper); color: var(--island-ink); border-color: var(--island-border); border-radius: 10px; box-shadow: var(--island-shadow); backdrop-filter: blur(14px); }
 .app-shell .chat-fab svg { width: 20px; height: 20px; }
-body .app-shell:is(.day, .night) .portfolio-panel { top: 92px; bottom: 28px; width: min(790px, calc(100vw - 60px)); right: 30px; background: var(--island-panel); color: var(--island-ink); border: 1px solid var(--island-border); border-radius: 13px; box-shadow: 0 20px 65px rgba(7, 27, 36, 0.22); }
+body .app-shell:is(.day, .night) .portfolio-panel { top: 92px; bottom: 28px; width: var(--panel-width, min(790px, calc(100vw - 60px))); right: 30px; background: var(--island-panel); color: var(--island-ink); border: 1px solid var(--island-border); border-radius: 13px; box-shadow: 0 20px 65px rgba(7, 27, 36, 0.22); }
 body .app-shell:is(.day, .night) .portfolio-panel.compact { max-height: calc(100dvh - 120px); }
 body .app-shell:is(.day, .night) .portfolio-panel .panel-header h2 { font: 550 26px/1.25 var(--island-font); letter-spacing: -0.5px; }
 body .app-shell:is(.day, .night) .portfolio-panel :is(.muted, .contact-label, .experience-link-source) { color: var(--island-muted); }
@@ -161,14 +162,14 @@ body .app-shell:is(.day, .night) .chat-panel .chat-input::placeholder { color: v
 body .app-shell:is(.day, .night) .chat-panel .chat-msg--bot { background: var(--island-tint); }
 .app-shell .skip-link { background: #345b55; color: #edf6e4; border: 0; z-index: 50; cursor: pointer; }
 .app-shell.day .skip-link { background: var(--island-paper); color: var(--island-ink); box-shadow: var(--island-shadow); }
-.app-shell button:focus-visible { outline: 2px solid var(--island-sage); outline-offset: 4px; }
+.app-shell :is(button, a):focus-visible { outline: 2px solid var(--island-sage); outline-offset: 4px; }
 .app-shell .island-render-fallback { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(400px, calc(100vw - 40px)); z-index: 2; padding: 25px; border: 1px solid var(--island-border); border-radius: 12px; background: var(--island-paper); color: var(--island-ink); box-shadow: var(--island-shadow); text-align: center; }
 .app-shell .island-render-fallback strong { font: 550 22px/1.3 var(--island-font); }
 .app-shell .island-render-fallback p { font-size: 13px; line-height: 1.7; color: var(--island-muted); }
 
 @media (max-width: 1050px) {
   .app-shell .island-header { gap: 13px; }
-  .app-shell .island-nav > button { padding: 9px 11px; }
+  .app-shell .island-nav > :is(button, a) { text-decoration: none; padding: 9px 11px; }
   .app-shell .dock-photo-label { display: none; }
 }
 
@@ -182,15 +183,15 @@ body .app-shell:is(.day, .night) .chat-panel .chat-msg--bot { background: var(--
 @media (max-width: 760px) {
   .app-shell { --island-bottom-inset: max(17px, calc(env(safe-area-inset-bottom) + 8px)); }
   .app-shell .island-header { top: max(20px, env(safe-area-inset-top)); left: 22px; right: 18px; height: 48px; gap: 8px; }
-  .app-shell .island-brand { gap: 10px; }
-  .app-shell .brand-lockup strong { font-size: 22px; }
+  .app-shell .island-brand { text-decoration: none; gap: 10px; }
+  .app-shell .brand-lockup :is(strong, .brand-name) { font-size: 22px; }
   .app-shell .brand-lockup > span { font-size: 9px; letter-spacing: 1px; }
-  .app-shell .daylight-switch { padding: 9px; }
+  .app-shell .daylight-switch { text-decoration: none; padding: 9px; }
   .app-shell .daylight-switch > span { display: none; }
   .app-shell .island-menu-button { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--island-border); border-radius: 8px; background: var(--island-paper); backdrop-filter: blur(14px); color: var(--island-ink); cursor: pointer; }
   .app-shell .island-nav { display: none; position: absolute; top: 61px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px; border-radius: 10px; background: var(--island-panel); backdrop-filter: blur(22px); border: 1px solid var(--island-border); box-shadow: var(--island-shadow); }
   .app-shell .island-nav.is-open { display: flex; }
-  .app-shell .island-nav > button { text-align: left; padding: 13px 14px; font-size: 12px; }
+  .app-shell .island-nav > :is(button, a) { text-decoration: none; text-align: left; padding: 13px 14px; font-size: 12px; }
   .app-shell .island-nav .island-help-mobile { display: block; border-top: 1px solid var(--island-line); border-radius: 0; }
   .app-shell .island-view-controls { right: 17px; top: 183px; padding: 3px; border-radius: 8px; }
   .app-shell .island-view-controls > button { width: 28px; height: 33px; }
@@ -264,3 +265,60 @@ body .app-shell.day .chat-panel :is(.chat-msg--user, .chat-send) { background: v
 body .app-shell.day :is(.chat-messages, .island-help) { scrollbar-color: var(--island-scrollbar) var(--island-tint); }
 body .app-shell.day :is(.chat-messages, .island-help)::-webkit-scrollbar-thumb { background: var(--island-scrollbar); }
 body .app-shell.day :is(.chat-messages, .island-help)::-webkit-scrollbar-track { background: var(--island-tint); }
+
+/* Loading: the header and navigation stay usable above the loader. */
+.app-shell .island-loading .island-loading-note { max-width: 340px; margin: 22px 20px 0; text-align: center; font-size: 12px; line-height: 1.7; opacity: 0.82; }
+.app-shell .island-loading .island-loading-note a { color: inherit; }
+.app-shell .portfolio-panel .project-org { margin: 2px 0 0; font-size: 13px; font-weight: 500; color: var(--island-sage); }
+.app-shell .portfolio-panel .project-card .project-org { display: block; }
+.app-shell .portfolio-panel .panel-page-link { margin-top: 18px; font-size: 13px; }
+.app-shell .skip-link { text-decoration: none; }
+
+@media (max-width: 760px) {
+  /* Phones: menu button first, then the standalone Simple view and day/night buttons. */
+  .app-shell .island-menu-button { order: -1; }
+  /* Panels become full-screen sheets on phones, with the close button in reach. */
+  body .app-shell:is(.day, .night) .portfolio-panel,
+  body .app-shell:is(.day, .night) .portfolio-panel.compact { z-index: 20; top: auto; bottom: 0; height: var(--sheet-height, 100dvh); max-height: 100dvh; border-radius: 0; padding-top: max(30px, calc(env(safe-area-inset-top) + 18px)); }
+  /* A sheet dragged below full height shows the island above it. */
+  body .app-shell:is(.day, .night) .portfolio-panel[style*="--sheet-height"] { border-radius: 16px 16px 0 0; padding-top: 30px; }
+  .app-shell .portfolio-panel::before { display: none; }
+  body .app-shell .portfolio-panel .panel-resize-handle { left: 0; right: 0; top: 0; bottom: auto; width: auto; height: 30px; cursor: ns-resize; }
+  body .app-shell .portfolio-panel .panel-resize-handle::after { left: 50%; top: 11px; width: 40px; height: 5px; margin-left: -20px; opacity: 1; }
+  body .app-shell:is(.day, .night) .portfolio-panel .panel-header { position: sticky; top: 0; }
+  body .app-shell:is(.day, .night) .portfolio-panel .ghost-button { min-height: 40px; min-width: 64px; }
+}
+
+/* Drag handle for resizing panels (left edge on desktop, top bar on phones). */
+.app-shell .portfolio-panel .panel-resize-handle { position: absolute; z-index: 3; left: 0; top: 14px; bottom: 14px; width: 12px; cursor: ew-resize; touch-action: none; }
+.app-shell .portfolio-panel .panel-resize-handle::after { content: ""; position: absolute; left: 4px; top: 50%; width: 4px; height: 44px; margin-top: -22px; border-radius: 4px; background: var(--island-scrollbar); opacity: 0.35; transition: opacity 150ms ease; }
+.app-shell .portfolio-panel .panel-resize-handle:is(:hover, :focus-visible, .is-dragging)::after { opacity: 0.9; }
+.app-shell .portfolio-panel .panel-resize-handle:focus-visible { outline: none; }
+.app-shell .portfolio-panel.is-resizing { transition: none; user-select: none; }
+
+/* Header controls share one fixed size, whether they are <button>s or links
+   (Safari otherwise sizes the link-based Simple view button differently). */
+.app-shell .island-header-actions > :is(.daylight-switch, .island-menu-button) {
+  box-sizing: border-box; height: 40px; min-height: 40px; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.app-shell .island-header-actions > .island-menu-button { display: none; }
+@media (max-width: 880px) {
+  .app-shell .island-header-actions > .daylight-switch { width: 40px; padding: 0; }
+}
+@media (max-width: 760px) {
+  .app-shell .island-header-actions > :is(.daylight-switch, .island-menu-button) { height: 38px; min-height: 38px; width: 38px; padding: 0; }
+  .app-shell .island-header-actions > .island-menu-button { display: inline-flex; }
+}
+/* Desktop nav pill matches the 40px header buttons beside it. */
+@media (min-width: 761px) {
+  .app-shell .island-nav { box-sizing: border-box; height: 40px; padding: 3px; }
+  .app-shell .island-nav > :is(button, a) { height: 32px; display: inline-flex; align-items: center; padding-top: 0; padding-bottom: 0; line-height: 1; }
+}
+
+/* Desktop panels take the height of their content (up to the screen), rather
+   than always stretching to the bottom edge. Longer content scrolls inside. */
+@media (min-width: 761px) {
+  body .app-shell:is(.day, .night) .portfolio-panel,
+  body .app-shell:is(.day, .night) .portfolio-panel.compact { bottom: auto; height: auto; max-height: calc(100dvh - 120px); }
+}

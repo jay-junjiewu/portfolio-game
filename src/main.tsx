@@ -1,13 +1,27 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { StrictMode } from "react";
+import { createRoot, hydrateRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import App from "./App";
+import Root from "./Root";
+import { readInitialView } from "./utils/homeView";
 import "./index.css";
+import "./document.css";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
+const container = document.getElementById("root") as HTMLElement;
+const initialView = readInitialView();
+const app = (
+  <StrictMode>
     <BrowserRouter>
-      <App />
+      <Root initialView={initialView} />
     </BrowserRouter>
-  </React.StrictMode>
+  </StrictMode>
 );
+
+// Document pages (and the homepage's simple view) are prerendered by
+// scripts/prerender.mjs with the same components, so they hydrate in place.
+// The island replaces the prerendered homepage markup instead.
+const path = window.location.pathname;
+const prerendered = container.dataset.prerendered === "true";
+const hydrate = prerendered && path !== "/stats" && (path !== "/" || initialView === "simple");
+
+if (hydrate) hydrateRoot(container, app);
+else createRoot(container).render(app);

@@ -74,7 +74,7 @@ function devApiPlugin() {
 }
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, isSsrBuild }) => {
   // Load .env.local / .env (ALL keys, not just VITE_*) and expose them to the
   // dev API handlers through process.env, mirroring how Vercel injects env vars.
   Object.assign(process.env, loadEnv(mode, process.cwd(), ''))
@@ -89,7 +89,7 @@ export default defineConfig(({ mode }) => {
       assetsDir: 'static',
       chunkSizeWarningLimit: 1500,
       rollupOptions: {
-        output: {
+        output: isSsrBuild ? {} : {
           manualChunks(id) {
             // Split the rarely-changing React/router runtime into its own
             // long-cacheable chunk. NOTE: do NOT manualChunk @babylonjs/* — Rollup

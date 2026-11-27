@@ -2,6 +2,13 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/projects/undergraduate-thesis-transformer-based-speech-anonymization",
+      "destination": "/projects/honours-thesis-privacy-preserving-speech-ai",
+      "statusCode": 301
+    }
+  ],
   "headers": [
     {
       "source": "/static/(.*)",
@@ -16,19 +23,29 @@
       ]
     },
     {
-      "source": "/(.*)\\.(glb|gltf|bin|obj|mtl|png|jpg|jpeg|webp|avif|svg|ktx2)",
+      "source": "/(.*)\\.(png|jpg|jpeg|webp|avif|svg|pdf)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=604800, stale-while-revalidate=86400" }
       ]
     },
     {
-      "source": "/(sitemap.xml|robots.txt|manifest.webmanifest)",
+      "source": "/(sitemap.xml|robots.txt|manifest.webmanifest|llms.txt|llms-full.txt)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
+      "source": "/(llms.txt|llms-full.txt)",
+      "headers": [
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" }
+      ]
+    },
+    {
+      "source": "/(.*)\\.md",
+      "headers": [
+        { "key": "Content-Type", "value": "text/markdown; charset=utf-8" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
       ]
     }
-  ],
-  "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }
