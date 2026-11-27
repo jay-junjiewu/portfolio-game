@@ -47,7 +47,7 @@ const ExplorerHUD = ({ controls, visited, isTourActive, photoMode, onOpenSection
           <span><strong>Island passport</strong><small>{visited.length === 5 ? "Every corner discovered" : `${visited.length} of 5 places discovered`}</small></span>
           <span className="passport-chevron" aria-hidden="true">{passportOpen ? "−" : "+"}</span>
         </button>
-        <div className="passport-progress" aria-label={`${visited.length} of 5 places discovered`}>{districts.map(({ key }) => <span key={key} className={visited.includes(key) ? "is-visited" : ""} />)}</div>
+        <div className="passport-progress" role="img" aria-label={`${visited.length} of 5 places discovered`}>{districts.map(({ key }) => <span key={key} className={visited.includes(key) ? "is-visited" : ""} />)}</div>
         {passportOpen && <div id="passport-districts" className="passport-districts">{districts.map(({ key, label, subtitle }, index) => (
           <button key={key} type="button" onClick={() => onOpenSection(key)} aria-label={`${label}: ${key}${visited.includes(key) ? ", visited" : ""}`}>
             <span className={`passport-stamp${visited.includes(key) ? " is-visited" : ""}`} aria-hidden="true">{visited.includes(key) ? "✓" : `0${index + 1}`}</span>

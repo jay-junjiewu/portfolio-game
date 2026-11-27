@@ -92,7 +92,7 @@ function fmt(value: unknown): string {
 
 /** Detail-grid label; flags IP-derived coordinates as approximate. */
 function fieldLabel(field: string): string {
-  if (field === "latitude" || field === "longitude") return `${field} (approx · IP)`;
+  if (field === "latitude" || field === "longitude") return `${field} (approx, from IP)`;
   return field;
 }
 
@@ -118,11 +118,11 @@ function dwellLabel(ms: unknown): string {
   return `${Math.floor(s / 60)}m ${s % 60}s`;
 }
 
-/** Network summary, e.g. "4g · 8.5Mbps". */
+/** Network summary, e.g. "4g, 8.5Mbps". */
 function networkLabel(visit: RecentVisit): string {
   const type = (visit.connection_type ?? "").trim();
   const dl = typeof visit.downlink === "number" ? `${visit.downlink}Mbps` : "";
-  return [type, dl].filter(Boolean).join(" · ") || "—";
+  return [type, dl].filter(Boolean).join(", ") || "—";
 }
 
 /** Format an ISO timestamp as a readable local datetime, tolerating bad input. */

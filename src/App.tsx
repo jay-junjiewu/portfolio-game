@@ -6,20 +6,23 @@ import PortfolioPanel from "./components/PortfolioPanel";
 import ProjectPanel from "./components/ProjectPanel";
 import TopBar from "./components/TopBar";
 import type { BuildingKey } from "./data/cityLayout";
+import { findProject } from "./data/portfolioData";
 import type { SceneControls } from "./scene/createScene";
 import { prefersReducedMotion } from "./utils/device";
-import { Analytics } from "@vercel/analytics/react";
-import { trackVisit } from "./utils/track";
 import { recordSection } from "./utils/engagement";
 import "./explorer.css";
 
 // Keep the interface available while the 3D engine streams in.
 const BabylonCanvas = lazy(() => import("./components/BabylonCanvas"));
 const ChatWidget = lazy(() => import("./components/ChatWidget"));
-const StatsPage = lazy(() => import("./components/StatsPage"));
 
 const PASSPORT_KEY = "ui:islandPassport:v1";
 const sectionKeys: BuildingKey[] = ["about", "projects", "skills", "experience", "contact"];
+const isSectionKey = (value: string | null): value is BuildingKey =>
+  value !== null && (sectionKeys as string[]).includes(value);
+
+/** History state we attach to entries we push, so "close" can go back instead of pushing. */
+type PanelHistoryState = { panelPushed?: boolean; projectPushed?: boolean } | null;
 
 const readDayMode = () => {
   try {
@@ -39,9 +42,12 @@ const readPassport = (): BuildingKey[] => {
   }
 };
 
-const App = () => {
+const NARROW_QUERY = "(max-width: 760px)";
+
+type AppProps = { onSimpleView: () => void };
+
+const App = ({ onSimpleView }: AppProps) => {
   const [isDay, setIsDay] = useState(readDayMode);
-  const [activeBuilding, setActiveBuilding] = useState<BuildingKey | null>(null);
   const [showControls, setShowControls] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMounted, setIsLoadingMounted] = useState(true);
@@ -49,14 +55,31 @@ const App = () => {
   const [isTourActive, setIsTourActive] = useState(false);
   const [photoMode, setPhotoMode] = useState(false);
   const [visited, setVisited] = useState(readPassport);
+  const [panelCoverage, setPanelCoverage] = useState(1);
+  const [isNarrow, setIsNarrow] = useState(() => window.matchMedia?.(NARROW_QUERY).matches ?? false);
   const controlsRef = useRef<SceneControls | null>(null);
   const cancelTourRef = useRef<(() => void) | null>(null);
+  const focusedFromUrlRef = useRef(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const isProjectRoute = location.pathname.startsWith("/projects/");
-  const isProjectsIndex = location.pathname === "/projects";
-  const activeSection: BuildingKey | null = isProjectsIndex ? "projects" : activeBuilding;
-  const isPanelOpen = activeSection !== null || isProjectRoute || showControls;
+
+  // The open panel lives in the URL (/?panel=<section>&project=<slug>) so it
+  // can be shared and the back button closes it. Canonical stays at "/".
+  const params = new URLSearchParams(location.search);
+  const panelParam = params.get("panel");
+  const projectParam = params.get("project");
+  const activeProject = panelParam === "projects" ? findProject(projectParam ?? undefined) : undefined;
+  const activeSection: BuildingKey | null = isSectionKey(panelParam) && !activeProject ? panelParam : null;
+  const historyState = location.state as PanelHistoryState;
+  const isPanelOpen = activeSection !== null || activeProject !== undefined || showControls;
+
+  useEffect(() => {
+    const query = window.matchMedia?.(NARROW_QUERY);
+    if (!query) return;
+    const update = () => setIsNarrow(query.matches);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     sceneControls?.setPhotoMode(photoMode);
@@ -96,36 +119,53 @@ const App = () => {
 
   useEffect(() => () => cancelTourRef.current?.(), []);
 
-  const handleBuildingSelect = useCallback((key: BuildingKey | null) => {
+  // A deep link (/?panel=skills) also flies the camera to that landmark once.
+  useEffect(() => {
+    if (!sceneControls || focusedFromUrlRef.current) return;
+    focusedFromUrlRef.current = true;
+    const key = activeProject ? "projects" : activeSection;
+    if (key) sceneControls.focusOnBuilding(key);
+  }, [sceneControls, activeSection, activeProject]);
+
+  const closePanel = useCallback(() => {
+    if (historyState?.panelPushed) navigate(-1);
+    else navigate("/", { replace: true });
+  }, [historyState, navigate]);
+
+  const showSection = useCallback((key: BuildingKey) => {
     stopTour();
-    setActiveBuilding(key);
-    if (key) {
-      setPhotoMode(false);
-      setShowControls(false);
-      navigate("/");
-    }
-  }, [navigate, stopTour]);
+    setPhotoMode(false);
+    setShowControls(false);
+    if (activeSection === key) return;
+    // Opening from the bare island pushes one history entry; switching between
+    // panels replaces it, so a single Back always returns to the island.
+    const alreadyOpen = activeSection !== null || activeProject !== undefined;
+    navigate(`/?panel=${key}`, {
+      replace: alreadyOpen,
+      state: { panelPushed: alreadyOpen ? Boolean(historyState?.panelPushed) : true },
+    });
+  }, [activeProject, activeSection, historyState, navigate, stopTour]);
+
+  const handleBuildingSelect = useCallback((key: BuildingKey | null) => {
+    if (key) showSection(key);
+  }, [showSection]);
 
   const openSection = useCallback((key: BuildingKey) => {
-    handleBuildingSelect(key);
+    showSection(key);
     controlsRef.current?.focusOnBuilding(key);
-  }, [handleBuildingSelect]);
+  }, [showSection]);
 
   const handleProjectOpen = useCallback((slug: string) => {
     stopTour();
-    setActiveBuilding(null);
-    navigate(`/projects/${slug}`);
-  }, [navigate, stopTour]);
+    navigate(`/?panel=projects&project=${encodeURIComponent(slug)}`, {
+      state: { panelPushed: Boolean(historyState?.panelPushed) || activeSection === null, projectPushed: true },
+    });
+  }, [activeSection, historyState, navigate, stopTour]);
 
   const handleProjectClose = useCallback(() => {
-    setActiveBuilding("projects");
-    navigate("/");
-  }, [navigate]);
-
-  const closeSection = useCallback(() => {
-    setActiveBuilding(null);
-    if (isProjectsIndex) navigate("/");
-  }, [isProjectsIndex, navigate]);
+    if (historyState?.projectPushed) navigate(-1);
+    else navigate("/?panel=projects", { replace: true, state: { panelPushed: Boolean(historyState?.panelPushed) } });
+  }, [historyState, navigate]);
 
   const openHelp = () => {
     stopTour();
@@ -137,31 +177,33 @@ const App = () => {
       if (event.key !== "Escape") return;
       if (photoMode) setPhotoMode(false);
       else if (showControls) setShowControls(false);
-      else if (isProjectRoute) handleProjectClose();
+      else if (activeProject) handleProjectClose();
+      else if (activeSection) closePanel();
       else if (isTourActive) stopTour();
-      else closeSection();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [closeSection, handleProjectClose, isProjectRoute, showControls, photoMode, isTourActive, stopTour]);
+  }, [activeProject, activeSection, closePanel, handleProjectClose, isTourActive, photoMode, showControls, stopTour]);
 
   useEffect(() => {
     try {
       window.localStorage.setItem("ui:dayMode", isDay ? "day" : "night");
     } catch { /* The island also works without local storage. */ }
+    // Keep the simple view and document pages on the same day/night choice.
+    document.documentElement.dataset.theme = isDay ? "day" : "night";
   }, [isDay]);
 
+  // A stamp represents opening the real content, including direct project links.
   useEffect(() => {
-    if (window.location.pathname !== "/stats") trackVisit();
-  }, []);
-
-  // A stamp represents opening the real content, including direct project URLs.
-  useEffect(() => {
-    const section = isProjectRoute ? "projects" : activeSection;
+    const section = activeProject ? "projects" : activeSection;
     if (!section) return;
     recordSection(section);
     setVisited((previous) => previous.includes(section) ? previous : [...previous, section]);
-  }, [activeSection, isProjectRoute]);
+  }, [activeSection, activeProject]);
+
+  useEffect(() => {
+    if (activeProject) recordSection(`project:${activeProject.slug}`);
+  }, [activeProject]);
 
   useEffect(() => {
     try {
@@ -170,34 +212,29 @@ const App = () => {
   }, [visited]);
 
   useEffect(() => {
-    if (isProjectRoute) recordSection(`project:${location.pathname.slice("/projects/".length)}`);
-  }, [isProjectRoute, location.pathname]);
-
-  useEffect(() => {
     document.body.classList.toggle("no-scroll", isPanelOpen);
     return () => document.body.classList.remove("no-scroll");
   }, [isPanelOpen]);
 
-  if (location.pathname === "/stats") {
-    return <Suspense fallback={null}><StatsPage /></Suspense>;
-  }
+  // On phones a full-height sheet hides the scene, so it can stop rendering.
+  const renderPaused = isNarrow && panelCoverage >= 0.9 && (activeSection !== null || activeProject !== undefined);
 
   return (
     <div className={`app-shell ${isDay ? "day" : "night"}${isLoadingMounted ? " is-loading" : ""}${photoMode ? " is-photo-mode" : ""}`}>
-      {!photoMode && <button type="button" className="skip-link" onClick={() => openSection("about")}>Skip to portfolio content</button>}
+      {!photoMode && <a className="skip-link" href="/about" onClick={(event) => { event.preventDefault(); openSection("about"); }}>Skip to portfolio content</a>}
       <Suspense fallback={null}>
-        <BabylonCanvas isDay={isDay} onBuildingSelect={handleBuildingSelect} onSceneReady={handleSceneReady} onLoadingChange={setIsLoading} />
+        <BabylonCanvas isDay={isDay} paused={renderPaused} onBuildingSelect={handleBuildingSelect} onSceneReady={handleSceneReady} onLoadingChange={setIsLoading} />
       </Suspense>
-      {!photoMode && <TopBar isDay={isDay} activeSection={isProjectRoute ? "projects" : activeSection} onToggleDay={() => setIsDay((day) => !day)} onToggleControls={openHelp} onOpenSection={openSection} />}
+      {!photoMode && <TopBar isDay={isDay} activeSection={activeProject ? "projects" : activeSection} onToggleDay={() => setIsDay((day) => !day)} onToggleControls={openHelp} onOpenSection={openSection} onSimpleView={onSimpleView} />}
       {!isLoading && !isPanelOpen && <ExplorerHUD controls={sceneControls} visited={visited} isTourActive={isTourActive} photoMode={photoMode} onOpenSection={openSection} onStartTour={startTour} onStopTour={stopTour} onPhotoMode={setPhotoMode} onHelp={openHelp} />}
-      {isProjectRoute ? <ProjectPanel onClose={handleProjectClose} /> : <PortfolioPanel activeKey={activeSection} onClose={closeSection} onProjectOpen={handleProjectOpen} />}
+      {activeProject ? <ProjectPanel project={activeProject} onClose={handleProjectClose} onCoverageChange={setPanelCoverage} /> : <PortfolioPanel activeKey={activeSection} onClose={closePanel} onProjectOpen={handleProjectOpen} onCoverageChange={setPanelCoverage} />}
       <ControlsPanel open={showControls} onClose={() => setShowControls(false)} />
       {isLoadingMounted && <div className={`loading-overlay island-loading${isLoading ? "" : " exiting"}`} role="status" aria-live="polite">
-        <h2>Building the island</h2>
+        <p className="island-loading-title">Building the island</p>
         <span className="island-loading-track" aria-hidden="true" />
+        <p className="island-loading-note">Use the menu above to read any section now, or <a href="/?view=simple" onClick={(event) => { event.preventDefault(); onSimpleView(); }}>switch to the simple view</a>.</p>
       </div>}
       {!isLoading && <div hidden={photoMode || showControls}><Suspense fallback={null}><ChatWidget /></Suspense></div>}
-      <Analytics />
     </div>
   );
 };

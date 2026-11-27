@@ -1,420 +1,117 @@
 import type { BuildingKey } from "../data/cityLayout";
-import { MAIN_BUILDINGS } from "../data/cityLayout";
-import { PANEL_TITLES, PORTFOLIO_DATA, projectSlug, type ProjectCategory } from "../data/portfolioData";
-import { useEffect, useRef, useState, type MouseEvent, type ReactElement } from "react";
-import Picture from "./Picture";
+import { PANEL_TITLES, PORTFOLIO_DATA, type ProjectCategory } from "../data/portfolioData";
+import { useEffect, useRef, useState } from "react";
+import { useDialogFocus } from "../utils/useDialog";
+import { usePanelResize } from "../utils/usePanelResize";
+import { AboutSection, ContactSection, ExperienceSection, ProjectCard, SkillsSection } from "./content/PortfolioContent";
 
 type PortfolioPanelProps = {
   activeKey: BuildingKey | null;
   onClose: () => void;
   onProjectOpen: (slug: string) => void;
+  onCoverageChange?: (coverage: number) => void;
 };
 
 const readProjectCategory = (): ProjectCategory => {
-  if (typeof window === "undefined") return "software";
   try {
     const stored = window.localStorage.getItem("ui:projectCategory");
-    if (stored === "software" || stored === "electrical") {
-      return stored;
-    }
-  } catch {
-    return "software";
-  }
+    if (stored === "software" || stored === "electrical") return stored;
+  } catch { /* Fall back to the default tab. */ }
   return "software";
 };
 
-const MailIcon = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path
-      d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M3.5 7.5L12 13l8.5-5.5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+const ProjectsContent = ({ onProjectOpen }: { onProjectOpen: (slug: string) => void }) => {
+  const [category, setCategory] = useState<ProjectCategory>(readProjectCategory);
 
-const PinIcon = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path
-      d="M12 22s7-7.1 7-12a7 7 0 1 0-14 0c0 4.9 7 12 7 12z"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" strokeWidth="1.6" />
-  </svg>
-);
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("ui:projectCategory", category);
+    } catch { /* The tab choice then lasts for this visit. */ }
+  }, [category]);
 
-const GithubIcon = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path
-      d="M12 2c-5.52 0-10 4.58-10 10.23 0 4.52 2.87 8.36 6.84 9.72.5.1.68-.22.68-.49v-1.7c-2.78.62-3.37-1.2-3.37-1.2-.46-1.19-1.12-1.5-1.12-1.5-.92-.64.07-.63.07-.63 1.01.07 1.54 1.07 1.54 1.07.9 1.57 2.36 1.12 2.94.86.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.15-4.56-5.09 0-1.12.39-2.03 1.03-2.74-.1-.26-.45-1.3.1-2.7 0 0 .85-.28 2.8 1.05.81-.23 1.68-.34 2.55-.34.87 0 1.74.12 2.55.34 1.94-1.33 2.79-1.05 2.79-1.05.56 1.4.21 2.44.11 2.7.64.71 1.03 1.62 1.03 2.74 0 3.95-2.34 4.82-4.57 5.08.36.32.68.95.68 1.92v2.85c0 .27.18.59.69.49A10.1 10.1 0 0 0 22 12.23C22 6.58 17.52 2 12 2z"
-      fill="currentColor"
-    />
-  </svg>
-);
-
-const LinkedInIcon = () => (
-  <svg viewBox="0 0 24 24" aria-hidden="true">
-    <rect
-      x="3"
-      y="3"
-      width="18"
-      height="18"
-      rx="3"
-      ry="3"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-    />
-    <path d="M8 10v6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    <path d="M8 7.5h.01" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    <path
-      d="M12 16v-6"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-    />
-    <path
-      d="M12 10h3.5a1.5 1.5 0 0 1 1.5 1.5V16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-    />
-  </svg>
-);
-
-const formatLinkSource = (url: string) => {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
+  return (
+    <div className="panel-section">
+      <div className="project-tabs" role="group" aria-label="Project category">
+        {(["software", "electrical"] as ProjectCategory[]).map((cat) => (
+          <button key={cat} type="button" className={`tab ${cat === category ? "active" : ""}`} aria-pressed={cat === category} onClick={() => setCategory(cat)}>
+            {cat === "software" ? "Software" : "Electrical"}
+          </button>
+        ))}
+      </div>
+      {PORTFOLIO_DATA.projects
+        .filter((project) => project.category === category)
+        .map((project) => (
+          <ProjectCard key={project.slug} project={project} onOpen={onProjectOpen} />
+        ))}
+    </div>
+  );
 };
 
-const renderContent = (
-  key: BuildingKey,
-  projectsCategory: ProjectCategory,
-  onTabChange: (cat: ProjectCategory) => void,
-  onProjectOpen: (slug: string) => void
-) => {
+const renderContent = (key: BuildingKey, onProjectOpen: (slug: string) => void) => {
   switch (key) {
     case "about":
-      return (
-        <div className="panel-section about-section">
-          <div className="about-header">
-            <Picture
-              className="about-photo"
-              src="/headshot.jpg"
-              alt="Junjie Wu"
-              width={84}
-              height={84}
-            />
-            <div className="about-intro">
-              <h3 className="about-name">Junjie Wu</h3>
-              <p className="about-role muted">{PORTFOLIO_DATA.about.headline}</p>
-            </div>
-          </div>
-          {PORTFOLIO_DATA.about.body.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
-          ))}
-        </div>
-      );
+      return <AboutSection />;
     case "projects":
-      return (
-        <div
-          className="panel-section"
-          onClick={(e) => {
-            const target = e.target as HTMLElement | null;
-            const tab = target?.closest<HTMLButtonElement>(".tab");
-            if (tab?.dataset.tab === "software" || tab?.dataset.tab === "electrical") {
-              onTabChange(tab.dataset.tab as ProjectCategory);
-            }
-          }}
-        >
-          <div className="project-tabs">
-            {(["software", "electrical"] as ProjectCategory[]).map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                className={`tab ${cat === projectsCategory ? "active" : ""}`}
-                data-tab={cat}
-              >
-                {cat === "software" ? "Software" : "Electrical"}
-              </button>
-            ))}
-          </div>
-          {PORTFOLIO_DATA.projects
-            .filter((project) => project.category === projectsCategory)
-            .map((project) => {
-              const slug = projectSlug(project.title);
-              const handleCardClick = (event: MouseEvent<HTMLAnchorElement>) => {
-                // Honor modified clicks (new tab / new window / middle-click) by
-                // letting the real href take over; SPA-navigate on a plain click.
-                if (
-                  event.defaultPrevented ||
-                  event.button !== 0 ||
-                  event.metaKey ||
-                  event.ctrlKey ||
-                  event.shiftKey ||
-                  event.altKey
-                ) {
-                  return;
-                }
-                event.preventDefault();
-                onProjectOpen(slug);
-              };
-              const hasImage = Boolean(project.image);
-              return (
-                <a
-                  key={project.title}
-                  href={`/projects/${slug}`}
-                  className={`project-card project-card-link ${hasImage ? "project-card-wide" : "project-card-text"}`}
-                  onClick={handleCardClick}
-                >
-                  {project.image && (
-                    <div className="project-thumb">
-                      <Picture src={project.image} alt={project.title} />
-                    </div>
-                  )}
-                  <div className="project-meta">
-                    <div className="project-topline">
-                      <div>
-                        <h3>{project.title}</h3>
-                        <span className="muted">{project.date}</span>
-                      </div>
-                    </div>
-                    <p>{project.description}</p>
-                    <div className="chip-row">
-                      {project.stack.map((tech) => (
-                        <span className="chip" key={tech}>
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
-        </div>
-      );
+      return <ProjectsContent onProjectOpen={onProjectOpen} />;
     case "skills":
-      return (
-        <div className="panel-section">
-          {PORTFOLIO_DATA.skills.map((group) => (
-            <div key={group.category} className="skill-group">
-              <h3>{group.category}</h3>
-              <p>{group.items.join(" · ")}</p>
-            </div>
-          ))}
-        </div>
-      );
+      return <SkillsSection />;
     case "experience":
-      return (
-        <div className="panel-section">
-          {PORTFOLIO_DATA.experience.map((job) => (
-            <div key={`${job.company}-${job.role}-${job.period}`} className="experience-card">
-              <h3>{job.role}</h3>
-              <p className="muted">
-                {job.companyUrl ? (
-                  <a
-                    className="experience-company-link"
-                    href={job.companyUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {job.company}
-                  </a>
-                ) : (
-                  job.company
-                )}{" "}
-                · {job.period}
-              </p>
-              <ul>
-                {job.highlights.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-              {job.links && job.links.length > 0 ? (
-                <div className="experience-links">
-                  {job.links.map((link) => (
-                    <a
-                      key={`${link.url}-${link.title}`}
-                      className="experience-link-card"
-                      href={link.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {link.image ? (
-                        <span className="experience-link-thumb">
-                          <Picture src={link.image} alt="" loading="lazy" />
-                        </span>
-                      ) : null}
-                      <span className="experience-link-copy">
-                        <span className="experience-link-source">
-                          {link.source ?? formatLinkSource(link.url)}
-                        </span>
-                        <span className="experience-link-title">{link.title}</span>
-                      </span>
-                    </a>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          ))}
-        </div>
-      );
-    case "contact": {
-      const iconMap: Record<string, () => ReactElement> = {
-        GitHub: GithubIcon,
-        LinkedIn: LinkedInIcon,
-      };
-
-      return (
-        <div className="panel-section contact-details">
-          <div className="contact-grid">
-            <a className="contact-card" href={`mailto:${PORTFOLIO_DATA.contact.email}`}>
-              <span className="contact-icon">
-                <MailIcon />
-              </span>
-              <span className="contact-copy">
-                <span className="contact-label">Email</span>
-                <span className="contact-value">{PORTFOLIO_DATA.contact.email}</span>
-              </span>
-            </a>
-            <div className="contact-card static">
-              <span className="contact-icon location">
-                <PinIcon />
-              </span>
-              <span className="contact-copy">
-                <span className="contact-label">Location</span>
-                <span className="contact-value">{PORTFOLIO_DATA.contact.location}</span>
-              </span>
-            </div>
-          </div>
-          <div className="contact-actions">
-            {PORTFOLIO_DATA.contact.links.map((link) => {
-              const Icon = iconMap[link.label];
-              const displayUrl = link.url.replace(/^https?:\/\//, "").replace(/\/$/, "");
-              return (
-                <a
-                  key={link.label}
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="contact-card contact-link-card"
-                >
-                  {Icon && (
-                    <span className="contact-icon">
-                      <Icon />
-                    </span>
-                  )}
-                  <span className="contact-copy">
-                    <span className="contact-label">{link.label}</span>
-                    <span className="contact-value">{displayUrl}</span>
-                  </span>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      );
-    }
+      return <ExperienceSection />;
+    case "contact":
+      return <ContactSection />;
     default:
       return null;
   }
 };
 
-const PortfolioPanel = ({ activeKey, onClose, onProjectOpen }: PortfolioPanelProps) => {
-  const [projectTab, setProjectTab] = useState<ProjectCategory>(readProjectCategory);
+const PortfolioPanel = ({ activeKey, onClose, onProjectOpen, onCoverageChange }: PortfolioPanelProps) => {
   const isOpen = Boolean(activeKey);
   const isCompact = activeKey === "about" || activeKey === "skills" || activeKey === "contact";
   const openAtRef = useRef<number | null>(null);
-  const asideRef = useRef<HTMLElement | null>(null);
-  const lastFocusedRef = useRef<HTMLElement | null>(null);
-  const building = MAIN_BUILDINGS.find(
-    (entry) => entry.type === "main" && entry.key === activeKey
-  );
+  const dialogRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (activeKey) {
-      openAtRef.current = Date.now();
-    } else {
-      openAtRef.current = null;
-    }
+    openAtRef.current = activeKey ? Date.now() : null;
   }, [activeKey]);
 
-  // Move keyboard focus into the panel when it opens; return it to whatever was
-  // focused (the nav button or the canvas) when it closes.
-  useEffect(() => {
-    if (isOpen) {
-      lastFocusedRef.current = document.activeElement as HTMLElement | null;
-      asideRef.current?.focus();
-    } else if (lastFocusedRef.current) {
-      lastFocusedRef.current.focus?.();
-      lastFocusedRef.current = null;
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      window.localStorage.setItem("ui:projectCategory", projectTab);
-    } catch {
-      return;
-    }
-  }, [projectTab]);
+  useDialogFocus(dialogRef, isOpen, activeKey);
+  const { style, handleProps, dragging } = usePanelResize(dialogRef, { onCoverageChange, onDismiss: onClose });
 
   const handleOverlayClick = () => {
-    if (openAtRef.current && Date.now() - openAtRef.current < 50) {
-      return;
-    }
+    if (openAtRef.current && Date.now() - openAtRef.current < 50) return;
     onClose();
   };
 
   return (
     <>
-      <aside
-        ref={asideRef}
+      <div
+        ref={dialogRef}
         tabIndex={-1}
-        aria-label={activeKey ? PANEL_TITLES[activeKey] : undefined}
-        className={`portfolio-panel ${isOpen ? "open" : ""} ${isCompact ? "compact" : ""}`}
+        role={isOpen ? "dialog" : undefined}
+        aria-modal={isOpen ? true : undefined}
+        aria-labelledby={isOpen ? "portfolio-panel-title" : undefined}
+        aria-hidden={isOpen ? undefined : true}
+        inert={!isOpen}
+        className={`portfolio-panel ${isOpen ? "open" : ""} ${isCompact ? "compact" : ""}${dragging ? " is-resizing" : ""}`}
+        style={style}
       >
-        {activeKey ? (
+        {activeKey && (
           <>
+            <div {...handleProps} />
             <div className="panel-header">
               <div>
-                <h2>{PANEL_TITLES[activeKey]}</h2>
+                <h2 id="portfolio-panel-title">{PANEL_TITLES[activeKey]}</h2>
               </div>
               <button type="button" className="ghost-button" onClick={onClose}>
                 Close
               </button>
             </div>
-            <div className="panel-body" id="panel-body" key={activeKey ?? "closed"}>
-              {renderContent(activeKey, projectTab, setProjectTab, onProjectOpen)}
+            <div className="panel-body" id="panel-body" key={activeKey}>
+              {renderContent(activeKey, onProjectOpen)}
             </div>
           </>
-        ) : (
-          <div className="panel-placeholder">
-            Click a highlighted building to open its story.
-          </div>
         )}
-      </aside>
+      </div>
       <div className={`panel-overlay ${isOpen ? "visible" : ""}`} onClick={handleOverlayClick} />
     </>
   );

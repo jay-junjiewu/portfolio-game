@@ -23,10 +23,13 @@ import { configureCityRoads, mapCityRoadHeading, mapCityRoadPoint } from "./city
 import { createAtmosphere } from "./atmosphere";
 import type { LoadedBuilding, RevealEntry } from "./loadBuilding";
 import { createModelCache, loadBuilding, revealQueue, setupBuildingLabels } from "./loadBuilding";
+import { createModelLibrary } from "./modelLibrary";
 import { setupPicking } from "./picking";
 import { isMobileDevice, prefersReducedMotion } from "../utils/device";
 
 export type SceneCallbacks = {
+  /** Lighter scene for low-end devices: no moving traffic. */
+  lowDetail?: boolean;
   onBuildingSelect: (key: BuildingKey | null) => void;
   onAssetsLoaded?: () => void;
   onAllAssetsLoaded?: () => void;
@@ -662,9 +665,13 @@ export const createCityScene = async (
     return Math.min(900, dist * 6);
   };
 
-  const modelCache = createModelCache();
+  // Landmark models come from a small "core" pack so the island is usable
+  // quickly; everything else streams in from the "props" pack afterwards.
+  const coreModels = new Set(CITY_LAYOUT.filter((entry) => entry.type === "main").map((entry) => entry.modelPath));
+  const modelCache = createModelCache(createModelLibrary(scene, (modelPath) => coreModels.has(modelPath) ? "core" : "props"));
   const mainEntries = CITY_LAYOUT.filter((entry) => entry.type === "main");
-  const otherEntries = CITY_LAYOUT.filter((entry) => entry.type !== "main");
+  const otherEntries = CITY_LAYOUT.filter((entry) =>
+    entry.type !== "main" && !(callbacks.lowDetail && entry.animation?.type === "sequence"));
   const mainBuildings = await Promise.all(
     mainEntries.map((entry) =>
       loadBuilding(scene, entry, shadowGenerator, modelCache, revealDelayFor(entry))

@@ -7,16 +7,14 @@ import { Mesh } from "@babylonjs/core/Meshes/mesh";
 import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder";
 import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData";
 import type { Scene } from "@babylonjs/core/scene";
-import { SceneLoader } from "@babylonjs/core/Loading/sceneLoader";
 import type { ShadowGenerator } from "@babylonjs/core/Lights/Shadows/shadowGenerator";
 import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 import { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 import { Matrix, Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { Viewport } from "@babylonjs/core/Maths/math.viewport";
-import "@babylonjs/loaders/OBJ/objFileLoader";
 import { CITY_TILE_SIZE, type CityEntity } from "../data/cityLayout";
 import { PANEL_TITLES } from "../data/portfolioData";
-import { ASSET_BASE_URL } from "../config";
+import type { ModelLibrary } from "./modelLibrary";
 import { prefersReducedMotion } from "../utils/device";
 import {
   CITY_ASPHALT_WIDTH, CITY_ROAD_WIDTH, getCityRoadPlan, mapCityHeading, mapCityPoint,
@@ -61,25 +59,15 @@ export type RevealEntry = {
  */
 export const revealQueue: RevealEntry[] = [];
 
-export type ModelCache = Map<string, Promise<Mesh[]>>;
+/** Prepared (material-adjusted) templates per model path, cloned for each placement. */
+export type ModelCache = { library: ModelLibrary; templates: Map<string, Promise<Mesh[]>> };
 
-export const createModelCache = (): ModelCache => new Map();
+export const createModelCache = (library: ModelLibrary): ModelCache => ({ library, templates: new Map() });
 
 const DEFAULT_SCALES: Record<CityEntity["type"], number> = {
   main: 1,
   decor: 1,
   road: 1,
-};
-
-const splitPath = (modelPath: string) => {
-  const sanitized = modelPath.replace(/^\/+/, "");
-  const lastSlash = sanitized.lastIndexOf("/");
-  if (lastSlash === -1) {
-    return { root: ASSET_BASE_URL, file: sanitized };
-  }
-  const root = `${ASSET_BASE_URL}${sanitized.slice(0, lastSlash + 1)}`;
-  const file = sanitized.slice(lastSlash + 1);
-  return { root, file };
 };
 
 const ensureMaterial = (mesh: AbstractMesh, scene: Scene) => {
@@ -105,7 +93,9 @@ const addWindowLighting = (mesh: Mesh, modelPath: string, scene: Scene) => {
     ctx.fillRect(0, 0, 512, 512);
     ctx.fillStyle = "#ffb65e";
     ctx.fillRect(320, 128, 64, 128);
-    mask.update();
+    // Models use glTF UVs (origin at the image's top-left), like the atlas
+    // texture they sample, so upload the mask without flipping it.
+    mask.update(false);
   }
   mat.emissiveTexture = mask;
   mat.useEmissiveAsIllumination = true;
@@ -376,23 +366,17 @@ const loadModelTemplate = (
   cache: ModelCache,
   modelPath: string
 ): Promise<Mesh[]> => {
-  let cached = cache.get(modelPath);
+  let cached = cache.templates.get(modelPath);
   if (cached) return cached;
-  const { root: assetRoot, file } = splitPath(modelPath);
-  cached = SceneLoader.LoadAssetContainerAsync(assetRoot, file, scene).then(
-    (container) => {
-      const templateMeshes = container.meshes.filter(
-        (m): m is Mesh => m instanceof Mesh && m.getTotalVertices() > 0
-      );
-      templateMeshes.forEach((m) => {
-        ensureMaterial(m, scene);
-        addWindowLighting(m, modelPath, scene);
-        m.setEnabled(false);
-      });
-      return templateMeshes;
-    }
-  );
-  cache.set(modelPath, cached);
+  cached = cache.library.load(modelPath).then((templateMeshes) => {
+    templateMeshes.forEach((m) => {
+      ensureMaterial(m, scene);
+      addWindowLighting(m, modelPath, scene);
+      m.setEnabled(false);
+    });
+    return templateMeshes;
+  });
+  cache.templates.set(modelPath, cached);
   return cached;
 };
 

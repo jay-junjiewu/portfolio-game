@@ -2329,3 +2329,6 @@ body.no-scroll .chat-fab {
   font-family: var(--font-display);
   opacity: 0.6;
 }
+
+/* Experience dates sit on their own line under the company. */
+.experience-card .experience-period { display: block; }

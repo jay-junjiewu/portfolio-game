@@ -41,15 +41,11 @@ const VoltagePlanningToolDetails = () => {
         <li>Decision logic requires both cost efficiency and compliance with residual risk targets.</li>
       </ul>
 
-      <h3>Interventions evaluated</h3>
+      <h3>Intervention strategies</h3>
       <p>
-        <strong>Tap Change:</strong> A low-cost operational voltage adjustment. Highly effective
-        at reducing persistent over/undervoltage but with limited impact on short-term variance.
-      </p>
-      <p>
-        <strong>STATCOM:</strong> A capital intervention providing fast reactive power support.
-        Effective at reducing PV-driven fluctuations; typically justified only where residual risk
-        remains high after operational controls.
+        The tool compares operational and capital intervention strategies on equal terms: each is
+        scored by how much predicted voltage risk it avoids against what it costs, so planners can
+        see where a low-cost operational change is enough and where larger investment is justified.
       </p>
 
       <h3>Outputs</h3>
