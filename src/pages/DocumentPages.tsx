@@ -168,7 +168,7 @@ export const SimpleHome = ({ onExploreIsland }: SimpleHomeProps) => {
     <DocumentLayout
       navMode="anchors"
       headerAction={
-        <div className="doc-header-actions">
+        <>
           <button type="button" className="doc-island-link doc-theme-switch" onClick={toggleTheme} title="Switch between day and night">
             <span className="theme-day"><SunIcon /><span>Daylight</span></span>
             <span className="theme-night"><MoonIcon /><span>Moonlight</span></span>
@@ -177,7 +177,7 @@ export const SimpleHome = ({ onExploreIsland }: SimpleHomeProps) => {
             <IslandIcon />
             <span>3D island view</span>
           </a>
-        </div>
+        </>
       }
     >
       <section className="doc-hero" aria-labelledby="home-title">

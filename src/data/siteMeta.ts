@@ -19,7 +19,7 @@ export type PageMeta = {
 
 export const HOME_META: PageMeta = {
   path: "/",
-  title: "Junjie Wu | C++ Software Engineer",
+  title: "Junjie Wu - C++ Software Engineer",
   heading: "Junjie Wu",
   description:
     "Junjie Wu is a C++ software engineer and electrical engineer from UNSW Sydney who builds high-performance real-time software, GPU tooling and FPGA designs.",
@@ -29,7 +29,7 @@ export const HOME_META: PageMeta = {
 export const SECTION_META: Record<BuildingKey, PageMeta> = {
   about: {
     path: "/about",
-    title: "About | Junjie Wu",
+    title: "About - Junjie Wu",
     heading: "About Junjie Wu",
     description:
       "About Junjie Wu: UNSW Sydney graduate in Electrical Engineering and Computer Science and former Tencent software engineering intern, based in Sydney, Australia.",
@@ -37,7 +37,7 @@ export const SECTION_META: Record<BuildingKey, PageMeta> = {
   },
   projects: {
     path: "/projects",
-    title: "Projects | Junjie Wu",
+    title: "Projects - Junjie Wu",
     heading: "Projects",
     description:
       "Projects by Junjie Wu in low-latency C++, machine learning, systems programming, embedded firmware, power electronics and FPGA digital design, with write-ups.",
@@ -45,7 +45,7 @@ export const SECTION_META: Record<BuildingKey, PageMeta> = {
   },
   experience: {
     path: "/experience",
-    title: "Experience | Junjie Wu",
+    title: "Experience - Junjie Wu",
     heading: "Experience",
     description:
       "Junjie Wu's experience: Software Engineering Intern at Tencent in Sydney (C++, CUDA, GPU programming, Unreal Engine 5) and Lab Demonstrator at UNSW Sydney.",
@@ -53,7 +53,7 @@ export const SECTION_META: Record<BuildingKey, PageMeta> = {
   },
   skills: {
     path: "/skills",
-    title: "Skills | Junjie Wu",
+    title: "Skills - Junjie Wu",
     heading: "Skills",
     description:
       "Junjie Wu's technical skills: C++, CUDA, Python, Unreal Engine 5, PyTorch, Verilog and FPGA design, power electronics, embedded systems and developer tools.",
@@ -61,7 +61,7 @@ export const SECTION_META: Record<BuildingKey, PageMeta> = {
   },
   contact: {
     path: "/contact",
-    title: "Contact | Junjie Wu",
+    title: "Contact - Junjie Wu",
     heading: "Contact",
     description:
       "Contact Junjie Wu, a Sydney-based C++ software engineer and electrical engineer, by email at jaywu0046@gmail.com or through his GitHub and LinkedIn profiles.",
@@ -78,8 +78,8 @@ export const NAV_ITEMS: { key: BuildingKey; label: string; href: string }[] = [
 ];
 
 export const NOT_FOUND_META = {
-  title: "Page not found | Junjie Wu",
+  title: "Page not found - Junjie Wu",
   description: "This page does not exist. Visit the homepage or browse Junjie Wu's projects.",
 };
 
-export const projectTitle = (title: string) => `${title} | ${SITE_NAME}`;
+export const projectTitle = (title: string) => `${title} - ${SITE_NAME}`;

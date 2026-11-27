@@ -84,12 +84,14 @@ const DocumentLayout = ({
             </a>
           ))}
         </nav>
-        {headerAction ?? (
-          <a className="doc-island-link" href={islandHref}>
-            <IslandIcon />
-            <span>Explore on the island</span>
-          </a>
-        )}
+        <div className="doc-header-actions">
+          {headerAction ?? (
+            <a className="doc-island-link" href={islandHref}>
+              <IslandIcon />
+              <span>Explore on the island</span>
+            </a>
+          )}
+        </div>
       </div>
     </header>
     <main id="main" className="doc-main">

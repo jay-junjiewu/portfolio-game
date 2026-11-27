@@ -167,7 +167,7 @@ for (const project of PORTFOLIO_DATA.projects) {
 {
   let html = template.replace(/<link\b[^>]*rel="canonical"[^>]*>/i, "");
   html = setMeta(html, "name", "robots", "noindex, nofollow");
-  html = html.replace(/<title>[\s\S]*?<\/title>/i, "<title>Stats | Junjie Wu</title>");
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, "<title>Stats - Junjie Wu</title>");
   await writeRoute("/stats", html);
 }
 

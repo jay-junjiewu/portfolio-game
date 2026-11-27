@@ -322,3 +322,4 @@ body .app-shell.day :is(.chat-messages, .island-help)::-webkit-scrollbar-track {
   body .app-shell:is(.day, .night) .portfolio-panel,
   body .app-shell:is(.day, .night) .portfolio-panel.compact { bottom: auto; height: auto; max-height: calc(100dvh - 120px); }
 }
+
