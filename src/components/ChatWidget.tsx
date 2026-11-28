@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { recordChatUsed } from "../utils/engagement";
+import { useChatResize } from "../utils/useChatResize";
 import { getSessionId } from "../utils/track";
 
 type ChatMessage = {
@@ -72,6 +73,7 @@ const ChatWidget = () => {
   const listRef = useRef<HTMLDivElement>(null);
   const fabRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const { style: resizeStyle, handleProps: resizeHandleProps, dragging: resizing } = useChatResize(panelRef);
   const wasOpen = useRef(false);
 
   // Focus the input when the panel opens; when it closes, restore focus to the
@@ -232,12 +234,14 @@ const ChatWidget = () => {
       {open && (
         <div
           ref={panelRef}
-          className="chat-panel"
+          className={`chat-panel${resizing ? " is-resizing" : ""}`}
+          style={resizeStyle}
           role="dialog"
           aria-modal="true"
           aria-label="Ask me about Junjie"
           onKeyDown={onPanelKeyDown}
         >
+          <div {...resizeHandleProps} />
           <div className="chat-panel__header">
             <h3>Ask me about Junjie</h3>
             <button

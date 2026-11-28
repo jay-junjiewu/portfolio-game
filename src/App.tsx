@@ -225,7 +225,7 @@ const App = ({ onSimpleView }: AppProps) => {
       <Suspense fallback={null}>
         <BabylonCanvas isDay={isDay} paused={renderPaused} onBuildingSelect={handleBuildingSelect} onSceneReady={handleSceneReady} onLoadingChange={setIsLoading} />
       </Suspense>
-      {!photoMode && <TopBar isDay={isDay} activeSection={activeProject ? "projects" : activeSection} onToggleDay={() => setIsDay((day) => !day)} onToggleControls={openHelp} onOpenSection={openSection} onSimpleView={onSimpleView} />}
+      {!photoMode && <TopBar isDay={isDay} activeSection={activeProject ? "projects" : activeSection} onToggleDay={() => setIsDay((day) => !day)} onOpenSection={openSection} onSimpleView={onSimpleView} canHintSimpleView={!isLoading && !isPanelOpen} />}
       {!isLoading && !isPanelOpen && <ExplorerHUD controls={sceneControls} visited={visited} isTourActive={isTourActive} photoMode={photoMode} onOpenSection={openSection} onStartTour={startTour} onStopTour={stopTour} onPhotoMode={setPhotoMode} onHelp={openHelp} />}
       {activeProject ? <ProjectPanel project={activeProject} onClose={handleProjectClose} onCoverageChange={setPanelCoverage} /> : <PortfolioPanel activeKey={activeSection} onClose={closePanel} onProjectOpen={handleProjectOpen} onCoverageChange={setPanelCoverage} />}
       <ControlsPanel open={showControls} onClose={() => setShowControls(false)} />

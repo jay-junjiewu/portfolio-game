@@ -27,7 +27,7 @@ const ExplorerHUD = ({ controls, visited, isTourActive, photoMode, onOpenSection
   const [passportOpen, setPassportOpen] = useState(false);
 
   if (photoMode) return (
-    <button className="photo-exit" type="button" autoFocus onClick={() => onPhotoMode(false)}><span>↗</span> Back to exploring <kbd>Esc</kbd></button>
+    <button className="photo-exit" type="button" autoFocus aria-label="Back to exploring (Esc)" title="Back to exploring" onClick={() => onPhotoMode(false)}><kbd>Esc</kbd></button>
   );
 
   const resetView = () => { onStopTour(); controls?.resetCamera(); };
@@ -42,7 +42,7 @@ const ExplorerHUD = ({ controls, visited, isTourActive, photoMode, onOpenSection
       </div>
 
       <aside className={`island-passport${passportOpen ? " is-open" : ""}`} aria-label="Island passport">
-        <button className="passport-heading" type="button" aria-expanded={passportOpen} aria-controls="passport-districts" onClick={() => setPassportOpen((open) => !open)}>
+        <button className="passport-heading" type="button" aria-label={`Island passport, ${visited.length} of 5 places discovered`} aria-expanded={passportOpen} aria-controls="passport-districts" onClick={() => setPassportOpen((open) => !open)}>
           <span className="passport-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" /><circle cx="12" cy="10" r="3.5" /><path d="M8 17h8m-7-7h6m-3-3.5c-2 2-2 5 0 7 2-2 2-5 0-7Z" /></svg></span>
           <span><strong>Island passport</strong><small>{visited.length === 5 ? "Every corner discovered" : `${visited.length} of 5 places discovered`}</small></span>
           <span className="passport-chevron" aria-hidden="true">{passportOpen ? "−" : "+"}</span>
@@ -58,14 +58,13 @@ const ExplorerHUD = ({ controls, visited, isTourActive, photoMode, onOpenSection
       </aside>
 
       <div className="island-dock" aria-label="Exploration controls">
-        <button className={`dock-explore${!isTourActive ? " is-active" : ""}`} type="button" onClick={onStopTour} aria-pressed={!isTourActive}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 3 14 9-7 1-3 7-4-17Z" /></svg><span>Free roam</span></button>
         <button className={isTourActive ? "is-active" : ""} type="button" disabled={!controls || prefersReducedMotion()} title={prefersReducedMotion() ? "Camera tours are disabled with reduced motion" : "A guided look around the island"} aria-pressed={isTourActive} onClick={isTourActive ? onStopTour : onStartTour}><svg viewBox="0 0 24 24" aria-hidden="true">{isTourActive ? <path d="M8 5v14M16 5v14" /> : <path d="m8 5 11 7-11 7V5Z" />}</svg><span>{isTourActive ? "Stop tour" : "Take a tour"}</span></button>
         <span className="dock-divider" />
         <button type="button" onClick={() => { onStopTour(); onPhotoMode(true); }} title="Photo mode" aria-label="Enter photo mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 1.5-2h5L16 5h4a1 1 0 0 1 1 1v13H3V6a1 1 0 0 1 1-1h4Z" /><circle cx="12" cy="12" r="4" /></svg><span className="dock-photo-label">Photo mode</span></button>
         <button className="dock-help" type="button" onClick={onHelp} aria-label="How to explore" title="How to explore"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M9.5 9a2.5 2.5 0 1 1 4.2 1.8c-1.2.8-1.7 1-1.7 2.7m0 3h.01" /></svg></button>
       </div>
 
-      <div className="island-tour-status" role="status" aria-live="polite">{isTourActive ? "The island tour is playing. Choose Free roam to take the controls." : ""}</div>
+      <div className="island-tour-status" role="status" aria-live="polite">{isTourActive ? "The island tour is playing. Choose Stop tour to take the controls." : ""}</div>
     </>
   );
 };
