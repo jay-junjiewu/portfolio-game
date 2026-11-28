@@ -496,8 +496,8 @@ const StatsPage = () => {
             <section className="stats-chatlog">
               <h2>Chat transcripts</h2>
               <p className="stats-hint">
-                {data.chat.messages.length.toLocaleString()} messages all-time, grouped by IP —
-                click a row to expand.
+                {data.chat.messages.length.toLocaleString()} messages all-time, grouped by IP.
+                Click a row to expand.
               </p>
               <div className="stats-table">
                 <table>
@@ -563,7 +563,7 @@ const StatsPage = () => {
           <p className="stats-note">
             Visitor IP, geolocation, device/network details and on-site activity
             are recorded for the site owner's analytics. Location and coordinates
-            are approximate — derived from IP (accurate to city level), not the
+            are approximate, derived from IP (accurate to city level), not the
             visitor's exact position.
           </p>
         </>

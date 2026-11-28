@@ -23,13 +23,6 @@ const AmbientSoundMonitorSystemDetails = () => {
 
   return (
     <section className="project-detail">
-      <p>
-        Ambient Sound Monitor System (Xylyrnth) is an intelligent ambient sound monitoring system for
-        the smartwatch market. It targets users who may struggle to stay aware of their surroundings
-        or frequently operate in noisy environments. The system uses real-time processing to detect
-        key sounds and deliver alerts through haptic and visual feedback.
-      </p>
-
       <div className="project-links">
         <a
           href="https://github.com/jay-junjiewu/ambient-sound-monitor-system-xylyrnth"
@@ -50,6 +43,10 @@ const AmbientSoundMonitorSystemDetails = () => {
       </div>
 
       <h3>System overview</h3>
+      <p>
+        Xylyrnth is designed for people who may struggle to stay aware of their surroundings or who
+        often operate in noisy environments.
+      </p>
       <p>
         Xylyrnth is built around two custom ESP32 hardware boards, programmed in low-level embedded C.
         The boards communicate via Bluetooth and perform tightly synchronized tasks.

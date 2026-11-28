@@ -149,7 +149,7 @@ html[data-theme="night"] .doc-theme-switch .theme-night { display: inline-flex; 
 .doc-shell .experience-card li + li { margin-top: 6px; }
 .doc-shell .experience-card :is(h2, h3) { margin: 0; font-size: 19px; }
 .doc-shell .skill-group :is(h2, h3) { margin: 0 0 4px; font-size: 17px; }
-.doc-shell .skill-group p { margin: 0 0 16px; }
+.doc-shell .skill-group { margin-bottom: 18px; }
 .doc-shell .about-header { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
 .doc-shell .about-photo { border-radius: 50%; object-fit: cover; }
 .doc-shell .about-name { font-size: 22px; font-weight: 600; margin: 0; }
@@ -160,9 +160,10 @@ html[data-theme="night"] .doc-theme-switch .theme-night { display: inline-flex; 
 
 .doc-project-group { margin-bottom: 36px; }
 .doc-project-group > :is(h2, h3) { font-size: 22px; margin: 0 0 14px; }
-.doc-project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; align-items: start; }
+.doc-project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; align-items: stretch; }
 /* Cards size to their own content instead of stretching to the tallest in the row. */
-.doc-shell .doc-project-grid .project-card-wide { display: block; }
+.doc-shell .doc-project-grid .project-card { display: flex; flex-direction: column; }
+.doc-shell .doc-project-grid .project-meta { flex: 1; }
 .doc-shell .doc-project-grid .project-thumb { margin-bottom: 10px; }
 .doc-shell .doc-project-grid .project-thumb img { aspect-ratio: 16 / 9; object-fit: cover; }
 

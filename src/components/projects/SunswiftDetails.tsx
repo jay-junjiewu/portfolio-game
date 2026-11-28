@@ -46,7 +46,7 @@ const SunswiftDetails = () => {
           className="text-link"
         >
           2023 Bridgestone World Solar Challenge
-        </a>, showcasing the incredible capabilities of solar-powered vehicles.
+        </a>, showcasing the incredible capabilities of solar cars.
       </p>
 
       <div className="hover-container">
@@ -72,6 +72,11 @@ const SunswiftDetails = () => {
       </div>
 
       <h3>MPPT PCB</h3>
+
+      <p>
+        The board is a DC-DC converter that delivers power from the car's 30 V photovoltaic panels
+        to the battery, and it reports to the energy management system over CAN.
+      </p>
 
       <p>
         The MPPT PCB board features an isolated H-bridge boost converter and an STM32

@@ -3,11 +3,6 @@ import Picture from "../Picture";
 const VinoosDetails = () => {
   return (
     <section className="project-detail">
-      <p>
-        A responsive product catalog website built for a fish tank company, focusing on
-        component-based architecture, reusable UI patterns, and high-quality visual presentation.
-      </p>
-
       <div className="project-links">
         <a
           href="https://github.com/jay-junjiewu/Vinoos"
@@ -25,9 +20,8 @@ const VinoosDetails = () => {
 
       <h3>Overview</h3>
       <p>
-        The site allows visitors to easily browse and view the company's products with an emphasis
-        on clean layout and fast image loading. Built with React and modern JavaScript practices,
-        the component architecture is designed to make adding new product categories straightforward.
+        The site lets visitors browse the company's products, with an emphasis on polished
+        visual presentation and fast image loading. It is built from reusable React components, so adding new product categories is straightforward.
       </p>
       <p>
         For the backend, Supabase handles image storage and delivery, keeping media assets separate

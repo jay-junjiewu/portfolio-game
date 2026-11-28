@@ -106,7 +106,13 @@ export const projectJsonLd = (project: Project) => {
     image: projectImageUrl(project),
     author: { "@id": PERSON_ID },
     inLanguage: "en-AU",
-    ...(project.organisation ? { sourceOrganization: { "@type": "Organization", name: project.organisation } } : {}),
+    ...(project.organisation ? {
+          sourceOrganization: {
+            "@type": "Organization",
+            name: project.organisation,
+            ...(project.organisationUrl ? { url: project.organisationUrl } : {}),
+          },
+        } : {}),
     ...(project.githubUrl ? { codeRepository: project.githubUrl } : {}),
   };
   return graph(work, breadcrumbNode([

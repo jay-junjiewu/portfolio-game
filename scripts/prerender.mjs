@@ -276,12 +276,14 @@ const projectMd = (project, level = 1) => {
       project.role && `Role: ${project.role}`,
       `Date: ${project.date}`,
       `URL: ${SITE_URL}/projects/${project.slug}`,
+      project.organisationUrl && `Website: ${project.organisationUrl}`,
       project.githubUrl && `Source: ${project.githubUrl}`,
       `Tags: ${tags(project.stack)}`,
     ]
       .filter(Boolean)
       .join("\n"),
     project.description,
+    ...(project.details ?? []),
     details ? htmlToMarkdown(details).replace(/^(#{1,3}) /gm, `${"#".repeat(level + 1)} `) : "",
   ]
     .filter(Boolean)

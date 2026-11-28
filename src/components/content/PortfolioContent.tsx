@@ -65,7 +65,11 @@ export const SkillsSection = ({ itemHeading = "h3" }: { itemHeading?: HeadingLev
       {PORTFOLIO_DATA.skills.map((group) => (
         <div key={group.category} className="skill-group">
           <Heading>{group.category}</Heading>
-          <p>{group.items.join(", ")}</p>
+          <ul className="chip-row skill-chips">
+            {group.items.map((item) => (
+              <li className="chip" key={item}>{item}</li>
+            ))}
+          </ul>
         </div>
       ))}
     </div>
@@ -141,7 +145,6 @@ export const ProjectCard = ({ project, heading = "h3", onOpen }: ProjectCardProp
         <div className="project-topline">
           <div>
             <Heading>{project.title}</Heading>
-            {project.organisationLine && <span className="project-org">{project.organisationLine}</span>}
             <span className="muted">{project.date}</span>
           </div>
         </div>
@@ -157,7 +160,7 @@ export const ProjectCard = ({ project, heading = "h3", onOpen }: ProjectCardProp
 };
 
 /**
- * Full project write-up: organisation, summary, tags and the long-form details.
+ * Full project write-up: organisation, summary, the long-form details, then tags.
  * On a document page (title is the <h1>) a visually hidden <h2> keeps the
  * write-up's own <h3> sections in heading order.
  */
@@ -167,11 +170,13 @@ export const ProjectArticle = ({ project, outlineHeading = false }: { project: P
     <div className="panel-section project-article">
       {project.role && <p className="muted project-role">{project.role}</p>}
       <p className="project-summary">{project.description}</p>
-      <div className="chip-row">
-        {project.stack.map((tech) => (
-          <span className="chip" key={tech}>{tech}</span>
-        ))}
-      </div>
+      {project.organisationUrl && (
+        <div className="pdf-container">
+          <a href={project.organisationUrl} target="_blank" rel="noreferrer" className="pdf-link">
+            Visit Website
+          </a>
+        </div>
+      )}
       {Details ? (
         <>
           {outlineHeading && <h2 className="visually-hidden">Project write-up</h2>}
@@ -179,18 +184,26 @@ export const ProjectArticle = ({ project, outlineHeading = false }: { project: P
         </>
       ) : (
         <>
-          {project.image && (
-            <div className="project-thumb project-thumb-detail">
-              <Picture src={project.image} alt={project.title} />
-            </div>
-          )}
           {project.githubUrl && (
             <div className="project-links">
               <a href={project.githubUrl} target="_blank" rel="noreferrer" className="chip chip-link">GitHub</a>
             </div>
           )}
+          {project.image && (
+            <div className="project-thumb project-thumb-detail">
+              <Picture src={project.image} alt={project.title} />
+            </div>
+          )}
+          {project.details?.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
         </>
       )}
+      <div className="chip-row project-stack">
+        {project.stack.map((tech) => (
+          <span className="chip" key={tech}>{tech}</span>
+        ))}
+      </div>
     </div>
   );
 };

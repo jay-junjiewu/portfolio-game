@@ -22,10 +22,6 @@ const AudioEqualiserDetails = () => {
 
   return (
     <section className="project-detail">
-      <p>
-        This personal project is a Digital Audio Equaliser written purely using C++ STL (no external libraries) for processing audio signals. The equaliser reads in a .wav audio file and allows users to apply various gains to 5 frequency bands (sub-bass, bass, midrange, upper midrange, treble). It can also process stereo audio and save the result into a .wav file.
-      </p>
-
       <div className="project-links">
         <a
           href="https://github.com/jay-junjiewu/audio-equaliser"
@@ -47,7 +43,7 @@ const AudioEqualiserDetails = () => {
 
       <h3>MATLAB real-time prototype</h3>
       <p>
-        As a prototype, I first designed a real-time equaliser in MATLAB before implementing it from scratch in C++. In MATLAB, the gain adjustment dynamically updates the filter parameters, directly influencing the time-domain signal. These adjustments span a wide range of gain levels, from subtle to significant, which can be observed in the time graph. To ensure smooth processing, a sliding window buffer is used to handle real-time audio data, continuously updating the signal as the sliders are adjusted. This buffer allows for efficient management of the audio stream, ensuring that the filter coefficients are recalculated in real-time. Updates to the frequency response and spectrogram occur in real-time, with minimal latency, providing seamless transitions and a smooth audio experience as the frequency spectrum is adjusted.
+        As a prototype, I first designed a real-time equaliser in MATLAB before implementing it from scratch in C++. In MATLAB, the gain adjustment dynamically updates the filter parameters, directly influencing the signal in the time domain. These adjustments span a wide range of gain levels, from subtle to significant, which can be observed in the time graph. To ensure smooth processing, a sliding window buffer is used to handle real-time audio data, continuously updating the signal as the sliders are adjusted. This buffer allows for efficient management of the audio stream, ensuring that the filter coefficients are recalculated in real time. Updates to the frequency response and spectrogram occur in real time, with minimal latency, providing seamless transitions and a smooth audio experience as the frequency spectrum is adjusted.
       </p>
 
       <div className="image-carousel" aria-label="MATLAB equaliser carousel">
@@ -104,7 +100,7 @@ const AudioEqualiserDetails = () => {
         Users can specify gain adjustments for any of the five predefined frequency bands (sub-bass, bass, midrange, upper midrange, treble). The system applies zero-phase filtering to each band by performing forward and reverse digital filtering, ensuring no phase distortion. This filtering and gain adjustment are performed independently for each channel in stereo files. After processing, the modified audio data is recombined and can be saved back to a .wav file, preserving the original format and metadata.
       </p>
       <p>
-        Additionally, users can apply dynamic range compression to control the audio signal's amplitude. This allows for precise adjustments to the threshold, which determines the level at which compression starts, the compression ratio, which defines the amount of reduction applied once the signal exceeds the threshold, and the make-up gain, which compensates for any volume loss caused by compression.
+        Additionally, users can apply dynamic range compression to control the audio signal's amplitude. This allows for precise adjustments to the threshold, which determines the level at which compression starts, the compression ratio, which defines the amount of reduction applied once the signal exceeds the threshold, and the makeup gain, which compensates for any volume loss caused by compression.
       </p>
       <p>
         The C++ code is in my{" "}

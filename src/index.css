@@ -827,7 +827,9 @@ button:active {
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 1.25rem;
-  align-items: center;
+  /* Stretch so the text column is full height: title and date at the top,
+     skill pills pinned to the bottom. */
+  align-items: stretch;
 }
 
 .project-card-text {
@@ -887,6 +889,9 @@ button:active {
   width: min(560px, 100%);
   height: auto;
   display: block;
+  /* The container's padding keeps its own rounded clip off the image, so
+     round the image itself (matters for flat, edge-to-edge images like diagrams). */
+  border-radius: 12px;
 }
 
 
@@ -1001,6 +1006,12 @@ button:active {
   gap: 0.5rem;
 }
 
+/* Skill pills always sit at the bottom of a project card. */
+.project-meta > .chip-row {
+  margin-top: auto;
+  padding-top: 0.35rem;
+}
+
 .project-topline {
   display: flex;
   justify-content: space-between;
@@ -1074,6 +1085,60 @@ button:active {
   justify-content: center;
 }
 
+/* Projects panel: the Software / Electrical switch sits in the header row,
+   centred between the title and the Close button, so it never scrolls away. */
+.panel-header.panel-header-tabs {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+}
+
+.panel-header-tabs .project-tabs {
+  margin: 0;
+}
+
+.panel-header-tabs > .ghost-button {
+  justify-self: end;
+}
+
+@media (max-width: 520px) {
+  .panel-header.panel-header-tabs {
+    grid-template-columns: 1fr auto;
+    row-gap: 0.6rem;
+  }
+
+  .panel-header-tabs .project-tabs {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+
+/* Island panel: tight title -> date -> summary rhythm on project cards. */
+.portfolio-panel .project-card {
+  padding-top: 0.9rem;
+}
+
+.portfolio-panel .project-card .project-meta {
+  gap: 0.45rem;
+}
+
+.portfolio-panel .project-card .project-topline :is(h2, h3, h4) {
+  margin: 0 0 0.15rem;
+}
+
+.portfolio-panel .project-card .project-meta > p {
+  margin: 0;
+}
+
+/* Project panel header: date and organisation sit right under the title. */
+.portfolio-panel .panel-header :is(.muted, .project-org) {
+  margin: 0.2rem 0 0;
+}
+
+.project-panel .panel-body {
+  margin-top: 0.75rem;
+}
+
 .tab {
   border: none;
   background: rgba(8, 18, 48, 0.06);
@@ -1118,6 +1183,10 @@ button:active {
   margin-top: 0.6rem;
 }
 
+.chip-row.project-stack {
+  margin-top: 1.5rem;
+}
+
 .chip {
   border-radius: 999px;
   background: rgba(8, 18, 48, 0.08);
@@ -1142,7 +1211,14 @@ button:active {
 }
 
 .skill-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.1rem;
+}
+
+/* Skills sit as pills, indented under their category heading. */
+.skill-chips {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0 0 0 1rem;
 }
 
 .contact-details {

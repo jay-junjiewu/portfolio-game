@@ -26,24 +26,16 @@ const GuitarPowerAmplifierDetails = () => {
   return (
     <section className="project-detail">
       <p>
-        This Class G guitar power amplifier is designed to drive loudspeakers with clear, high-quality
-        audio while maintaining efficiency. It takes weak stereo signals from devices like audio jacks
-        or microphones and amplifies them without losing signal integrity or introducing unwanted
-        distortion. By preserving the shape of the audio signal across its frequency range, it ensures
-        that the sound remains true to the original source.
-      </p>
-
-      <p>
-        The amplifier features a multi-stage design, with separate stages for signal gain and power
-        output, allowing for precise control over both audio clarity and power efficiency. This setup
-        ensures that the amplifier delivers the right amount of power to the loudspeakers, making it
-        ideal for high-performance audio applications.
+        The amplifier takes weak stereo signals from devices like audio jacks or microphones and
+        amplifies them while preserving signal integrity and minimising total harmonic distortion
+        (THD). It uses a multistage cascaded design, with separate stages for signal gain and power
+        output, giving precise control over both audio clarity and efficiency.
       </p>
 
       <p>
         In addition to its core functionality, the amplifier includes advanced features like dynamic
         compression to prevent volume spikes and ensure a consistent output level, preventing
-        distortion in high-volume situations. It also incorporates a noise gate to reduce unwanted
+        distortion at high volume. It also incorporates a noise gate to reduce unwanted
         noise, ensuring cleaner sound, and a dynamic compressor to manage volume levels, delivering a
         balanced audio experience and maintaining sound quality in any environment.
       </p>

@@ -222,7 +222,7 @@ const ChatWidget = () => {
           ref={fabRef}
           type="button"
           className="chat-fab"
-          aria-label="Open chat — ask me anything about Junjie"
+          aria-label="Open chat: ask me anything about Junjie"
           onClick={() => setOpen(true)}
         >
           <ChatIcon />
