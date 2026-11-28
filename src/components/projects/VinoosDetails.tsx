@@ -8,7 +8,7 @@ const VinoosDetails = () => {
           href="https://github.com/jay-junjiewu/Vinoos"
           target="_blank"
           rel="noreferrer"
-          className="chip chip-link"
+          className="pdf-link"
         >
           GitHub
         </a>

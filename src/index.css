@@ -604,17 +604,6 @@ button:active {
   color: rgba(216, 230, 255, 0.7);
 }
 
-.app-shell.night .project-detail .project-links .chip {
-  background: rgba(124, 197, 255, 0.18);
-  box-shadow: inset 0 0 0 1px rgba(124, 197, 255, 0.3);
-  color: #d8e6ff;
-}
-
-.app-shell.night .project-detail .project-links .chip:hover {
-  background: rgba(124, 197, 255, 0.28);
-  box-shadow: inset 0 0 0 1px rgba(124, 197, 255, 0.45);
-}
-
 .app-shell.night .pdf-link {
   border-color: rgba(216, 230, 255, 0.2);
   background: rgba(255, 255, 255, 0.08);
@@ -1029,29 +1018,14 @@ button:active {
   font-weight: 700;
 }
 
+/* Project link buttons (GitHub, schematics, website) share the .pdf-link
+   pill style, centred in a row. */
 .project-links {
   display: flex;
-  gap: 0.5rem;
   flex-wrap: wrap;
-}
-
-.project-detail .project-links {
-  margin: 1.5rem;
-  display: flex;
   justify-content: center;
-  gap: 20px;
-}
-
-.project-detail .project-links .chip {
-  padding: 0.35rem 0.95rem;
-  font-size: var(--fs-base);
-  background: rgba(8, 18, 48, 0.1);
-  box-shadow: inset 0 0 0 1px rgba(8, 18, 48, 0.08);
-}
-
-.project-detail .project-links .chip:hover {
-  background: rgba(23, 82, 255, 0.12);
-  box-shadow: inset 0 0 0 1px rgba(23, 82, 255, 0.25);
+  gap: 0.75rem;
+  margin: 1rem 0 1.25rem;
 }
 
 .pdf-container {

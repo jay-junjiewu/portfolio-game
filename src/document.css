@@ -156,7 +156,7 @@ html[data-theme="night"] .doc-theme-switch .theme-night { display: inline-flex; 
 .doc-shell .about-facts { font-size: 17px; }
 .doc-shell .project-detail img { max-width: 100%; height: auto; }
 .doc-shell .carousel-button { background: var(--doc-paper); color: var(--doc-ink); }
-.doc-shell .pdf-link { background: var(--doc-tint); color: var(--doc-ink); }
+.doc-shell .pdf-link { background: var(--doc-tint); color: var(--doc-ink); border-color: var(--doc-border); }
 
 .doc-project-group { margin-bottom: 36px; }
 .doc-project-group > :is(h2, h3) { font-size: 22px; margin: 0 0 14px; }

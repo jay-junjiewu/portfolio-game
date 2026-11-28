@@ -186,7 +186,7 @@ export const ProjectArticle = ({ project, outlineHeading = false }: { project: P
         <>
           {project.githubUrl && (
             <div className="project-links">
-              <a href={project.githubUrl} target="_blank" rel="noreferrer" className="chip chip-link">GitHub</a>
+              <a href={project.githubUrl} target="_blank" rel="noreferrer" className="pdf-link">GitHub</a>
             </div>
           )}
           {project.image && (

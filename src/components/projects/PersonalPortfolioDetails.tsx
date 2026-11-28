@@ -6,7 +6,7 @@ const PersonalPortfolioDetails = () => {
           href="https://github.com/jay-junjiewu/portfolio-game"
           target="_blank"
           rel="noreferrer"
-          className="chip chip-link"
+          className="pdf-link"
         >
           GitHub
         </a>

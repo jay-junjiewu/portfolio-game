@@ -6,7 +6,7 @@ const VoltagePlanningToolDetails = () => {
           href="https://github.com/jay-junjiewu/voltage_planning_tool"
           target="_blank"
           rel="noreferrer"
-          className="chip chip-link"
+          className="pdf-link"
         >
           GitHub
         </a>

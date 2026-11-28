@@ -149,7 +149,9 @@ body .app-shell:is(.day, .night) .portfolio-panel :is(.muted, .contact-label, .e
 body .app-shell:is(.day, .night) .portfolio-panel :is(.text-link, .experience-company-link, .project-card-heading a) { color: var(--island-sage); }
 body .app-shell:is(.day, .night) .portfolio-panel .experience-link-title { color: var(--island-ink); }
 body .app-shell:is(.day, .night) .portfolio-panel :is(.project-card, .experience-card, .experience-link-card, .contact-card) { background: var(--island-tint); border-color: var(--island-line); box-shadow: none; }
-body .app-shell:is(.day, .night) .portfolio-panel :is(.chip, .tab, .pdf-link, .contact-icon, .ghost-button) { background: var(--island-tint); color: var(--island-ink); border-color: var(--island-line); box-shadow: none; }
+body .app-shell:is(.day, .night) .portfolio-panel :is(.chip, .tab, .contact-icon, .ghost-button) { background: var(--island-tint); color: var(--island-ink); border-color: var(--island-line); box-shadow: none; }
+/* Project link buttons: a clear outline so they read as buttons in both themes. */
+body .app-shell:is(.day, .night) .portfolio-panel .pdf-link { background: var(--island-hover); color: var(--island-ink); border: 1px solid var(--island-accent-border); box-shadow: none; }
 body .app-shell:is(.day, .night) .portfolio-panel .project-tabs .tab.active { background: var(--island-selected); color: var(--island-ink); box-shadow: none; }
 body .app-shell:is(.day, .night) .portfolio-panel .ghost-button:hover { background: var(--island-hover); color: var(--island-ink); box-shadow: none; }
 body .app-shell:is(.day, .night) .portfolio-panel .panel-body { scrollbar-color: var(--island-scrollbar) var(--island-tint); }
@@ -237,8 +239,6 @@ body .app-shell:is(.day, .night) .portfolio-panel :is(.text-link, .experience-co
 body .app-shell:is(.day, .night) .portfolio-panel :is(.contact-card, .experience-link-card, .pdf-link):hover { border-color: var(--island-accent-border); box-shadow: 0 5px 18px rgba(8, 25, 31, 0.15); }
 body .app-shell:is(.day, .night) .portfolio-panel .contact-card.static:hover { border-color: var(--island-line); box-shadow: none; }
 body .app-shell:is(.day, .night) .portfolio-panel .contact-icon.location { color: var(--island-sage); background: var(--island-tint); }
-body .app-shell:is(.day, .night) .portfolio-panel .project-detail .project-links .chip { color: var(--island-ink); background: var(--island-tint); box-shadow: inset 0 0 0 1px var(--island-line); }
-body .app-shell:is(.day, .night) .portfolio-panel .project-detail .project-links .chip:hover { background: var(--island-hover); box-shadow: inset 0 0 0 1px var(--island-accent-border); }
 body .app-shell:is(.day, .night) .portfolio-panel :is(.carousel-button, .carousel-button:disabled:hover) { background: var(--island-panel); color: var(--island-ink); border-color: var(--island-line); box-shadow: none; }
 body .app-shell:is(.day, .night) .portfolio-panel .carousel-button:hover:not(:disabled) { background: var(--island-selected); border-color: var(--island-accent-border); }
 body .app-shell:is(.day, .night) .portfolio-panel .carousel-dot { background: var(--island-scrollbar); }

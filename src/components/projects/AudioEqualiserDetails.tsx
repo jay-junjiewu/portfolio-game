@@ -27,7 +27,7 @@ const AudioEqualiserDetails = () => {
           href="https://github.com/jay-junjiewu/audio-equaliser"
           target="_blank"
           rel="noreferrer"
-          className="chip chip-link"
+          className="pdf-link"
         >
           GitHub
         </a>

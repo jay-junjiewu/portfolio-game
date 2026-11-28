@@ -28,7 +28,7 @@ const AmbientSoundMonitorSystemDetails = () => {
           href="https://github.com/jay-junjiewu/ambient-sound-monitor-system-xylyrnth"
           target="_blank"
           rel="noreferrer"
-          className="chip chip-link"
+          className="pdf-link"
         >
           GitHub
         </a>
@@ -36,7 +36,7 @@ const AmbientSoundMonitorSystemDetails = () => {
           href="/assets/ambient-sound-monitor-system/Project_Xylyrnth.pdf"
           target="_blank"
           rel="noreferrer"
-          className="chip chip-link"
+          className="pdf-link"
         >
           Altium Schematics + Draftsman
         </a>

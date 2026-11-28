@@ -8,7 +8,7 @@ const RankItDetails = () => {
           href="https://github.com/FiveRankers/RankIt"
           target="_blank"
           rel="noreferrer"
-          className="chip chip-link"
+          className="pdf-link"
         >
           GitHub
         </a>
