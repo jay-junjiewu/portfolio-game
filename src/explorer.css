@@ -287,12 +287,20 @@ body .app-shell.day :is(.chat-messages, .island-help)::-webkit-scrollbar-track {
   /* The header drags the sheet too (its buttons still work). */
   body .app-shell .portfolio-panel .panel-header[data-sheet-drag] { touch-action: none; cursor: ns-resize; }
   body .app-shell .portfolio-panel .panel-header[data-sheet-drag] :is(button, a) { cursor: pointer; }
-  body .app-shell .portfolio-panel .panel-resize-handle::after { left: 50%; top: 11px; width: 40px; height: 5px; margin-left: -20px; opacity: 1; }
+  /* Grab bar, matching the chat sheet's. margin-top resets the desktop handle's centring offset, which pushed the bar off the top. */
+  body .app-shell .portfolio-panel .panel-resize-handle::after { left: 50%; top: 11px; width: 40px; height: 5px; margin: 0 0 0 -20px; background: currentColor; opacity: 0.3; }
+  body .app-shell .portfolio-panel .panel-resize-handle:is(:focus-visible, .is-dragging)::after { opacity: 0.6; }
+  /* Close becomes an X, like the chat's. */
+  body .app-shell:is(.day, .night) .portfolio-panel .panel-close { display: grid; place-items: center; width: 40px; min-width: 40px; height: 40px; min-height: 40px; padding: 0; border: 0; border-radius: 50%; background: transparent; }
+  body .app-shell:is(.day, .night) .portfolio-panel .panel-close:hover { background: var(--island-hover); }
+  body .app-shell .portfolio-panel .panel-close-label { display: none; }
+  body .app-shell .portfolio-panel .panel-close-icon { display: block; }
   body .app-shell:is(.day, .night) .portfolio-panel .panel-header { position: sticky; top: 0; }
   body .app-shell:is(.day, .night) .portfolio-panel .ghost-button { min-height: 40px; min-width: 64px; }
 }
 
 /* Drag handle for resizing panels (left edge on desktop, top bar on phones). */
+.app-shell .portfolio-panel .panel-close-icon { display: none; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
 .app-shell .portfolio-panel .panel-resize-handle { position: absolute; z-index: 3; left: 0; top: 14px; bottom: 14px; width: 12px; cursor: ew-resize; touch-action: none; }
 .app-shell .portfolio-panel .panel-resize-handle::after { content: ""; position: absolute; left: 4px; top: 50%; width: 4px; height: 44px; margin-top: -22px; border-radius: 4px; background: var(--island-scrollbar); opacity: 0.35; transition: opacity 150ms ease; }
 .app-shell .portfolio-panel .panel-resize-handle:is(:hover, :focus-visible, .is-dragging)::after { opacity: 0.9; }

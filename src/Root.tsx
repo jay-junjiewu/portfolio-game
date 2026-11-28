@@ -50,11 +50,24 @@ const Home = ({ initialView }: { initialView: HomeView }) => {
     setView(next);
   }, []);
 
-  if (view === "simple") return <SimpleHome onExploreIsland={() => changeView("island")} />;
+  // Once the island has been opened it stays mounted (hidden and paused) while
+  // the simple view shows, so switching back doesn't reload the whole scene.
+  const [islandOpened, setIslandOpened] = useState(view === "island");
+  useEffect(() => {
+    if (view === "island") setIslandOpened(true);
+  }, [view]);
+
   return (
-    <Suspense fallback={null}>
-      <IslandApp onSimpleView={() => changeView("simple")} />
-    </Suspense>
+    <>
+      {view === "simple" && <SimpleHome onExploreIsland={() => changeView("island")} />}
+      {(islandOpened || view === "island") && (
+        <div hidden={view !== "island"}>
+          <Suspense fallback={null}>
+            <IslandApp active={view === "island"} onSimpleView={() => changeView("simple")} />
+          </Suspense>
+        </div>
+      )}
+    </>
   );
 };
 

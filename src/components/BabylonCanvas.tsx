@@ -70,6 +70,8 @@ const BabylonCanvas = ({
     const syncRenderLoop = () => {
       const shouldRun = Boolean(renderScene) && !pausedRef.current && document.visibilityState === "visible";
       if (shouldRun && !looping && renderScene) {
+        // The canvas may have been hidden (simple view) and resized meanwhile.
+        engine.resize();
         engine.runRenderLoop(renderScene);
         looping = true;
       } else if (!shouldRun && looping) {

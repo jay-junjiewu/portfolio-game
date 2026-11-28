@@ -106,8 +106,9 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen, onCoverageChange }:
                 <h2 id="portfolio-panel-title">{PANEL_TITLES[activeKey]}</h2>
               </div>
               {activeKey === "projects" && <ProjectTabs category={category} onChange={setCategory} />}
-              <button type="button" className="ghost-button" onClick={onClose}>
-                Close
+              <button type="button" className="ghost-button panel-close" aria-label="Close" onClick={onClose}>
+                <span className="panel-close-label">Close</span>
+                <svg className="panel-close-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
               </button>
             </div>
             <div className="panel-body" id="panel-body" key={activeKey}>

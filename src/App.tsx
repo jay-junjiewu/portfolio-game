@@ -44,9 +44,13 @@ const readPassport = (): BuildingKey[] => {
 
 const NARROW_QUERY = "(max-width: 760px)";
 
-type AppProps = { onSimpleView: () => void };
+type AppProps = {
+  onSimpleView: () => void;
+  /** False while the simple view is showing: the island stays loaded but hidden and paused. */
+  active?: boolean;
+};
 
-const App = ({ onSimpleView }: AppProps) => {
+const App = ({ onSimpleView, active = true }: AppProps) => {
   const [isDay, setIsDay] = useState(readDayMode);
   const [showControls, setShowControls] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -174,7 +178,7 @@ const App = ({ onSimpleView }: AppProps) => {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
+      if (!active || event.key !== "Escape") return;
       if (photoMode) setPhotoMode(false);
       else if (showControls) setShowControls(false);
       else if (activeProject) handleProjectClose();
@@ -183,7 +187,12 @@ const App = ({ onSimpleView }: AppProps) => {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [activeProject, activeSection, closePanel, handleProjectClose, isTourActive, photoMode, showControls, stopTour]);
+  }, [active, activeProject, activeSection, closePanel, handleProjectClose, isTourActive, photoMode, showControls, stopTour]);
+
+  // Leaving for the simple view: a tour shouldn't keep flying in the background.
+  useEffect(() => {
+    if (!active && isTourActive) stopTour();
+  }, [active, isTourActive, stopTour]);
 
   useEffect(() => {
     try {
@@ -212,9 +221,9 @@ const App = ({ onSimpleView }: AppProps) => {
   }, [visited]);
 
   useEffect(() => {
-    document.body.classList.toggle("no-scroll", isPanelOpen);
+    document.body.classList.toggle("no-scroll", isPanelOpen && active);
     return () => document.body.classList.remove("no-scroll");
-  }, [isPanelOpen]);
+  }, [isPanelOpen, active]);
 
   // On phones a full-height sheet hides the scene, so it can stop rendering.
   const renderPaused = isNarrow && panelCoverage >= 0.9 && (activeSection !== null || activeProject !== undefined);
@@ -223,7 +232,7 @@ const App = ({ onSimpleView }: AppProps) => {
     <div className={`app-shell ${isDay ? "day" : "night"}${isLoadingMounted ? " is-loading" : ""}${photoMode ? " is-photo-mode" : ""}`}>
       {!photoMode && <a className="skip-link" href="/about" onClick={(event) => { event.preventDefault(); openSection("about"); }}>Skip to portfolio content</a>}
       <Suspense fallback={null}>
-        <BabylonCanvas isDay={isDay} paused={renderPaused} onBuildingSelect={handleBuildingSelect} onSceneReady={handleSceneReady} onLoadingChange={setIsLoading} />
+        <BabylonCanvas isDay={isDay} paused={renderPaused || !active} onBuildingSelect={handleBuildingSelect} onSceneReady={handleSceneReady} onLoadingChange={setIsLoading} />
       </Suspense>
       {!photoMode && <TopBar isDay={isDay} activeSection={activeProject ? "projects" : activeSection} onToggleDay={() => setIsDay((day) => !day)} onOpenSection={openSection} onSimpleView={onSimpleView} canHintSimpleView={!isLoading && !isPanelOpen} />}
       {!isLoading && !isPanelOpen && <ExplorerHUD controls={sceneControls} visited={visited} isTourActive={isTourActive} photoMode={photoMode} onOpenSection={openSection} onStartTour={startTour} onStopTour={stopTour} onPhotoMode={setPhotoMode} onHelp={openHelp} />}
