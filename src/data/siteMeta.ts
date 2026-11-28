@@ -19,7 +19,7 @@ export type PageMeta = {
 
 export const HOME_META: PageMeta = {
   path: "/",
-  title: "Junjie Wu - C++ Software Engineer",
+  title: "Junjie Wu Software Engineer",
   heading: "Junjie Wu",
   description:
     "Junjie Wu is a C++ software engineer and electrical engineer from UNSW Sydney who builds high-performance real-time software, GPU tooling and FPGA designs.",

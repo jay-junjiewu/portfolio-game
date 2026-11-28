@@ -286,7 +286,7 @@ export const PORTFOLIO_DATA: PortfolioContent = {
     {
       slug: "fpga-based-5-stage-pipelined-processor",
       title: "FPGA-Based 5-Stage Pipelined Processor",
-      category: "electrical",
+      category: "electrical", 
       date: "May 2025 - August 2025",
       started: "2025-05",
       updated: "2026-06-27",
