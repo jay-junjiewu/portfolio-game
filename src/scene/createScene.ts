@@ -24,6 +24,7 @@ import { createAtmosphere } from "./atmosphere";
 import type { LoadedBuilding, RevealEntry } from "./loadBuilding";
 import { createModelCache, loadBuilding, revealQueue, setupBuildingLabels } from "./loadBuilding";
 import { createModelLibrary } from "./modelLibrary";
+import { startDroneTour } from "./droneTour";
 import { setupPicking } from "./picking";
 import { isMobileDevice, prefersReducedMotion } from "../utils/device";
 
@@ -826,125 +827,23 @@ export const createCityScene = async (
     }
 
     camera.detachControl();
-    camera.inertialAlphaOffset = 0;
-    camera.inertialBetaOffset = 0;
-    camera.inertialRadiusOffset = 0;
-
-    const easeInOut = (t: number): number => t * t * (3 - 2 * t);
-
-    type TourWaypoint = {
-      alpha: number;
-      beta: number;
-      radius: number;
-      tx: number;
-      tz: number;
-      ty?: number;
-      moveDuration: number;
-      pauseDuration: number;
-    };
-
-    const isMobile = isMobileDevice();
-    const closeRadius = isMobile ? 62 : 40;
-    const homeRadius = defaultCameraState.radius;
-
-    const waypoints: TourWaypoint[] = [
-      // 0: high overview — snap here instantly, then pause
-      { alpha: (3 * Math.PI) / 4, beta: .86, radius: homeRadius, tx: 2, tz: 2, ty: defaultCameraState.target.y, moveDuration: 0, pauseDuration: 600 },
-      // 1: Projects (city centre)
-      { alpha: Math.PI / 2, beta: 0.82, radius: closeRadius, tx: 2, tz: 2, moveDuration: 1600, pauseDuration: 650 },
-      // 2: About (NE  12, 12)
-      { alpha: (3 * Math.PI) / 4, beta: 0.78, radius: closeRadius + 2, tx: 14, tz: 14, moveDuration: 1600, pauseDuration: 650 },
-      // 3: Experience (NW  -16, 12)
-      { alpha: Math.PI, beta: 0.78, radius: closeRadius + 4, tx: -14, tz: 14, moveDuration: 1800, pauseDuration: 650 },
-      // 4: Contact (SW  -12, -12)
-      { alpha: Math.PI / 4, beta: 0.78, radius: closeRadius + 2, tx: -10, tz: -10, moveDuration: 1800, pauseDuration: 650 },
-      // 5: Skills (SE  12, -12)
-      { alpha: -(Math.PI / 4), beta: 0.78, radius: closeRadius + 2, tx: 14, tz: -10, moveDuration: 1600, pauseDuration: 650 },
-      // 6: return home
-      { alpha: (3 * Math.PI) / 4, beta: .86, radius: homeRadius, tx: 2, tz: 2, ty: defaultCameraState.target.y, moveDuration: 2000, pauseDuration: 0 },
-    ];
-
-    // Snap to initial overview position
-    const first = waypoints[0];
-    camera.alpha = first.alpha;
-    camera.beta = first.beta;
-    camera.radius = first.radius;
-    camera.target.set(first.tx, first.ty ?? 4, first.tz);
-
-    let cancelled = false;
-    let tourRafId: number | null = null;
-    let waypointIndex = 0;
-    let segmentStart = performance.now();
-    let phase: "pause" | "move" = "pause";
-    let fromAlpha = first.alpha;
-    let fromBeta = first.beta;
-    let fromRadius = first.radius;
-    let fromTx = first.tx;
-    let fromTz = first.tz;
-    let fromTy = first.ty ?? 4;
-
-    const finish = () => {
-      camera.inertialAlphaOffset = 0;
-      camera.inertialBetaOffset = 0;
-      camera.inertialRadiusOffset = 0;
-      camera.attachControl(false, false, -1);
-      if (!cancelled) onComplete?.();
-    };
-
-    const step = (timestamp: number) => {
-      if (cancelled) return;
-      const elapsed = timestamp - segmentStart;
-      const wp = waypoints[waypointIndex];
-
-      if (phase === "pause") {
-        if (elapsed >= wp.pauseDuration) {
-          waypointIndex++;
-          if (waypointIndex >= waypoints.length) {
-            finish();
-            return;
-          }
-          fromAlpha = camera.alpha;
-          fromBeta = camera.beta;
-          fromRadius = camera.radius;
-          fromTx = camera.target.x;
-          fromTz = camera.target.z;
-          fromTy = camera.target.y;
-          segmentStart = timestamp;
-          phase = "move";
-        }
-        tourRafId = window.requestAnimationFrame(step);
-      } else {
-        const nextWp = waypoints[waypointIndex];
-        const t = Math.min(1, elapsed / nextWp.moveDuration);
-        const e = easeInOut(t);
-
-        camera.alpha = fromAlpha + shortestAngle(fromAlpha, nextWp.alpha) * e;
-        camera.beta = fromBeta + (nextWp.beta - fromBeta) * e;
-        camera.radius = fromRadius + (nextWp.radius - fromRadius) * e;
-        camera.target.x = fromTx + (nextWp.tx - fromTx) * e;
-        camera.target.z = fromTz + (nextWp.tz - fromTz) * e;
-        camera.target.y = fromTy + ((nextWp.ty ?? 4) - fromTy) * e;
-
-        if (t >= 1) {
-          camera.alpha = nextWp.alpha;
-          camera.beta = nextWp.beta;
-          camera.radius = nextWp.radius;
-          camera.target.set(nextWp.tx, nextWp.ty ?? 4, nextWp.tz);
-          segmentStart = timestamp;
-          phase = "pause";
-        }
-        tourRafId = window.requestAnimationFrame(step);
-      }
-    };
-
-    tourRafId = window.requestAnimationFrame(step);
-
-    cancelActiveTour = () => {
-      if (cancelled) return;
-      cancelled = true;
-      if (tourRafId !== null) window.cancelAnimationFrame(tourRafId);
-      finish();
-    };
+    const { alpha, beta, radius, target } = defaultCameraState;
+    const homePosition = new Vector3(
+      target.x + radius * Math.cos(alpha) * Math.sin(beta),
+      target.y + radius * Math.cos(beta),
+      target.z + radius * Math.sin(alpha) * Math.sin(beta),
+    );
+    cancelActiveTour = startDroneTour({
+      scene,
+      camera,
+      home: { position: homePosition, target: target.clone() },
+      isMobile: isMobileDevice(),
+      onDone: (cancelled) => {
+        cancelActiveTour = null;
+        camera.attachControl(false, false, -1);
+        if (!cancelled) onComplete?.();
+      },
+    });
     return cancelActiveTour;
   };
 
