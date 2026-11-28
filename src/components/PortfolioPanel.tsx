@@ -78,7 +78,7 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen, onCoverageChange }:
   }, [activeKey]);
 
   useDialogFocus(dialogRef, isOpen, activeKey);
-  const { style, handleProps, dragging } = usePanelResize(dialogRef, { onCoverageChange, onDismiss: onClose });
+  const { style, handleProps, headerDragProps, dragging } = usePanelResize(dialogRef, { onCoverageChange, onDismiss: onClose });
 
   const handleOverlayClick = () => {
     if (openAtRef.current && Date.now() - openAtRef.current < 50) return;
@@ -101,7 +101,7 @@ const PortfolioPanel = ({ activeKey, onClose, onProjectOpen, onCoverageChange }:
         {activeKey && (
           <>
             <div {...handleProps} />
-            <div className={`panel-header${activeKey === "projects" ? " panel-header-tabs" : ""}`}>
+            <div className={`panel-header${activeKey === "projects" ? " panel-header-tabs" : ""}`} {...headerDragProps}>
               <div>
                 <h2 id="portfolio-panel-title">{PANEL_TITLES[activeKey]}</h2>
               </div>

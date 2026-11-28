@@ -14,7 +14,7 @@ type ProjectPanelProps = {
 const ProjectPanel = ({ project, onClose, onCoverageChange }: ProjectPanelProps) => {
   const dialogRef = useRef<HTMLDivElement | null>(null);
   useDialogFocus(dialogRef, true, project.slug);
-  const { style, handleProps, dragging } = usePanelResize(dialogRef, { onCoverageChange, onDismiss: onClose });
+  const { style, handleProps, headerDragProps, dragging } = usePanelResize(dialogRef, { onCoverageChange, onDismiss: onClose });
 
   return (
     <>
@@ -28,7 +28,7 @@ const ProjectPanel = ({ project, onClose, onCoverageChange }: ProjectPanelProps)
         style={style}
       >
         <div {...handleProps} />
-        <div className="panel-header">
+        <div className="panel-header" {...headerDragProps}>
           <div>
             <h2 id="project-panel-title">{project.title}</h2>
             <ProjectOrganisation project={project} />

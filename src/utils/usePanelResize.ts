@@ -73,6 +73,8 @@ export function usePanelResize(panelRef: RefObject<HTMLElement | null>, { onCove
   const onPointerDown = useCallback((event: PointerEvent<HTMLElement>) => {
     const panel = panelRef.current;
     if (!panel || event.button !== 0) return;
+    // The phone sheet's header is also a drag area; leave its buttons and links alone.
+    if (event.currentTarget !== event.target && (event.target as Element).closest?.("button, a, input, [role=separator]")) return;
     event.preventDefault();
     const rect = panel.getBoundingClientRect();
     drag.current = {
@@ -170,5 +172,10 @@ export function usePanelResize(panelRef: RefObject<HTMLElement | null>, { onCove
     onKeyDown,
   };
 
-  return { style, handleProps, dragging };
+  /** Spread on the panel header: on phones the whole header drags the sheet. */
+  const headerDragProps = isNarrow
+    ? { onPointerDown, onPointerMove, onPointerUp: finish, onPointerCancel: finish, "data-sheet-drag": "" }
+    : {};
+
+  return { style, handleProps, headerDragProps, dragging };
 }

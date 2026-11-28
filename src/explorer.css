@@ -275,11 +275,18 @@ body .app-shell.day :is(.chat-messages, .island-help)::-webkit-scrollbar-track {
   .app-shell .island-menu-button { order: -1; }
   /* Panels become full-screen sheets on phones, with the close button in reach. */
   body .app-shell:is(.day, .night) .portfolio-panel,
-  body .app-shell:is(.day, .night) .portfolio-panel.compact { z-index: 20; top: auto; bottom: 0; height: var(--sheet-height, 100dvh); max-height: 100dvh; border-radius: 0; padding-top: max(30px, calc(env(safe-area-inset-top) + 18px)); }
+  body .app-shell:is(.day, .night) .portfolio-panel.compact { z-index: 20; top: auto; bottom: 0; height: var(--sheet-height, 100dvh); max-height: 100dvh; border-radius: 0; padding-top: max(30px, calc(env(safe-area-inset-top) + 30px)); }
   /* A sheet dragged below full height shows the island above it. */
   body .app-shell:is(.day, .night) .portfolio-panel[style*="--sheet-height"] { border-radius: 16px 16px 0 0; padding-top: 30px; }
   .app-shell .portfolio-panel::before { display: none; }
-  body .app-shell .portfolio-panel .panel-resize-handle { left: 0; right: 0; top: 0; bottom: auto; width: auto; height: 30px; cursor: ns-resize; }
+  /* The handle sits below the status bar / notch: at the very top of a
+     full-height sheet, touches there go to the phone, not the page. */
+  body .app-shell .portfolio-panel .panel-resize-handle { left: 0; right: 0; top: env(safe-area-inset-top, 0px); bottom: auto; width: auto; height: 30px; cursor: ns-resize; }
+  /* A sheet dragged below full height clears the status bar, so its handle goes back to the top edge. */
+  body .app-shell .portfolio-panel[style*="--sheet-height"] .panel-resize-handle { top: 0; }
+  /* The header drags the sheet too (its buttons still work). */
+  body .app-shell .portfolio-panel .panel-header[data-sheet-drag] { touch-action: none; cursor: ns-resize; }
+  body .app-shell .portfolio-panel .panel-header[data-sheet-drag] :is(button, a) { cursor: pointer; }
   body .app-shell .portfolio-panel .panel-resize-handle::after { left: 50%; top: 11px; width: 40px; height: 5px; margin-left: -20px; opacity: 1; }
   body .app-shell:is(.day, .night) .portfolio-panel .panel-header { position: sticky; top: 0; }
   body .app-shell:is(.day, .night) .portfolio-panel .ghost-button { min-height: 40px; min-width: 64px; }
