@@ -69,7 +69,8 @@ const App = ({ onSimpleView, active = true }: AppProps) => {
 
   // The open panel lives in the URL (/?panel=<section>&project=<slug>) so it
   // can be shared and the back button closes it. Canonical stays at "/".
-  const params = new URLSearchParams(location.search);
+  // Off the homepage (a document page opened from the island) no panel is open.
+  const params = new URLSearchParams(location.pathname === "/" ? location.search : "");
   const panelParam = params.get("panel");
   const projectParam = params.get("project");
   const activeProject = panelParam === "projects" ? findProject(projectParam ?? undefined) : undefined;

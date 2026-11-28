@@ -291,8 +291,8 @@ body .app-shell.day :is(.chat-messages, .island-help)::-webkit-scrollbar-track {
   body .app-shell .portfolio-panel .panel-resize-handle::after { left: 50%; top: 11px; width: 40px; height: 5px; margin: 0 0 0 -20px; background: currentColor; opacity: 0.3; }
   body .app-shell .portfolio-panel .panel-resize-handle:is(:focus-visible, .is-dragging)::after { opacity: 0.6; }
   /* Close becomes an X, like the chat's. */
-  body .app-shell:is(.day, .night) .portfolio-panel .panel-close { display: grid; place-items: center; width: 40px; min-width: 40px; height: 40px; min-height: 40px; padding: 0; border: 0; border-radius: 50%; background: transparent; }
-  body .app-shell:is(.day, .night) .portfolio-panel .panel-close:hover { background: var(--island-hover); }
+  body .app-shell:is(.day, .night) .portfolio-panel .ghost-button.panel-close { display: grid; place-items: center; width: 40px; min-width: 40px; height: 40px; min-height: 40px; padding: 0; border: 0; border-radius: 50%; background: transparent; }
+  body .app-shell:is(.day, .night) .portfolio-panel .ghost-button.panel-close:hover { background: var(--island-hover); }
   body .app-shell .portfolio-panel .panel-close-label { display: none; }
   body .app-shell .portfolio-panel .panel-close-icon { display: block; }
   body .app-shell:is(.day, .night) .portfolio-panel .panel-header { position: sticky; top: 0; }
